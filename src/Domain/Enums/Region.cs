@@ -2,9 +2,9 @@
 
 public enum Region
 {
-    Unknown = -1,
-    UsEast = 0,
-    UsWest = 1,
+    Earth = -1,
+    USEast = 0,
+    USWest = 1,
     SouthAmerica = 2,
     Europe = 3,
     Asia = 4,

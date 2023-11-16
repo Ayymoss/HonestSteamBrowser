@@ -10,5 +10,6 @@ public class Server
     public string Map { get; set; }
     public int Players { get; set; }
     public int MaxPlayers { get; set; }
+    public Region Region { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
 }

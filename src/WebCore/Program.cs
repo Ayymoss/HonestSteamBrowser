@@ -1,5 +1,6 @@
 using BetterSteamBrowser.Business.DTOs;
 using BetterSteamBrowser.Business.Mediatr.Commands;
+using BetterSteamBrowser.Business.Services;
 using BetterSteamBrowser.Business.Utilities;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
@@ -8,6 +9,7 @@ using BetterSteamBrowser.Infrastructure.Context;
 using BetterSteamBrowser.Infrastructure.Repositories;
 using BetterSteamBrowser.Infrastructure.Repositories.Pagination;
 using BetterSteamBrowser.Infrastructure.Services;
+using BetterSteamBrowser.Infrastructure.SignalR;
 using BetterSteamBrowser.WebCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -26,12 +28,15 @@ builder.Services.AddDbContextFactory<DataContext>(options =>
 
 builder.Services.AddSingleton(configuration);
 builder.Services.AddSingleton<ScheduledSteamTaskRunner>();
+builder.Services.AddSingleton<ServerContextCache>();
 
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 
+builder.Services.AddScoped<ISignalRNotification, SignalRNotificationFactory>();
+builder.Services.AddScoped<BsbClientHub>();
 builder.Services.AddScoped<IServerRepository, ServerRepository>();
 builder.Services.AddScoped<IBlacklistRepository, BlacklistRepository>();
 builder.Services.AddScoped<ISteamServerService, SteamServerService>();
@@ -86,6 +91,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.MapHub<BsbServerHub>("/SignalR/MainHub");
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

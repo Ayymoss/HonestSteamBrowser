@@ -11,7 +11,6 @@ public enum SteamGame
     /// Unknown provided game from Steam.
     /// </summary>
     Unknown,
-    _7DaysToDie = 251570,
     AgeOfChivalry = 17510,
     AlienSwarm = 630,
     Arma2OperationArrowhead = 33930,
@@ -56,6 +55,7 @@ public enum SteamGame
     Ricochet = 60,
     RiskOfRain2 = 632360,
     Rust = 252490,
+    SevenDaysToDie = 251570,
     Smashball = 17730,
     SniperElite4 = 312660,
     Spacewar = 480,

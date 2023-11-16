@@ -31,11 +31,15 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
             {
                 "Name" => current.ApplySort(sort, p => p.Name),
                 "Players" => current.ApplySort(sort, p => p.Players),
+                "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
                 _ => current
             });
 
         var count = await query.CountAsync(cancellationToken: cancellationToken);
-        var playerCount = await query.SumAsync(server => server.Players, cancellationToken: cancellationToken);
+        var playerCount = 0;
+        if (gameSearch is not null)
+            playerCount = await query.SumAsync(server => server.Players, cancellationToken: cancellationToken);
+
         var pagedData = await query
             .Skip(request.Skip)
             .Take(request.Top)
@@ -47,6 +51,7 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
                 Map = server.Map,
                 Players = server.Players,
                 MaxPlayers = server.MaxPlayers,
+                Region = server.Region,
                 LastUpdated = server.LastUpdated
             }).ToListAsync(cancellationToken: cancellationToken);
 
@@ -54,7 +59,7 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
         {
             Data = pagedData,
             Count = count,
-            ExtraData = playerCount
+            Players = playerCount
         };
     }
 }

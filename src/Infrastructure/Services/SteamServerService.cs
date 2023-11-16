@@ -1,23 +1,24 @@
 ﻿using System.Text;
 using System.Text.Json;
+using BetterSteamBrowser.Business.DTOs;
+using BetterSteamBrowser.Business.Services;
 using BetterSteamBrowser.Business.Utilities;
 using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Services;
 using BetterSteamBrowser.Domain.ValueObjects;
-using BetterSteamBrowser.Infrastructure.Utilities;
 using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
 public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, SetupConfigurationContext config,
-        IBlacklistRepository blacklistRepository)
+        IBlacklistRepository blacklistRepository, ServerContextCache serverContextCache)
     : ISteamServerService
 {
     private const int BatchSize = 10;
 
-    public async Task StartSteamFetchAsync() // todo rename
+    public async Task StartSteamFetchAsync()
     {
         try
         {

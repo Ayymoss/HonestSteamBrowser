@@ -1,4 +1,6 @@
-﻿using BetterSteamBrowser.Domain.Interfaces.Services;
+﻿using BetterSteamBrowser.Business.Mediatr.Events;
+using BetterSteamBrowser.Domain.Interfaces.Services;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -26,9 +28,11 @@ public class ScheduledSteamTaskRunner(IServiceProvider serviceProvider) : IDispo
         {
             using var scope = serviceProvider.CreateScope();
             var steamService = scope.ServiceProvider.GetRequiredService<ISteamServerService>();
+            var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>(); 
             try
             {
                 await steamService.StartSteamFetchAsync();
+                await publisher.Publish(new UpdateInformationCommand());
             }
             catch (Exception e)
             {

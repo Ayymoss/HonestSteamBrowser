@@ -54,3 +54,9 @@ a {
     color: var(--rz-link-color);
 }
 
+@media (max-width: 1024px) {
+    .hide-on-small {
+        display: none;
+    }
+}
+

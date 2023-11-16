@@ -24,4 +24,20 @@ public class ServerRepository(DataContext context) : IServerRepository
 
         await context.SaveChangesAsync();
     }
+
+    public async Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken)
+    {
+        var count = await context.Servers
+            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
+            .SumAsync(x => x.Players, cancellationToken: cancellationToken);
+        return count;
+    }
+
+    public async Task<int> GetTotalServerCountAsync(CancellationToken cancellationToken)
+    {
+        var count = await context.Servers
+            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
+            .CountAsync(cancellationToken: cancellationToken);
+        return count;
+    }
 }
