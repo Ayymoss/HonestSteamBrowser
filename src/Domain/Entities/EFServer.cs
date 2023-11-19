@@ -11,7 +11,8 @@ public class EFServer
     public int Players { get; set; }
     public int MaxPlayers { get; set; }
     public SteamGame Game { get; set; }
-    public Region Region { get; set; }
+    public string? Country { get; set; }
+    public string? CountryCode { get; set; }
     public string Map { get; set; }
 
     public DateTimeOffset LastUpdated { get; set; }

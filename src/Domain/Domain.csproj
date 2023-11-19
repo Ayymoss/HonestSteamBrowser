@@ -5,10 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>BetterSteamBrowser.Domain</RootNamespace>
+        <AssemblyName>BetterSteamBrowser.Domain</AssemblyName>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Folder Include="ValueObjects\" />
-    </ItemGroup>
 
 </Project>

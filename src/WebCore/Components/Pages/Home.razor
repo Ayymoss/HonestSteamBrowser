@@ -49,7 +49,7 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="Region" Title="Region" Sortable="false" MinWidth="100px">
                         <Template Context="context">
-                            @context.Region.Humanize().Transform(To.TitleCase)
+                            @context.Country.Humanize().Transform(To.TitleCase)
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="LastUpdated" Title="Last Seen" MinWidth="120px">

@@ -6,6 +6,7 @@ namespace BetterSteamBrowser.Infrastructure.SignalR;
 
 public class BsbClientHub : IAsyncDisposable
 {
+    // TODO: Add viewer count endpoints
     public event Action<CacheInfo>? OnInformationUpdated;
     private HubConnection? _hubConnection;
 
@@ -23,7 +24,7 @@ public class BsbClientHub : IAsyncDisposable
 #if DEBUG
             .WithUrl("http://localhost:8123/SignalR/MainHub")
 #else
-            .WithUrl("https://bettersteambrowsers.app/SignalR/MainHub")
+            .WithUrl("https://bettersteambrowser.app/SignalR/MainHub")
 #endif
             .WithAutomaticReconnect()
             .Build();

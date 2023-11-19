@@ -19,7 +19,17 @@ using Serilog.Events;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = SetupConfiguration.ReadConfiguration();
 
-configuration.DatabaseName = "SteamBrowserTest1";
+#if DEBUG
+builder.WebHost.ConfigureKestrel(options => { options.ListenLocalhost(8123); });
+#else
+builder.WebHost.UseKestrel(options =>
+{
+    options.ListenAnyIP(configuration.WebBind, configure =>
+        configure.UseHttps(configuration.CertificatePath, configuration.CertificatePassword));
+});
+#endif
+
+configuration.DatabaseName = "SteamBrowserLive3";
 
 builder.Services.AddDbContextFactory<DataContext>(options =>
 {
@@ -36,6 +46,7 @@ builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 
 builder.Services.AddScoped<ISignalRNotification, SignalRNotificationFactory>();
+builder.Services.AddScoped<IGeoIpService, GeoIpService>();
 builder.Services.AddScoped<BsbClientHub>();
 builder.Services.AddScoped<IServerRepository, ServerRepository>();
 builder.Services.AddScoped<IBlacklistRepository, BlacklistRepository>();
@@ -72,6 +83,18 @@ Log.Logger = new LoggerConfiguration()
         retainedFileCountLimit: 10,
         outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] [{ShortSourceContext}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsSpecs", corsPolicyBuilder =>
+    {
+        corsPolicyBuilder
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials();
+    });
+});
 
 builder.Host.UseSerilog();
 

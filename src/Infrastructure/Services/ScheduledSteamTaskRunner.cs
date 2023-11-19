@@ -18,17 +18,19 @@ public class ScheduledSteamTaskRunner(IServiceProvider serviceProvider) : IDispo
 
     private void ExecuteScheduledAction(object? state)
     {
+#if !DEBUG
         if (_firstRun)
         {
             _firstRun = false;
             return;
         }
+#endif
 
         Task.Run(async () =>
         {
             using var scope = serviceProvider.CreateScope();
             var steamService = scope.ServiceProvider.GetRequiredService<ISteamServerService>();
-            var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>(); 
+            var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
             try
             {
                 await steamService.StartSteamFetchAsync();

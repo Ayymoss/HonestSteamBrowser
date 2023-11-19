@@ -1,6 +1,6 @@
 ﻿namespace BetterSteamBrowser.Domain.Enums;
 
-public enum BlacklistType
+public enum FilterType
 {
     IpAddress,
     GameType,

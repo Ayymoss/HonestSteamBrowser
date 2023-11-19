@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>BetterSteamBrowser.Business</RootNamespace>
+        <AssemblyName>BetterSteamBrowser.Business</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

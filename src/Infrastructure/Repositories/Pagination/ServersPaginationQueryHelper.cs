@@ -23,6 +23,7 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
 
         if (!string.IsNullOrWhiteSpace(request.SearchString))
             query = query.Where(search =>
+                (search.Country != null && EF.Functions.ILike(search.Country, $"%{request.SearchString}%")) ||
                 EF.Functions.ILike(search.Address, $"%{request.SearchString}%") ||
                 EF.Functions.ILike(search.Name, $"%{request.SearchString}%"));
 
@@ -51,7 +52,7 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
                 Map = server.Map,
                 Players = server.Players,
                 MaxPlayers = server.MaxPlayers,
-                Region = server.Region,
+                Country = server.Country ?? "Unknown",
                 LastUpdated = server.LastUpdated
             }).ToListAsync(cancellationToken: cancellationToken);
 
