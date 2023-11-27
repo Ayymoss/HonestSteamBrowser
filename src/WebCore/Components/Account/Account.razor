@@ -1,7 +1,16 @@
 ﻿@page "/Account"
+<PageTitle>Log in | Better Steam Browser</PageTitle>
 
 <AuthorizeView>
     <NotAuthorized>
-        <Login/>
+       <RadzenRow JustifyContent="JustifyContent.Center">
+           <RadzenColumn SizeSM="12" SizeMD="4">
+               <LoginComponent/>
+           </RadzenColumn>
+           <RadzenColumn SizeSM="12" SizeMD="4">
+               <RegisterComponent/>
+           </RadzenColumn>
+       </RadzenRow>
     </NotAuthorized>
 </AuthorizeView>
+

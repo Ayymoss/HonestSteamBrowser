@@ -1,11 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using BetterSteamBrowser.Infrastructure.Identity
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Identity
-
-<PageTitle>Log in | Better Steam Browser</PageTitle>
-
-<RadzenStack JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Orientation="Orientation.Vertical" Gap="0">
+﻿<RadzenCard>
     <RadzenText Text="Login In" TextStyle="TextStyle.H3"/>
     <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
         <DataAnnotationsValidator/>
@@ -27,4 +20,4 @@
             }
         </RadzenStack>
     </EditForm>
-</RadzenStack>
+</RadzenCard>
