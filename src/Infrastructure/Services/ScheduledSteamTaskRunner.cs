@@ -18,13 +18,13 @@ public class ScheduledSteamTaskRunner(IServiceProvider serviceProvider) : IDispo
 
     private void ExecuteScheduledAction(object? state)
     {
-#if !DEBUG
+//#if !DEBUG
         if (_firstRun)
         {
             _firstRun = false;
             return;
         }
-#endif
+//#endif
 
         Task.Run(async () =>
         {

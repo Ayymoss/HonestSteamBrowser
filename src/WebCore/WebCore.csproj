@@ -1,33 +1,82 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>BetterSteamBrowser.WebCore</RootNamespace>
-        <AssemblyName>BetterSteamBrowser.WebCore</AssemblyName>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-WebCore-d32094a3-1311-45ac-b49a-8370c73b46ff</UserSecretsId>
+    <RootNamespace>BetterSteamBrowser.WebCore</RootNamespace>
+    <AssemblyName>BetterSteamBrowser.WebCore</AssemblyName>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Npgsql" Version="8.0.0-rc.2" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-rc.2" />
-      <PackageReference Include="Radzen.Blazor" Version="4.21.1" />
-      <PackageReference Include="Serilog" Version="3.1.1" />
-      <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
-      <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <PackageReference Include="Humanizer.Core" Version="2.14.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql" Version="8.0.0-rc.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-rc.2" />
+    <PackageReference Include="Radzen.Blazor" Version="4.21.1" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Business\Business.csproj" />
-      <ProjectReference Include="..\Domain\Domain.csproj" />
-      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Business\Business.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Components\Pages\Subcomponents\LoginDialog.razor" />
+    <AdditionalFiles Include="Components\Pages\Subcomponents\ServerList.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ConfirmEmail.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ConfirmEmailChange.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ExternalLogin.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ForgotPassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ForgotPasswordConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\InvalidPasswordReset.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\InvalidUser.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Lockout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Login.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\LoginWith2fa.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\LoginWithRecoveryCode.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\ChangePassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\DeletePersonalData.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Disable2fa.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Email.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\EnableAuthenticator.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\ExternalLogins.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\GenerateRecoveryCodes.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\Index.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\PersonalData.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\ResetAuthenticator.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\SetPassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\TwoFactorAuthentication.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Manage\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\Register.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\RegisterConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ResendEmailConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ResetPassword.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\ResetPasswordConfirmation.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Pages\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\AccountLayout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ExternalLoginPicker.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ManageLayout.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ManageNavMenu.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\RedirectToLogin.razor" />
+    <_ContentIncludedByDefault Remove="Components\Account\Shared\ShowRecoveryCodes.razor" />
+  </ItemGroup>
 
 </Project>

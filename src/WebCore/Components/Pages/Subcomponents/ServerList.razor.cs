@@ -9,9 +9,9 @@ using Radzen;
 using Radzen.Blazor;
 using SortDescriptor = BetterSteamBrowser.Domain.ValueObjects.Pagination.SortDescriptor;
 
-namespace BetterSteamBrowser.WebCore.Components.Pages;
+namespace BetterSteamBrowser.WebCore.Components.Pages.Subcomponents;
 
-public partial class Home : IDisposable
+public partial class ServerList : IDisposable
 {
     [Inject] private IMediator Mediator { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }

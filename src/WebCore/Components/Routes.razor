@@ -1,6 +1,18 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly">
+﻿
+<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <RadzenText TextStyle="TextStyle.DisplayH4" Text="Unauthorised" class="rz-color-primary"/>
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
     </Found>
+    <NotFound>
+        <PageTitle>Not Found</PageTitle>
+        <LayoutView Layout="@typeof(Layout.MainLayout)">
+            <RadzenText TextStyle="TextStyle.DisplayH4" Text="404 :(" class="rz-color-primary"/>
+            <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, there's nothing here!" class="rz-color-error"/>
+        </LayoutView>
+    </NotFound>
 </Router>

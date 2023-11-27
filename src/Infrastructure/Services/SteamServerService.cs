@@ -122,7 +122,6 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
         return filtered;
     }
 
-
     private string BuildApiFilter(SteamGame game, IEnumerable<EFBlacklist> blacklists)
     {
         var blacklistsList = blacklists.Where(x => x.ApiFilter).OrderByDescending(x => x.Type).ToList();

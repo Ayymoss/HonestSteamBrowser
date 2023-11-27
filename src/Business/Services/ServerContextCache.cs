@@ -2,7 +2,7 @@
 
 namespace BetterSteamBrowser.Business.Services;
 
-public class ServerContextCache(IServiceProvider serviceProvider)
+public class ServerContextCache
 {
     public int ServerCount { get; private set; }
     public int PlayerCount { get; private set; }

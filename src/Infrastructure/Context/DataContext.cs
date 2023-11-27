@@ -1,15 +1,14 @@
 ﻿using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
+using BetterSteamBrowser.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BetterSteamBrowser.Infrastructure.Context;
 
-public class DataContext : DbContext
+public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<MyUser>(options)
 {
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
-    {
-    }
-
     public DbSet<EFServer> Servers { get; set; }
     public DbSet<EFBlacklist> Blacklists { get; set; }
 
@@ -17,6 +16,35 @@ public class DataContext : DbContext
     {
         modelBuilder.Entity<EFServer>().ToTable("EFServers");
         modelBuilder.Entity<EFBlacklist>().ToTable("EFBlacklists");
+
+        var hasher = new PasswordHasher<MyUser>();
+
+        var adminUser = new MyUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = "Admin",
+            NormalizedUserName = "ADMIN",
+            Email = "admin@example.com",
+            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            EmailConfirmed = true,
+            PasswordHash = hasher.HashPassword(null, "adminadmin"),
+            SecurityStamp = string.Empty
+        };
+
+        var adminRole = new IdentityRole
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Admin",
+            NormalizedName = "ADMIN"
+        };
+
+        modelBuilder.Entity<MyUser>().HasData(adminUser);
+        modelBuilder.Entity<IdentityRole>().HasData(adminRole);
+        modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+        {
+            RoleId = adminRole.Id,
+            UserId = adminUser.Id
+        });
 
         var blacklists = new[]
         {

@@ -13,7 +13,7 @@ public class ServerListItem
     [JsonPropertyName("gamedir")] public string GameDirectory { get; set; }
     [JsonPropertyName("version")] public string Version { get; set; }
     [JsonPropertyName("product")] public string Product { get; set; }
-    [JsonPropertyName("region")] public Region Region { get; set; }
+    [JsonPropertyName("region")] public int Region { get; set; }
     [JsonPropertyName("players")] public int Players { get; set; }
     [JsonPropertyName("max_players")] public int MaxPlayers { get; set; }
     [JsonPropertyName("bots")] public int Bots { get; set; }
