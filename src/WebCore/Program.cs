@@ -36,7 +36,7 @@ public class Program
         });
 #endif
 
-        configuration.DatabaseName = "SteamBrowserTest3";
+        configuration.DatabaseName = "SteamBrowserTest2";
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
         {
@@ -56,6 +56,7 @@ public class Program
         builder.Services.AddScoped<ISignalRNotification, SignalRNotificationFactory>();
         builder.Services.AddScoped<IGeoIpService, GeoIpService>();
         builder.Services.AddScoped<BsbClientHub>();
+        builder.Services.AddScoped<ISteamGameRepository, SteamGameRepository>();
         builder.Services.AddScoped<IServerRepository, ServerRepository>();
         builder.Services.AddScoped<IBlacklistRepository, BlacklistRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();

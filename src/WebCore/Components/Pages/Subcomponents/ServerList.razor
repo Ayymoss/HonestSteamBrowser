@@ -1,4 +1,5 @@
 ﻿@using BetterSteamBrowser.Business.DTOs
+@using BetterSteamBrowser.Domain.ValueObjects
 @using Humanizer
 <RadzenRow JustifyContent="JustifyContent.Center">
     <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
@@ -11,7 +12,7 @@
                 </RadzenColumn>
                 <RadzenColumn SizeSM="12" SizeMD="9">
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.End" Wrap="FlexWrap.Wrap">
-                        <RadzenDropDown @bind-Value="@_dropdownSelected" Data="@_dropdownGames" AllowClear="true" FilterAsYouType="true"
+                        <RadzenDropDown TValue="SteamGame" @bind-Value="@_dropDownSelected" Data="@_dropDownGames" AllowClear="true" FilterAsYouType="true"
                                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         Change="OnDropdownChanged" Placeholder="Select Game" Style="width: 100%; max-width: 300px; height: 42px;"/>
                         <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; max-width: 300px;">
@@ -33,11 +34,7 @@
                 <Columns>
                     <RadzenDataGridColumn TItem="Server" Property="Name" Title="Name" MinWidth="120px" Width="500px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Address" Title="Address" Sortable="false" MinWidth="100px" Width="175px"/>
-                    <RadzenDataGridColumn TItem="Server" Property="Game" Title="Game" Sortable="false" MinWidth="60px">
-                        <Template Context="context">
-                            @context.Game.Humanize().Transform(To.TitleCase)
-                        </Template>
-                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Server" Property="SteamGameName" Title="Game" Sortable="false" MinWidth="60px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Map" Title="Map" Sortable="false" MinWidth="100px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Players" Title="Players" SortOrder="SortOrder.Descending" MinWidth="80px">
                         <Template Context="context">

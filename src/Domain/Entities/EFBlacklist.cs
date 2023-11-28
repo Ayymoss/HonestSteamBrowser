@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using BetterSteamBrowser.Domain.Enums;
 
 namespace BetterSteamBrowser.Domain.Entities;
@@ -8,7 +9,10 @@ public class EFBlacklist
     [Key] public int Id { get; set; }
     public string Value { get; set; }
     public bool ApiFilter { get; set; }
-    public SteamGame Game { get; set; }
     public FilterType Type { get; set; }
     public DateTimeOffset Added { get; set; }
+
+    public int SteamGameId { get; set; }
+
+    [ForeignKey(nameof(SteamGameId))] public EFSteamGame SteamGame { get; set; }
 }

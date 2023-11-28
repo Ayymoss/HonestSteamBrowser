@@ -7,27 +7,21 @@ namespace BetterSteamBrowser.Infrastructure.Repositories;
 
 public class ServerRepository(DataContext context) : IServerRepository
 {
-    public async Task AddAndUpdateServerListAsync(IReadOnlyCollection<EFServer> servers)
+    public async Task AddAndUpdateServerListAsync(IEnumerable<EFServer> existingServers, IEnumerable<EFServer> newServers)
     {
-        var distinctServerHashes = servers.Select(s => s.Hash).Distinct().ToList();
-        var hashList = await context.Servers
-            .Where(x => distinctServerHashes.Contains(x.Hash))
-            .Select(s => s.Hash)
-            .ToListAsync();
-
-        var existingHashes = new HashSet<string>(hashList);
-        var newServers = servers.Where(s => !existingHashes.Contains(s.Hash)).ToList();
-        var updatedServers = servers.Where(s => existingHashes.Contains(s.Hash)).ToList();
-
         context.Servers.AddRange(newServers);
-        context.Servers.UpdateRange(updatedServers);
-
+        context.Servers.UpdateRange(existingServers);
         await context.SaveChangesAsync();
+        
+        
+        var test = await context.Servers.FirstOrDefaultAsync(x => x.Address == "37.61.231.78:27015");
+        Console.WriteLine($"AddAndUpdateServerListAsync - 1 - {test?.Blacklisted}");
     }
 
     public async Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken)
     {
         var count = await context.Servers
+            .Where(x => !x.Blacklisted)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
             .SumAsync(x => x.Players, cancellationToken: cancellationToken);
         return count;
@@ -36,8 +30,18 @@ public class ServerRepository(DataContext context) : IServerRepository
     public async Task<int> GetTotalServerCountAsync(CancellationToken cancellationToken)
     {
         var count = await context.Servers
+            .Where(x => !x.Blacklisted)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
             .CountAsync(cancellationToken: cancellationToken);
         return count;
+    }
+
+    public async Task<List<EFServer>> GetServerByExistingAsync(IEnumerable<string> servers)
+    {
+        var serverList = await context.Servers
+            .Where(x => servers.Contains(x.Hash))
+            .Include(x => x.SteamGame)
+            .ToListAsync();
+        return serverList;
     }
 }

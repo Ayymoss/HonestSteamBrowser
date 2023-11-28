@@ -9,7 +9,9 @@ public class BlacklistRepository(DataContext context) : IBlacklistRepository
 {
     public async Task<List<EFBlacklist>> GetBlacklistAsync()
     {
-        var blacklists = await context.Blacklists.ToListAsync();
+        var blacklists = await context.Blacklists
+            .Include(x => x.SteamGame)
+            .ToListAsync();
         return blacklists;
     }
 }

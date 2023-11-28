@@ -1,132 +1,169 @@
-﻿using System.Text;
-using System.Text.Json;
-using BetterSteamBrowser.Business.Services;
+﻿using System.Collections.Concurrent;
+using System.Text;
 using BetterSteamBrowser.Business.Utilities;
 using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
+using BetterSteamBrowser.Domain.Interfaces;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Services;
 using BetterSteamBrowser.Domain.ValueObjects;
-using Serilog;
+using BetterSteamBrowser.Infrastructure.Interfaces;
+using BetterSteamBrowser.Infrastructure.Utilities;
+using Microsoft.Extensions.Logging;
+using RestEase;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
 public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, SetupConfigurationContext config,
-        IBlacklistRepository blacklistRepository, IGeoIpService geoIpService)
+        IBlacklistRepository blacklistRepository, ISteamGameRepository steamGameRepository, IGeoIpService geoIpService,
+        ILogger<SteamServerService> logger)
     : ISteamServerService
 {
     private const int BatchSize = 10;
     private List<EFBlacklist> _blacklisted = new();
+    private List<EFSteamGame> _steamGames = new();
+    private ISteamApi _steamApi = null!;
 
     public async Task StartSteamFetchAsync()
     {
+        var client = httpClientFactory.CreateClient("BSBClient");
+        client.BaseAddress = new Uri("https://api.steampowered.com/");
+        _steamApi = RestClient.For<ISteamApi>(client);
+
         try
         {
             _blacklisted = await blacklistRepository.GetBlacklistAsync();
-            var allStats = await RetrieveServerStatisticsAsync();
-            var servers = ProcessServerStatistics(allStats).ToList();
-            await serverRepository.AddAndUpdateServerListAsync(servers);
-            Log.Information("Successfully modified {Count} servers", servers.Count);
+            _steamGames = await steamGameRepository.GetSteamGamesAsync();
+
+            var rawSteamServers = (await RetrieveServerStatisticsAsync())
+                .ToDictionary(
+                    serverStat => serverStat.Address.Compute256Hash(),
+                    serverStat => serverStat);
+
+            var existingServerHashes = await serverRepository.GetServerByExistingAsync(rawSteamServers.Keys);
+            var existingServerDictionary = existingServerHashes.ToDictionary(server => server.Hash, server => server);
+
+            var existingServers = existingServerDictionary
+                .Select(kv => new Tuple<EFServer, ServerListItem>(kv.Value, rawSteamServers[kv.Key]))
+                .ToList();
+
+            var newServers = rawSteamServers
+                .Where(kv => !existingServerDictionary.ContainsKey(kv.Key))
+                .Select(kv => new Tuple<ServerListItem, string>(kv.Value, kv.Key))
+                .ToList();
+
+            var existingServerFinal = ProcessExistingServers(existingServers).ToList();
+            var newServersFinal = ProcessNewServers(newServers).ToList();
+
+            await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal);
+            logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
         }
         catch (Exception e)
         {
-            Log.Error(e, "Error executing scheduled action");
+            logger.LogError(e, "Error executing scheduled action");
         }
     }
 
     private async Task<List<ServerListItem>> RetrieveServerStatisticsAsync()
     {
-        var serverList = new List<ServerListItem>();
-        var games = Enum.GetValues<SteamGame>()
-            .Where(x => x > 0)
-            .ToList();
+        var serverList = new ConcurrentBag<ServerListItem>();
 
-        for (var i = 0; i < games.Count; i += BatchSize)
+
+        for (var i = 0; i < _steamGames.Count; i += BatchSize)
         {
-            var batch = games.Skip(i).Take(BatchSize);
-            var taskGameDictionary = new Dictionary<Task<List<ServerListItem>?>, SteamGame>();
+            var batch = _steamGames.Skip(i).Take(BatchSize);
+            var tasks = batch.AsParallel().Select(ProcessGameAsync).ToList();
+            var results = await Task.WhenAll(tasks);
 
-            foreach (var game in batch)
+            foreach (var result in results.Where(r => r.Item2 is not null))
             {
-                var blacklistForApi = _blacklisted.Where(x => x.Game is SteamGame.AllGames || x.Game == game);
-                var filter = BuildApiFilter(game, blacklistForApi);
-                var task = GetServerListAsync(filter);
-                taskGameDictionary.Add(task, game);
-            }
-
-            await Task.WhenAll(taskGameDictionary.Keys);
-
-            foreach (var task in taskGameDictionary.Keys)
-            {
-                var game = taskGameDictionary[task];
-                if (task.Result is null)
+                foreach (var item in result.Item2!)
                 {
-                    Log.Information("No results for game: {Game}", game);
-                    continue;
+                    serverList.Add(item);
                 }
-
-                serverList.AddRange(task.Result);
             }
         }
 
-        return serverList;
+        return serverList.ToList();
+    }
+
+    private async Task<Tuple<EFSteamGame, List<ServerListItem>?>> ProcessGameAsync(EFSteamGame game)
+    {
+        var blacklistForApi = _blacklisted.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
+        var filter = BuildApiFilter(blacklistForApi, game.AppId);
+        var serverListItems = await GetServerListAsync(filter);
+
+        if (serverListItems is null)
+        {
+            logger.LogInformation("No results for game: {Game}", game.Name);
+        }
+
+        return new Tuple<EFSteamGame, List<ServerListItem>?>(game, serverListItems);
     }
 
     private async Task<List<ServerListItem>?> GetServerListAsync(string filterParam)
     {
-        var client = httpClientFactory.CreateClient("BSBClient");
-        const string endpoint = "https://api.steampowered.com/IGameServersService/GetServerList/v1/";
+        const int queryLimit = 20_000;
         var queryParams = new Dictionary<string, string>
         {
             ["key"] = config.SteamApiKey,
-            ["limit"] = "20000",
+            ["limit"] = queryLimit.ToString(),
             ["filter"] = filterParam
         };
 
-        var response = await client.GetAsync($"{endpoint}?{string.Join("&", queryParams.Select(kv => $"{kv.Key}={kv.Value}"))}");
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            Log.Warning("Failed to request data: {Error}", response.ReasonPhrase);
+            var response = await _steamApi.GetServerListAsync(queryParams);
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Failed to request data: {Error}", response.ReasonPhrase);
+                return null;
+            }
+
+            var result = await response.DeserializeHttpResponseContentAsync<ServerListRoot>();
+            return result?.Response.Servers;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while fetching server list");
             return null;
         }
-
-        var jsonString = await response.Content.ReadAsStringAsync();
-        var responseJson = JsonSerializer.Deserialize<ServerListRoot>(jsonString);
-        return responseJson?.Response.Servers;
     }
 
-    private IEnumerable<EFServer> BuildPostFilter(IEnumerable<EFServer> servers)
+    private List<EFServer> BuildBlacklist(List<EFServer> servers)
     {
         var blacklistsList = _blacklisted.Where(x => !x.ApiFilter).ToList();
         if (blacklistsList.Count is 0) return servers;
 
-        var filtered = servers;
-
-        foreach (var blacklist in blacklistsList)
+        foreach (var server in servers)
         {
-            switch (blacklist.Type)
+            if (server.Name.Contains("FASTCUP") && !server.Blacklisted) Console.WriteLine();
+            var blacklists = blacklistsList.Where(blacklist =>
+                server.SteamGameId == blacklist.SteamGameId || blacklist.SteamGameId == SteamGameConstants.AllGames);
+            foreach (var blacklist in blacklists)
             {
-                case FilterType.Hostname:
-                    filtered = filtered
-                        .Where(x => x.Game != blacklist.Game || (x.Game == blacklist.Game && !x.Name.Contains(blacklist.Value)));
-                    break;
-
-                case FilterType.IpAddress:
-                    filtered = filtered
-                        .Where(x => x.Game != blacklist.Game || (x.Game == blacklist.Game && x.CountryCode != blacklist.Value));
-                    break;
+                switch (blacklist.Type)
+                {
+                    case FilterType.Hostname:
+                        if (server.Name.Contains(blacklist.Value, StringComparison.OrdinalIgnoreCase))
+                            server.Blacklisted = true;
+                        break;
+                    case FilterType.IpAddress:
+                        if (server.CountryCode == blacklist.Value)
+                            server.Blacklisted = true;
+                        break;
+                }
             }
         }
 
-        return filtered;
+        return servers;
     }
 
-    private string BuildApiFilter(SteamGame game, IEnumerable<EFBlacklist> blacklists)
+    private static string BuildApiFilter(IEnumerable<EFBlacklist> blacklists, int gameAppId)
     {
         var blacklistsList = blacklists.Where(x => x.ApiFilter).OrderByDescending(x => x.Type).ToList();
 
-        var filterBuilder = new StringBuilder($@"\appid\{(int)game}\empty\1\dedicated\1\name_match\*");
+        var filterBuilder = new StringBuilder($@"\appid\{gameAppId}\empty\1\dedicated\1\name_match\*");
         filterBuilder.Append(@"\nand\1\gametype\hidden");
 
         if (blacklistsList.Count is 0) return filterBuilder.ToString();
@@ -147,25 +184,47 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
         return filterBuilder.ToString();
     }
 
-    private IEnumerable<EFServer> ProcessServerStatistics(IEnumerable<ServerListItem> allStats)
+    private IEnumerable<EFServer> ProcessExistingServers(List<Tuple<EFServer, ServerListItem>> servers)
     {
-        var servers = allStats
-            .Where(x => x is {Name: not null, Map: not null})
-            .Select(x => new EFServer
+        foreach (var server in servers)
+        {
+            server.Item1.Name = server.Item2.Name!;
+            server.Item1.SteamGame.AppId = server.Item2.AppId;
+            server.Item1.Players = server.Item2.Players;
+            server.Item1.MaxPlayers = server.Item2.MaxPlayers;
+            server.Item1.Map = server.Item2.Map!;
+            server.Item1.LastUpdated = DateTimeOffset.UtcNow;
+        }
+
+        var filtered = BuildBlacklist(servers.Select(x => x.Item1).ToList());
+        return filtered;
+    }
+
+    private IEnumerable<EFServer> ProcessNewServers(IEnumerable<Tuple<ServerListItem, string>> steamServers)
+    {
+        var servers = steamServers
+            .Where(x => x.Item1 is {Name: not null, Map: not null})
+            .Select(x =>
             {
-                Hash = x.Address.Compute256Hash(),
-                Address = x.Address,
-                Name = x.Name!,
-                Players = x.Players,
-                MaxPlayers = x.MaxPlayers,
-                Game = Enum.TryParse<SteamGame>(x.AppId.ToString(), out var game) ? game : SteamGame.Unknown,
-                Country = null,
-                CountryCode = null,
-                Map = x.Map!,
-                LastUpdated = DateTimeOffset.UtcNow
+                var steamGameId = _steamGames.FirstOrDefault(s => s.AppId == x.Item1.AppId)?.Id ?? SteamGameConstants.Unknown;
+
+                return new EFServer
+                {
+                    Hash = x.Item2,
+                    Address = x.Item1.Address,
+                    Name = x.Item1.Name!,
+                    Players = x.Item1.Players,
+                    MaxPlayers = x.Item1.MaxPlayers,
+                    Country = null,
+                    CountryCode = null,
+                    Map = x.Item1.Map!,
+                    LastUpdated = DateTimeOffset.UtcNow,
+                    SteamGameId = steamGameId
+                };
             }).ToList();
-        var countryIpInformation = geoIpService.PopulateCountries(servers);
-        var filtered = BuildPostFilter(countryIpInformation);
+
+        geoIpService.PopulateCountries(servers);
+        var filtered = BuildBlacklist(servers);
 
         return filtered;
     }

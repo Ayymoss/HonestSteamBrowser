@@ -4,5 +4,5 @@ namespace BetterSteamBrowser.Domain.Interfaces.Services;
 
 public interface IGeoIpService
 {
-    IEnumerable<EFServer> PopulateCountries(IEnumerable<EFServer> servers);
+    void PopulateCountries(IEnumerable<EFServer> servers);
 }

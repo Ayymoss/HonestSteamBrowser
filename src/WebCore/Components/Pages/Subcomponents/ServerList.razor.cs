@@ -1,6 +1,9 @@
 ﻿using BetterSteamBrowser.Business.DTOs;
 using BetterSteamBrowser.Business.Mediatr.Commands;
+using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
+using BetterSteamBrowser.Domain.Interfaces.Repositories;
+using BetterSteamBrowser.Domain.ValueObjects;
 using Humanizer;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -18,34 +21,28 @@ public partial class ServerList : IDisposable
 
     private RadzenDataGrid<Server> _dataGrid;
     private IEnumerable<Server> _serverTable;
-    private IEnumerable<string> _dropdownGames;
-    private string? _dropdownSelected;
-    private SteamGame? _dropdownSelectedGame;
+    private IEnumerable<SteamGame> _dropDownGames;
+    private SteamGame? _dropDownSelected;
     private bool _isLoading = true;
     private int _count;
     private int _gamePlayerCount;
     private string? _searchString;
     private string _titleText = "Servers";
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        _dropdownGames = Enum.GetValues(typeof(SteamGame))
-            .Cast<SteamGame>()
-            .Where(x => x is not SteamGame.Unknown)
-            .Where(x => x is not SteamGame.AllGames)
-            .Select(x => x.Humanize().Transform(To.TitleCase))
-            .Order()
-            .ToList();
+        _dropDownGames = await Mediator.Send(new GetSteamGamesCommand());
 
         var uri = new Uri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
 
         query.TryGetValue("game", out var game);
         query.TryGetValue("filter", out var filter);
-        _dropdownSelectedGame = Enum.TryParse<SteamGame>(game.FirstOrDefault(), out var steamGame) ? steamGame : null;
-        _dropdownSelected = _dropdownSelectedGame?.Humanize().Transform(To.TitleCase);
+        _dropDownSelected = int.TryParse(game.FirstOrDefault(), out var gameAppId)
+            ? _dropDownGames.FirstOrDefault(x => x.AppId == gameAppId)
+            : null;
         _searchString = filter.FirstOrDefault();
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
     private async Task LoadData(LoadDataArgs args)
@@ -62,7 +59,7 @@ public partial class ServerList : IDisposable
                     : SortDirection.Descending
             }),
             SearchString = _searchString,
-            Data = _dropdownSelectedGame,
+            Data = _dropDownSelected?.AppId,
             Top = args.Top ?? 20,
             Skip = args.Skip ?? 0
         };
@@ -77,15 +74,6 @@ public partial class ServerList : IDisposable
 
     private void OnDropdownChanged()
     {
-        try
-        {
-            _dropdownSelectedGame = _dropdownSelected.DehumanizeTo<SteamGame>();
-        }
-        catch
-        {
-            _dropdownSelectedGame = null;
-        }
-
         _dataGrid.Reload();
         UpdateUrl();
     }
@@ -99,7 +87,7 @@ public partial class ServerList : IDisposable
 
     private void UpdateTitle()
     {
-        _titleText = _dropdownSelectedGame is not null ? $"Players {_gamePlayerCount:N0}" : "Servers";
+        _titleText = _dropDownSelected is not null ? $"Players {_gamePlayerCount:N0}" : "Servers";
         StateHasChanged();
     }
 
@@ -108,9 +96,9 @@ public partial class ServerList : IDisposable
         var baseUri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).GetLeftPart(UriPartial.Path);
 
         var queryString = new Dictionary<string, string?>();
-        if (_dropdownSelectedGame is not null)
+        if (_dropDownSelected is not null)
         {
-            queryString["game"] = ((int)_dropdownSelectedGame).ToString();
+            queryString["game"] = _dropDownSelected.AppId.ToString();
         }
 
         if (!string.IsNullOrEmpty(_searchString))

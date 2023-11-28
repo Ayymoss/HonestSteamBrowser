@@ -15,11 +15,12 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
         CancellationToken cancellationToken)
     {
         var query = context.Servers
+            .Where(x => !x.Blacklisted)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
             .AsQueryable();
 
-        SteamGame? gameSearch = request.Data is SteamGame game ? game : null;
-        if (gameSearch is not null && gameSearch is not SteamGame.AllGames) query = query.Where(server => server.Game == gameSearch);
+        int? gameSearch = request.Data is int game ? game : null;
+        if (gameSearch is not null) query = query.Where(server => server.SteamGame.AppId == gameSearch);
 
         if (!string.IsNullOrWhiteSpace(request.SearchString))
             query = query.Where(search =>
@@ -48,7 +49,8 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
             {
                 Address = server.Address,
                 Name = server.Name,
-                Game = server.Game,
+                SteamGameAppId = server.SteamGame.AppId,
+                SteamGameName = server.SteamGame.Name,
                 Map = server.Map,
                 Players = server.Players,
                 MaxPlayers = server.MaxPlayers,

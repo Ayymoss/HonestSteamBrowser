@@ -2,6 +2,4 @@
 
 namespace BetterSteamBrowser.Business.Mediatr.Events;
 
-public class UpdateInformationCommand : INotification
-{
-}
+public class UpdateInformationCommand : INotification;

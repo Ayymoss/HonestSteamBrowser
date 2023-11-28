@@ -8,15 +8,14 @@ namespace BetterSteamBrowser.Infrastructure.Services;
 
 public class GeoIpService(SetupConfigurationContext configuration) : IGeoIpService
 {
-    public IEnumerable<EFServer> PopulateCountries(IEnumerable<EFServer> servers)
+    public void PopulateCountries(IEnumerable<EFServer> servers)
     {
         var workingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var fileName = Path.Join(workingDirectory, "Resources", configuration.MaxMindGeoIp2DatabaseName);
         var parallelOptions = new ParallelOptions {MaxDegreeOfParallelism = 10};
         using var reader = new DatabaseReader(fileName);
-        var populateCountries = servers.ToList();
 
-        Parallel.ForEach(populateCountries, parallelOptions, server =>
+        Parallel.ForEach(servers, parallelOptions, server =>
         {
             try
             {
@@ -30,7 +29,5 @@ public class GeoIpService(SetupConfigurationContext configuration) : IGeoIpServi
                 // ignored
             }
         });
-
-        return populateCountries;
     }
 }

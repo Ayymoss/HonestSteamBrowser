@@ -13,18 +13,19 @@ public class ScheduledSteamTaskRunner(IServiceProvider serviceProvider) : IDispo
 
     public void StartTimer()
     {
-        _timer = new Timer(ExecuteScheduledAction, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+        // TODO: Move the save period to cache then write out cache every 6 hours
+        _timer = new Timer(ExecuteScheduledAction, null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
     }
 
     private void ExecuteScheduledAction(object? state)
     {
-//#if !DEBUG
+#if !DEBUG
         if (_firstRun)
         {
             _firstRun = false;
             return;
         }
-//#endif
+#endif
 
         Task.Run(async () =>
         {
