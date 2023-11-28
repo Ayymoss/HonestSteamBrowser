@@ -11,9 +11,9 @@ public static class DataContextSeed
 {
     public static void AddCustomIdentitySeed(this ModelBuilder modelBuilder)
     {
-        var hasher = new PasswordHasher<MyUser>();
+        var hasher = new PasswordHasher<ApplicationUser>();
 
-        var adminUser = new MyUser
+        var adminUser = new ApplicationUser
         {
             Id = Guid.NewGuid().ToString(),
             UserName = "Admin",
@@ -32,7 +32,7 @@ public static class DataContextSeed
             NormalizedName = "ADMIN"
         };
 
-        modelBuilder.Entity<MyUser>().HasData(adminUser);
+        modelBuilder.Entity<ApplicationUser>().HasData(adminUser);
         modelBuilder.Entity<IdentityRole>().HasData(adminRole);
         modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
         {

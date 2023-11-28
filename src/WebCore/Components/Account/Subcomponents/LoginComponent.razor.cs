@@ -9,7 +9,7 @@ namespace BetterSteamBrowser.WebCore.Components.Account.Subcomponents;
 public partial class LoginComponent
 {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-    [Inject] private SignInManager<MyUser> SignInManager { get; set; } = default!;
+    [Inject] private SignInManager<ApplicationUser> SignInManager { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [SupplyParameterFromForm] private LoginModel Input { get; set; } = new();
 

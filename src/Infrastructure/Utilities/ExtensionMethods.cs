@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
+using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Utilities;
 
@@ -32,7 +33,7 @@ public static partial class ExtensionMethods
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Log.Error("Failed to deserialize response content: {Message}", e.Message);
         }
 
         return null;

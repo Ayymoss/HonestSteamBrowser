@@ -29,6 +29,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Authentication.Abstractions">
+        <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.0\Microsoft.AspNetCore.Authentication.Abstractions.dll</HintPath>
+      </Reference>
       <Reference Include="Microsoft.AspNetCore.Identity">
         <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.0\Microsoft.AspNetCore.Identity.dll</HintPath>
       </Reference>

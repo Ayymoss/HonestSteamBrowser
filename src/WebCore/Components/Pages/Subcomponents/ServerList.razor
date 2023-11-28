@@ -1,6 +1,8 @@
 ﻿@using BetterSteamBrowser.Business.DTOs
+@using BetterSteamBrowser.Domain.Enums
 @using BetterSteamBrowser.Domain.ValueObjects
 @using Humanizer
+
 <RadzenRow JustifyContent="JustifyContent.Center">
     <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
         <RadzenCard>
@@ -30,7 +32,7 @@
                             Density="Density.Compact" AllowPaging="true" PageSize="30" AllowSorting="true" PagerAlwaysVisible="true"
                             PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="new[] {20, 30, 50, 100}" ShowPagingSummary="true"
                             PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
-                            Style="min-height: 200px">
+                            RowClick="RowClickEvent" Style="min-height: 200px" class="rz-selectable">
                 <Columns>
                     <RadzenDataGridColumn TItem="Server" Property="Name" Title="Name" MinWidth="120px" Width="500px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Address" Title="Address" Sortable="false" MinWidth="100px" Width="175px"/>
@@ -38,7 +40,7 @@
                     <RadzenDataGridColumn TItem="Server" Property="Map" Title="Map" Sortable="false" MinWidth="100px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Players" Title="Players" SortOrder="SortOrder.Descending" MinWidth="80px">
                         <Template Context="context">
-                            @context.Players/@context.MaxPlayers
+                            @context.Players.ToString("N0")/@context.MaxPlayers.ToString("N0")
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="Region" Title="Region" Sortable="false" MinWidth="100px">

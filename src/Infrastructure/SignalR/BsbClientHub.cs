@@ -8,6 +8,7 @@ public class BsbClientHub : IAsyncDisposable
 {
     // TODO: Add viewer count endpoints
     public event Action<CacheInfo>? OnInformationUpdated;
+    public event Action<int>? SiteViewerCountUpdated;
     private HubConnection? _hubConnection;
 
     public async Task InitializeAsync()
@@ -38,13 +39,16 @@ public class BsbClientHub : IAsyncDisposable
     private void SubscribeToHubEvents()
     {
         _hubConnection?.On<CacheInfo>(SignalRMethods.OnInformationUpdated.ToString(), cache => OnInformationUpdated?.Invoke(cache));
+        _hubConnection?.On<int>(SignalRMethods.OnActiveUsersUpdate.ToString(), count => SiteViewerCountUpdated?.Invoke(count));
     }
 
     private async Task InitialiseDefaults()
     {
         if (_hubConnection is null) return;
-        var onlineCount = await _hubConnection.InvokeAsync<CacheInfo>(SignalRMethods.GetInformation.ToString());
-        OnInformationUpdated?.Invoke(onlineCount);
+        var cacheInfo = await _hubConnection.InvokeAsync<CacheInfo>(SignalRMethods.GetInformation.ToString());
+        var onlineCount = await _hubConnection.InvokeAsync<int>(SignalRMethods.GetActiveUsersCount.ToString());
+        OnInformationUpdated?.Invoke(cacheInfo);
+        SiteViewerCountUpdated?.Invoke(onlineCount);
     }
 
     public async ValueTask DisposeAsync()

@@ -25,7 +25,7 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
         if (!string.IsNullOrWhiteSpace(request.SearchString))
             query = query.Where(search =>
                 (search.Country != null && EF.Functions.ILike(search.Country, $"%{request.SearchString}%")) ||
-                EF.Functions.ILike(search.Address, $"%{request.SearchString}%") ||
+                EF.Functions.ILike(search.IpAddress, $"%{request.SearchString}%") ||
                 EF.Functions.ILike(search.Name, $"%{request.SearchString}%"));
 
         if (request.Sorts.Any())
@@ -47,10 +47,12 @@ public class ServersPaginationQueryHelper(DataContext context) : IResourceQueryH
             .Take(request.Top)
             .Select(server => new Server
             {
-                Address = server.Address,
+                IpAddress = server.IpAddress,
+                Port = server.Port,
                 Name = server.Name,
                 SteamGameAppId = server.SteamGame.AppId,
                 SteamGameName = server.SteamGame.Name,
+                SteamGameId = server.SteamGameId,
                 Map = server.Map,
                 Players = server.Players,
                 MaxPlayers = server.MaxPlayers,

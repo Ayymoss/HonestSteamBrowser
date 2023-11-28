@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BetterSteamBrowser.Infrastructure.Context;
 
-public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<MyUser>(options)
+public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<EFServer> Servers { get; set; }
     public DbSet<EFBlacklist> Blacklists { get; set; }

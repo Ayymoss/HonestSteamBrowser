@@ -4,9 +4,13 @@ using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.ValueObjects;
+using BetterSteamBrowser.Infrastructure.Identity;
+using BetterSteamBrowser.WebCore.Components.Pages.Dialogs;
 using Humanizer;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Radzen;
 using Radzen.Blazor;
@@ -18,6 +22,8 @@ public partial class ServerList : IDisposable
 {
     [Inject] private IMediator Mediator { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
+    [Inject] private DialogService DialogService { get; set; }
 
     private RadzenDataGrid<Server> _dataGrid;
     private IEnumerable<Server> _serverTable;
@@ -28,6 +34,9 @@ public partial class ServerList : IDisposable
     private int _gamePlayerCount;
     private string? _searchString;
     private string _titleText = "Servers";
+
+    private bool IsAdmin => AuthenticationStateProvider?
+        .GetAuthenticationStateAsync().Result.User.IsInRole(IdentityRoles.Admin.ToString()) ?? false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,5 +122,24 @@ public partial class ServerList : IDisposable
     public void Dispose()
     {
         _dataGrid.Dispose();
+    }
+
+    private async Task RowClickEvent(DataGridRowMouseEventArgs<Server> arg)
+    {
+        if (!IsAdmin) return;
+
+        var parameters = new Dictionary<string, object>
+        {
+            {"Server", arg.Data}
+        };
+
+        var options = new DialogOptions
+        {
+            Style = "min-height:auto;min-width:auto;width:auto;max-width:75%;max-height:97%",
+            CloseDialogOnOverlayClick = true
+        };
+
+        await DialogService.OpenAsync<ServerDialog>("Blacklist Address?", parameters, options);
+        await _dataGrid.Reload();
     }
 }

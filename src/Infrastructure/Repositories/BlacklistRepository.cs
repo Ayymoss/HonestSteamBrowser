@@ -14,4 +14,14 @@ public class BlacklistRepository(DataContext context) : IBlacklistRepository
             .ToListAsync();
         return blacklists;
     }
+
+    public async Task AddAsync(EFBlacklist blacklist, CancellationToken cancellationToken)
+    {
+        var alreadyExists = await context.Blacklists
+            .Where(x => x.Value == blacklist.Value && x.SteamGameId == blacklist.SteamGameId)
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        if (alreadyExists is not null) return;
+        context.Blacklists.Add(blacklist);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

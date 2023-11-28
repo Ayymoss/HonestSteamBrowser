@@ -20,7 +20,8 @@ public class GeoIpService(SetupConfigurationContext configuration) : IGeoIpServi
             try
             {
                 // This "Captured variable is disposed in the outer scope" is a lie.
-                var response = reader.Country(server.Address.Split(':').First());
+                // ReSharper disable once AccessToDisposedClosure
+                var response = reader.Country(server.IpAddress);
                 server.Country = response.Country.Name;
                 server.CountryCode = response.Country.IsoCode;
             }

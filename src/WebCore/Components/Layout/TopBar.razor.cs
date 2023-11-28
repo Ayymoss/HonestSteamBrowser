@@ -1,6 +1,8 @@
 ﻿using BetterSteamBrowser.Business.DTOs;
 using BetterSteamBrowser.Infrastructure.SignalR;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BetterSteamBrowser.WebCore.Components.Layout;
 
@@ -11,14 +13,23 @@ public partial class TopBar : IAsyncDisposable
 
     private int _players;
     private int _servers;
+    private int _activeUserCount;
 
     protected override async Task OnInitializedAsync()
     {
         if (HubConnection is null) return;
         HubConnection.OnInformationUpdated += OnInformationUpdatedReceived;
+        HubConnection.SiteViewerCountUpdated += UpdatePageViewersCount;
         await HubConnection.InitializeAsync();
         await base.OnInitializedAsync();
     }
+
+    private void UpdatePageViewersCount(int count)
+    {
+        _activeUserCount = count;
+        InvokeAsync(StateHasChanged);
+    }
+
 
     private void OnInformationUpdatedReceived(CacheInfo cache)
     {
@@ -26,9 +37,9 @@ public partial class TopBar : IAsyncDisposable
         {
             _ = OnInformationUpdatedReceivedAsync(cache);
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"An error occurred: {ex.Message}");
+            // ignored
         }
     }
 

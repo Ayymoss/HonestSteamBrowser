@@ -12,6 +12,9 @@ using BetterSteamBrowser.Infrastructure.Repositories.Pagination;
 using BetterSteamBrowser.Infrastructure.Services;
 using BetterSteamBrowser.Infrastructure.SignalR;
 using BetterSteamBrowser.WebCore.Components;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using Serilog;
@@ -36,7 +39,7 @@ public class Program
         });
 #endif
 
-        configuration.DatabaseName = "SteamBrowserTest2";
+        configuration.DatabaseName = "SteamBrowserTest11";
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
         {
@@ -52,6 +55,7 @@ public class Program
         builder.Services.AddScoped<NotificationService>();
         builder.Services.AddScoped<TooltipService>();
         builder.Services.AddScoped<ContextMenuService>();
+        builder.Services.AddBlazoredLocalStorage();
 
         builder.Services.AddScoped<ISignalRNotification, SignalRNotificationFactory>();
         builder.Services.AddScoped<IGeoIpService, GeoIpService>();
@@ -60,6 +64,7 @@ public class Program
         builder.Services.AddScoped<IServerRepository, ServerRepository>();
         builder.Services.AddScoped<IBlacklistRepository, BlacklistRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();
+        //builder.Services.AddScoped<IClaimsTransformation, ClaimsTransformer>();
 
         builder.Services.AddScoped<IResourceQueryHelper<GetServerListCommand, Server>, ServersPaginationQueryHelper>();
 
@@ -76,7 +81,8 @@ public class Program
         // Identity
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddAuthorization();
-        builder.Services.AddIdentityApiEndpoints<MyUser>()
+        builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DataContext>();
         // Identity end
 

@@ -1,4 +1,5 @@
 ﻿using BetterSteamBrowser.Domain.Entities;
+using BetterSteamBrowser.Domain.Interfaces;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,6 @@ public class ServerRepository(DataContext context) : IServerRepository
         context.Servers.AddRange(newServers);
         context.Servers.UpdateRange(existingServers);
         await context.SaveChangesAsync();
-        
-        
-        var test = await context.Servers.FirstOrDefaultAsync(x => x.Address == "37.61.231.78:27015");
-        Console.WriteLine($"AddAndUpdateServerListAsync - 1 - {test?.Blacklisted}");
     }
 
     public async Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken)
@@ -43,5 +40,14 @@ public class ServerRepository(DataContext context) : IServerRepository
             .Include(x => x.SteamGame)
             .ToListAsync();
         return serverList;
+    }
+
+    public async Task BlacklistAddressAsync(string address, int steamGameId, CancellationToken cancellationToken)
+    {
+        var query = context.Servers.Where(x => x.IpAddress == address);
+        if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
+        var servers = await query.ToListAsync(cancellationToken: cancellationToken);
+        foreach (var server in servers) server.Blacklisted = true;
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -137,7 +137,6 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
 
         foreach (var server in servers)
         {
-            if (server.Name.Contains("FASTCUP") && !server.Blacklisted) Console.WriteLine();
             var blacklists = blacklistsList.Where(blacklist =>
                 server.SteamGameId == blacklist.SteamGameId || blacklist.SteamGameId == SteamGameConstants.AllGames);
             foreach (var blacklist in blacklists)
@@ -184,9 +183,9 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
         return filterBuilder.ToString();
     }
 
-    private IEnumerable<EFServer> ProcessExistingServers(List<Tuple<EFServer, ServerListItem>> servers)
+    private IEnumerable<EFServer> ProcessExistingServers(IReadOnlyCollection<Tuple<EFServer, ServerListItem>> servers)
     {
-        foreach (var server in servers)
+        foreach (var server in servers.Where(server => server.Item2.Map is not null && server.Item2.Name is not null))
         {
             server.Item1.Name = server.Item2.Name!;
             server.Item1.SteamGame.AppId = server.Item2.AppId;
@@ -207,11 +206,13 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
             .Select(x =>
             {
                 var steamGameId = _steamGames.FirstOrDefault(s => s.AppId == x.Item1.AppId)?.Id ?? SteamGameConstants.Unknown;
+                var address = x.Item1.Address.Split(':');
 
                 return new EFServer
                 {
                     Hash = x.Item2,
-                    Address = x.Item1.Address,
+                    IpAddress = address[0],
+                    Port = int.Parse(address[1]),
                     Name = x.Item1.Name!,
                     Players = x.Item1.Players,
                     MaxPlayers = x.Item1.MaxPlayers,

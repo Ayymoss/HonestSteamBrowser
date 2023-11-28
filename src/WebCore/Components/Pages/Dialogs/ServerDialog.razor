@@ -1,0 +1,31 @@
+﻿<RadzenStack Orientation="Orientation.Vertical" Gap="0">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Name:"/>
+            <RadzenText>@Server.Name</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Address:"/>
+            <RadzenText>@Server.Address</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Players:"/>
+            <RadzenText>@Server.Players/@Server.MaxPlayers</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Country:"/>
+            <RadzenText>@Server.Country</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Game Name:"/>
+            <RadzenText>@Server.SteamGameName</RadzenText>
+        </RadzenStack>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" class="rz-my-4">
+        <RadzenCheckBox @bind-Value="_forAllGames" Name="BlacklistCheckbox"/>
+        <RadzenText class="rz-ml-2 rz-mb-0" Text="Blacklist for all games or just this one?"/>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+        <RadzenButton Click="BlacklistAddress" Text="Blacklist" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Blacklisting..."/>
+    </RadzenStack>
+</RadzenStack>

@@ -9,7 +9,7 @@ namespace BetterSteamBrowser.WebCore.Components.Account.Subcomponents;
 public partial class RegisterComponent
 {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-    [Inject] private SignInManager<MyUser> SignInManager { get; set; } = default!;
+    [Inject] private SignInManager<ApplicationUser> SignInManager { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [SupplyParameterFromForm] private RegisterModel Input { get; set; } = new();
 
@@ -27,7 +27,7 @@ public partial class RegisterComponent
     {
         _errorMessage = string.Empty;
 
-        var user = new MyUser {UserName = Input.Username};
+        var user = new ApplicationUser {UserName = Input.Username};
         var result = await SignInManager.UserManager.CreateAsync(user, Input.Password);
         if (result.Succeeded)
         {

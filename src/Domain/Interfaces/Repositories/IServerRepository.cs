@@ -8,4 +8,5 @@ public interface IServerRepository
     Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken);
     Task<int> GetTotalServerCountAsync(CancellationToken cancellationToken);
     Task<List<EFServer>> GetServerByExistingAsync(IEnumerable<string> servers);
+    Task BlacklistAddressAsync(string address, int steamGameId, CancellationToken cancellationToken);
 }

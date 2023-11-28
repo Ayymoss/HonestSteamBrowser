@@ -2,4 +2,4 @@
 
 namespace BetterSteamBrowser.Infrastructure.Identity;
 
-public class MyUser : IdentityUser;
+public class ApplicationUser : IdentityUser;
