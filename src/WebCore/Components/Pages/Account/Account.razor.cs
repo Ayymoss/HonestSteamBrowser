@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 
-namespace BetterSteamBrowser.WebCore.Components.Account;
+namespace BetterSteamBrowser.WebCore.Components.Pages.Account;
 
 public partial class Account
 {

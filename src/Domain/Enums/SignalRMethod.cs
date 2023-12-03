@@ -1,6 +1,6 @@
 ﻿namespace BetterSteamBrowser.Domain.Enums;
 
-public enum SignalRMethods
+public enum SignalRMethod
 {
     #region Client Methods
 

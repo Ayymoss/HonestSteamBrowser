@@ -7,8 +7,6 @@ public static class SteamGameConstants
 {
     public const int AllGames = -2;
     public const int Unknown = -1;
-    public const int CounterStrike = 1;
-    public const int CounterStrikeSource = 2;
-    public const int CounterStrike2 = 3;
-    public const int Rust = 4;
+    public const int CounterStrike2 = 12;
+    public const int Rust = 27;
 }

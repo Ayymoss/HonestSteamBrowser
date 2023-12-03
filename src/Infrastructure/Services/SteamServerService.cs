@@ -71,7 +71,7 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
 
         for (var i = 0; i < _steamGames.Count; i += BatchSize)
         {
-            var batch = _steamGames.Skip(i).Take(BatchSize);
+            var batch = _steamGames.Where(x => x.Id > 0).Skip(i).Take(BatchSize);
             var tasks = batch.AsParallel().Select(ProcessGameAsync).ToList();
             var results = await Task.WhenAll(tasks);
 

@@ -1,0 +1,8 @@
+﻿@page "/"
+
+<PageTitle>Better Steam Browser</PageTitle>
+
+<RadzenStack Orientation="Orientation.Vertical">
+    <InfoBar IsAdmin="_isAdmin" UserId="@_userId"/>
+    <ServerList Manager="false" IsAdmin="_isAdmin" UserId="@_userId"/>
+</RadzenStack>

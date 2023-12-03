@@ -37,7 +37,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Components\Pages\Subcomponents\ServerList.razor" />
+    <AdditionalFiles Include="Components\Pages\Account\Account.razor" />
+    <AdditionalFiles Include="Components\Pages\Account\Subcomponents\LoginComponent.razor" />
+    <AdditionalFiles Include="Components\Pages\Account\Subcomponents\RegisterComponent.razor" />
+    <AdditionalFiles Include="Components\Pages\Home\Dialogs\ServerDialog.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Pages\Subcomponents\ServerList.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Pages\Manage\Subcomponents\" />
   </ItemGroup>
   
 </Project>

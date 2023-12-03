@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/app.css"/>
     <link rel="icon" type="image/png" href="favicon.png"/>
-    <HeadOutlet @rendermode="@RenderModeForPage()"/>
+    <HeadOutlet @rendermode="@GetRenderMode()"/>
 </head>
 
 <body>
-<Routes @rendermode="@RenderModeForPage()"/>
+<Routes @rendermode="@GetRenderMode()"/>
 <script src="_framework/blazor.web.js"></script>
 <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 </body>
@@ -26,12 +26,8 @@
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    private IComponentRenderMode? RenderModeForPage()
-    {
-        var context = HttpContext.Request.Path.StartsWithSegments("/Account")
-            ? null
-            : InteractiveServer;
-        return context;
-    }
+    private IComponentRenderMode? GetRenderMode() => HttpContext.Request.Path.StartsWithSegments("/Account")
+        ? null
+        : InteractiveServer;
 
 }

@@ -39,7 +39,7 @@ public class Program
         });
 #endif
 
-        configuration.DatabaseName = "SteamBrowserTest11";
+        configuration.DatabaseName = "SteamBrowserTest12";
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
         {
@@ -64,7 +64,8 @@ public class Program
         builder.Services.AddScoped<IServerRepository, ServerRepository>();
         builder.Services.AddScoped<IBlacklistRepository, BlacklistRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();
-        //builder.Services.AddScoped<IClaimsTransformation, ClaimsTransformer>();
+        builder.Services.AddScoped<IGameServerPlayerService, GameServerPlayerService>();
+        builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
 
         builder.Services.AddScoped<IResourceQueryHelper<GetServerListCommand, Server>, ServersPaginationQueryHelper>();
 

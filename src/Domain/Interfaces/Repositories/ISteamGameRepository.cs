@@ -4,5 +4,5 @@ namespace BetterSteamBrowser.Domain.Interfaces.Repositories;
 
 public interface ISteamGameRepository
 {
-    Task<List<EFSteamGame>> GetSteamGamesAsync();
+    Task<List<EFSteamGame>> GetSteamGamesAsync(CancellationToken cancellationToken = default);
 }

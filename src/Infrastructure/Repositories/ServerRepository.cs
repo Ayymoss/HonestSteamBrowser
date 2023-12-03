@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BetterSteamBrowser.Infrastructure.Repositories;
 
-public class ServerRepository(DataContext context) : IServerRepository
+public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : IServerRepository
 {
     public async Task AddAndUpdateServerListAsync(IEnumerable<EFServer> existingServers, IEnumerable<EFServer> newServers)
     {
+        await using var context = await contextFactory.CreateDbContextAsync();
         context.Servers.AddRange(newServers);
         context.Servers.UpdateRange(existingServers);
         await context.SaveChangesAsync();
@@ -17,6 +18,7 @@ public class ServerRepository(DataContext context) : IServerRepository
 
     public async Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken)
     {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var count = await context.Servers
             .Where(x => !x.Blacklisted)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
@@ -26,6 +28,7 @@ public class ServerRepository(DataContext context) : IServerRepository
 
     public async Task<int> GetTotalServerCountAsync(CancellationToken cancellationToken)
     {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var count = await context.Servers
             .Where(x => !x.Blacklisted)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
@@ -35,6 +38,7 @@ public class ServerRepository(DataContext context) : IServerRepository
 
     public async Task<List<EFServer>> GetServerByExistingAsync(IEnumerable<string> servers)
     {
+        await using var context = await contextFactory.CreateDbContextAsync();
         var serverList = await context.Servers
             .Where(x => servers.Contains(x.Hash))
             .Include(x => x.SteamGame)
@@ -44,6 +48,7 @@ public class ServerRepository(DataContext context) : IServerRepository
 
     public async Task BlacklistAddressAsync(string address, int steamGameId, CancellationToken cancellationToken)
     {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var query = context.Servers.Where(x => x.IpAddress == address);
         if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
         var servers = await query.ToListAsync(cancellationToken: cancellationToken);

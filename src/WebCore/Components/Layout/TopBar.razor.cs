@@ -10,6 +10,7 @@ public partial class TopBar : IAsyncDisposable
 {
     [Inject] private BsbClientHub? HubConnection { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private IHttpContextAccessor httpContextAccessor { get; set; }
 
     private int _players;
     private int _servers;
@@ -20,7 +21,7 @@ public partial class TopBar : IAsyncDisposable
         if (HubConnection is null) return;
         HubConnection.OnInformationUpdated += OnInformationUpdatedReceived;
         HubConnection.SiteViewerCountUpdated += UpdatePageViewersCount;
-        await HubConnection.InitializeAsync();
+        await HubConnection.InitializeAsync(httpContextAccessor);
         await base.OnInitializedAsync();
     }
 

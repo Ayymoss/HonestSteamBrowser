@@ -25,7 +25,7 @@ public class BsbServerHub(ISender mediator) : Hub
             if (_countLock.CurrentCount is 0) _countLock.Release();
         }
 
-        await Clients.All.SendAsync(SignalRMethods.OnActiveUsersUpdate.ToString(), _activeUserCount);
+        await Clients.All.SendAsync(SignalRMethod.OnActiveUsersUpdate.ToString(), _activeUserCount);
     }
 
     public override async Task OnConnectedAsync()

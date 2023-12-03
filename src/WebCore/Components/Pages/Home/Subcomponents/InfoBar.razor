@@ -1,0 +1,32 @@
+﻿@using BetterSteamBrowser.WebCore.Utilities
+@using BetterSteamBrowser.Domain.Enums
+
+@if (!_loading)
+{
+    <AuthorizeView>
+        <Authorized Context="oContext">
+            <RadzenRow JustifyContent="JustifyContent.Center">
+                <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="4">
+                    <RadzenCard>
+                        <RadzenStack Orientation="Orientation.Vertical" Gap="0">
+                            <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary" Style="margin: 0" Text="@_favouriteCount.ToString()"/>
+                            <RadzenText class="rz-text-tertiary-color" Text="Favourites"/>
+                        </RadzenStack>
+                    </RadzenCard>
+                </RadzenColumn>
+                <AuthorizeView Context="iContext" Roles="@HelperMethods.GetHigherRolesAsString(IdentityRole.Admin)">
+                    <Authorized>
+                        <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="4">
+                            <RadzenCard>
+                                <RadzenStack Orientation="Orientation.Vertical" Gap="0">
+                                    <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary" Style="margin: 0" Text="@_blacklistCount.ToString()"/>
+                                    <RadzenText class="rz-text-tertiary-color" Text="Blacklists"/>
+                                </RadzenStack>
+                            </RadzenCard>
+                        </RadzenColumn>
+                    </Authorized>
+                </AuthorizeView>
+            </RadzenRow>
+        </Authorized>
+    </AuthorizeView>
+}

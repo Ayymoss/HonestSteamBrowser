@@ -6,4 +6,5 @@ public interface IBlacklistRepository
 {
     Task<List<EFBlacklist>> GetBlacklistAsync();
     Task AddAsync(EFBlacklist blacklist, CancellationToken cancellationToken);
+    Task<int> CountAsync(CancellationToken cancellationToken);
 }

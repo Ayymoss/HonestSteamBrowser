@@ -9,7 +9,7 @@ public class GetSteamGamesHandler(ISteamGameRepository steamGameRepository) : IR
 {
     public async Task<List<SteamGame>> Handle(GetSteamGamesCommand request, CancellationToken cancellationToken)
     {
-        var result = (await steamGameRepository.GetSteamGamesAsync())
+        var result = (await steamGameRepository.GetSteamGamesAsync(cancellationToken))
             .Where(x => x.Id is not SteamGameConstants.Unknown)
             .Where(x => x.Id is not SteamGameConstants.AllGames)
             .Select(x => new SteamGame

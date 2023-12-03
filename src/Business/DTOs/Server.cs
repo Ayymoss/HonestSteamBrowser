@@ -14,4 +14,5 @@ public class Server
     public string Country { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
     public string Address => $"{IpAddress}:{Port}";
+    public bool Favourite { get; set; }
 }

@@ -22,7 +22,7 @@ public class UpdateInformationEvent(IServerRepository serverRepository, ServerCo
         };
 
         contextCache.UpdateServerCount(cache);
-        await signalRNotification.NotifyUserAsync(HubType.Main, SignalRMethods.OnInformationUpdated.ToString(), cache,
+        await signalRNotification.NotifyUserAsync(HubType.Main, SignalRMethod.OnInformationUpdated.ToString(), cache,
             cancellationToken);
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 
-namespace BetterSteamBrowser.WebCore.Components.Account.Subcomponents;
+namespace BetterSteamBrowser.WebCore.Components.Pages.Account.Subcomponents;
 
 public partial class LoginComponent
 {

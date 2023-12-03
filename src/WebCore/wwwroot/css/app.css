@@ -1,5 +1,5 @@
 #blazor-error-ui {
-    background: lightyellow;
+    background: indianred;
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     display: none;
@@ -60,3 +60,13 @@ a {
     }
 }
 
+.scrollable-container {
+    max-height: 200px; /* Adjust this value as needed */
+    overflow-y: auto;  /* Enables vertical scrolling */
+}
+
+.no-padding-hr {
+    margin: 0;
+    padding: 0;
+    border: none;
+}

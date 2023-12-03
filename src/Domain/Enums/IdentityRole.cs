@@ -1,6 +1,6 @@
 ﻿namespace BetterSteamBrowser.Domain.Enums;
 
-public enum IdentityRoles
+public enum IdentityRole
 {
     User,
     Admin

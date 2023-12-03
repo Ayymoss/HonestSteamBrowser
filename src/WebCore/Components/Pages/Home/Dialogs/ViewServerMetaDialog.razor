@@ -1,0 +1,67 @@
+﻿@using Humanizer
+<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.Left">
+    <RadzenText TextStyle="TextStyle.DisplayH5" TextAlign="TextAlign.Center" Text="@Server.Name" class="rz-mb-0"/>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
+        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="@Server.SteamGameName" class="rz-mb-0"/>
+        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" class="rz-mb-0">
+            @Server.Players.ToString("N0")/@Server.MaxPlayers.ToString("N0")
+        </RadzenText>
+    </RadzenStack>
+    @if (!string.IsNullOrWhiteSpace(UserId))
+    {
+        var favouriteText = _isFavourite ? "Remove from favourites" : "Add to favourites";
+        var favouriteIcon = _isFavourite ? "star" : "star_border";
+        var favouriteStyle = _isFavourite ? ButtonStyle.Danger : ButtonStyle.Info;
+        <RadzenButton ButtonStyle="@favouriteStyle" Icon="@favouriteIcon" Click="AddToFavouriteAsync" Text="@favouriteText" IsBusy="_processing" BusyText="Working..."/>
+    }
+    @if (_players is null)
+    {
+        <div class="rz-m-12">
+            <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Info" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
+        </div>
+    }
+    else
+    {
+        if (_players.Count is not 0)
+        {
+            <div class="scrollable-container">
+                <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                    <RadzenColumn SizeSM="12" SizeMD="2">
+                        <RadzenText class="rz-mb-0">Index</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="12" SizeMD="5">
+                        <RadzenText class="rz-mb-0">Name</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="12" SizeMD="2">
+                        <RadzenText class="rz-mb-0">Score</RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="12" SizeMD="3">
+                        <RadzenText class="rz-mb-0">Online Time</RadzenText>
+                    </RadzenColumn>
+                </RadzenRow>
+                <hr class="no-padding-hr"/>
+                @for (var i = 0; i < _players.Count; i++)
+                {
+                    var i1 = i;
+                    <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                        <RadzenColumn SizeSM="12" SizeMD="2">
+                            <RadzenText class="rz-mb-0">@((i1 + 1).ToString())</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn SizeSM="12" SizeMD="5">
+                            <RadzenText class="rz-mb-0">@_players[i1].Name</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn SizeSM="12" SizeMD="2">
+                            <RadzenText class="rz-mb-0">@_players[i1].Score</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn SizeSM="12" SizeMD="3">
+                            <RadzenText class="rz-mb-0">@_players[i1].Online.Humanize()</RadzenText>
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <hr class="no-padding-hr"/>
+                }
+            </div>
+        }
+    }
+    <hr/>
+    <RadzenText class="rz-mb-0" TextStyle="TextStyle.Caption" Text="Note, some games do not properly adhere to Valve's Query and might not show any/all players."/>
+</RadzenStack>

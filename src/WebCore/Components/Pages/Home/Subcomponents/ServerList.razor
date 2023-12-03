@@ -14,6 +14,14 @@
                 </RadzenColumn>
                 <RadzenColumn SizeSM="12" SizeMD="9">
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.End" Wrap="FlexWrap.Wrap">
+                        <AuthorizeView>
+                            <Authorized>
+                                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" class="rz-mb-1">
+                                    <RadzenLabel Text="Favourites?"/>
+                                    <RadzenSwitch @bind-Value="_showFavourites" Change="OnFavouriteClick"/>
+                                </RadzenStack>
+                            </Authorized>
+                        </AuthorizeView>
                         <RadzenDropDown TValue="SteamGame" @bind-Value="@_dropDownSelected" Data="@_dropDownGames" AllowClear="true" FilterAsYouType="true"
                                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         Change="OnDropdownChanged" Placeholder="Select Game" Style="width: 100%; max-width: 300px; height: 42px;"/>
@@ -29,11 +37,17 @@
                 </RadzenColumn>
             </RadzenRow>
             <RadzenDataGrid @ref="_dataGrid" TItem="Server" IsLoading="@_isLoading" Count="@_count" Data="@_serverTable" LoadData="@LoadData"
-                            Density="Density.Compact" AllowPaging="true" PageSize="30" AllowSorting="true" PagerAlwaysVisible="true"
-                            PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="new[] {20, 30, 50, 100}" ShowPagingSummary="true"
+                            Density="Density.Compact" AllowPaging="true" PageSize="25" AllowSorting="true" PagerAlwaysVisible="true"
+                            PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="new[] {25, 50, 100}" ShowPagingSummary="true"
                             PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
-                            RowClick="RowClickEvent" Style="min-height: 200px" class="rz-selectable">
+                            RowClick="RowClickEvent" Style="min-height: 200px;" class="rz-selectable">
                 <Columns>
+                    <RadzenDataGridColumn TItem="Server" Width="40px" TextAlign="TextAlign.Center" Sortable="false" Frozen="true">
+                        <Template Context="context">
+                            <RadzenButton Icon="@(context.Favourite ? "star" : "star_border")" ButtonStyle="@(context.Favourite ? ButtonStyle.Success : ButtonStyle.Primary)" Shade="Shade.Lighter" Size="ButtonSize.ExtraSmall"
+                                          MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Top}, context.Favourite ? "Favourited" : "Not Favourited"))"/>
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="Name" Title="Name" MinWidth="120px" Width="500px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Address" Title="Address" Sortable="false" MinWidth="100px" Width="175px"/>
                     <RadzenDataGridColumn TItem="Server" Property="SteamGameName" Title="Game" Sortable="false" MinWidth="60px"/>

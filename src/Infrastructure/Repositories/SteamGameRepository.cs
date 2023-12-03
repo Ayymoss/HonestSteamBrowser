@@ -5,11 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BetterSteamBrowser.Infrastructure.Repositories;
 
-public class SteamGameRepository(DataContext context) : ISteamGameRepository
+public class SteamGameRepository(IDbContextFactory<DataContext> contextFactory) : ISteamGameRepository
 {
-    public async Task<List<EFSteamGame>> GetSteamGamesAsync()
+    public async Task<List<EFSteamGame>> GetSteamGamesAsync(CancellationToken cancellationToken)
     {
-        var result = await context.SteamGames.ToListAsync();
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var result = await context.SteamGames.ToListAsync(cancellationToken: cancellationToken);
         return result;
     }
 }

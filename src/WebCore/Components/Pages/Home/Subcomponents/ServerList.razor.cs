@@ -1,12 +1,10 @@
 ﻿using BetterSteamBrowser.Business.DTOs;
 using BetterSteamBrowser.Business.Mediatr.Commands;
-using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
-using BetterSteamBrowser.Domain.Interfaces.Repositories;
-using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Infrastructure.Identity;
-using BetterSteamBrowser.WebCore.Components.Pages.Dialogs;
-using Humanizer;
+using BetterSteamBrowser.WebCore.Components.Pages.Home.Dialogs;
+using BetterSteamBrowser.WebCore.Components.Pages.Manage.Dialogs;
+using BetterSteamBrowser.WebCore.Utilities;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -16,14 +14,17 @@ using Radzen;
 using Radzen.Blazor;
 using SortDescriptor = BetterSteamBrowser.Domain.ValueObjects.Pagination.SortDescriptor;
 
-namespace BetterSteamBrowser.WebCore.Components.Pages.Subcomponents;
+namespace BetterSteamBrowser.WebCore.Components.Pages.Home.Subcomponents;
 
 public partial class ServerList : IDisposable
 {
+    [Parameter] public bool Manager { get; set; }
+    [Parameter] public bool IsAdmin { get; set; }
+    [Parameter] public string? UserId { get; set; }
     [Inject] private IMediator Mediator { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
-    [Inject] private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
     [Inject] private DialogService DialogService { get; set; }
+    [Inject] private TooltipService TooltipService { get; set; }
 
     private RadzenDataGrid<Server> _dataGrid;
     private IEnumerable<Server> _serverTable;
@@ -34,13 +35,12 @@ public partial class ServerList : IDisposable
     private int _gamePlayerCount;
     private string? _searchString;
     private string _titleText = "Servers";
-
-    private bool IsAdmin => AuthenticationStateProvider?
-        .GetAuthenticationStateAsync().Result.User.IsInRole(IdentityRoles.Admin.ToString()) ?? false;
+    private bool _showFavourites;
 
     protected override async Task OnInitializedAsync()
     {
-        _dropDownGames = await Mediator.Send(new GetSteamGamesCommand());
+        var steamGames = await Mediator.Send(new GetSteamGamesCommand());
+        _dropDownGames = steamGames.OrderBy(x => x.Name);
 
         var uri = new Uri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
@@ -70,7 +70,9 @@ public partial class ServerList : IDisposable
             SearchString = _searchString,
             Data = _dropDownSelected?.AppId,
             Top = args.Top ?? 20,
-            Skip = args.Skip ?? 0
+            Skip = args.Skip ?? 0,
+            UserId = UserId,
+            Favourites = _showFavourites
         };
 
         var context = await Mediator.Send(paginationQuery);
@@ -81,16 +83,16 @@ public partial class ServerList : IDisposable
         UpdateTitle();
     }
 
-    private void OnDropdownChanged()
+    private async Task OnDropdownChanged()
     {
-        _dataGrid.Reload();
+        await _dataGrid.Reload();
         UpdateUrl();
     }
 
-    private void OnSearch(string text)
+    private async Task OnSearch(string text)
     {
         _searchString = text;
-        _dataGrid.Reload();
+        await _dataGrid.Reload();
         UpdateUrl();
     }
 
@@ -126,11 +128,10 @@ public partial class ServerList : IDisposable
 
     private async Task RowClickEvent(DataGridRowMouseEventArgs<Server> arg)
     {
-        if (!IsAdmin) return;
-
         var parameters = new Dictionary<string, object>
         {
-            {"Server", arg.Data}
+            {"Server", arg.Data},
+            {"UserId", UserId ?? string.Empty}
         };
 
         var options = new DialogOptions
@@ -139,7 +140,26 @@ public partial class ServerList : IDisposable
             CloseDialogOnOverlayClick = true
         };
 
-        await DialogService.OpenAsync<ServerDialog>("Blacklist Address?", parameters, options);
+        if (Manager)
+        {
+            if (!IsAdmin) return;
+
+            await DialogService.OpenAsync<BlacklistServerDialog>("Blacklist Address?", parameters, options);
+            await _dataGrid.Reload();
+        }
+        else
+        {
+            await DialogService.OpenAsync<ViewServerMetaDialog>("Server Meta", parameters, options);
+            await _dataGrid.Reload();
+        }
+    }
+
+    private void ShowTooltip(ElementReference elementReference, TooltipOptions? options, string message) =>
+        TooltipService.Open(elementReference, message, options);
+
+    private async Task OnFavouriteClick(bool favourites)
+    {
+        _showFavourites = favourites;
         await _dataGrid.Reload();
     }
 }

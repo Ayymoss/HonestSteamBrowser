@@ -1,0 +1,23 @@
+﻿@page "/Manage"
+@using BetterSteamBrowser.WebCore.Utilities
+@using BetterSteamBrowser.Domain.Enums
+
+<PageTitle>Manage | Better Steam Browser</PageTitle>
+
+<AuthorizeView Roles="@HelperMethods.GetHigherRolesAsString(IdentityRole.Admin)">
+    <Authorized>
+        <RadzenTabs RenderMode="TabRenderMode.Client">
+            <Tabs>
+                <RadzenTabsItem Text="Server List">
+                    <ServerList Manager="true" IsAdmin="_isAdmin" UserId="@_userId"/>
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Blacklist"></RadzenTabsItem>
+                <RadzenTabsItem Text="Add Custom Blacklist"></RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </Authorized>
+    <NotAuthorized>
+        <RadzenText TextStyle="TextStyle.DisplayH4" Text="401 :(" class="rz-color-primary"/>
+        <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, you're not authorised!" class="rz-color-warning"/>
+    </NotAuthorized>
+</AuthorizeView>
