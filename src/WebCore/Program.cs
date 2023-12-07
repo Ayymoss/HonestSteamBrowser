@@ -80,7 +80,7 @@ public class Program
             .AddInteractiveServerComponents();
 
         // Identity
-        builder.Services.AddCascadingAuthenticationState();
+        builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
         builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
             .AddRoles<IdentityRole>()

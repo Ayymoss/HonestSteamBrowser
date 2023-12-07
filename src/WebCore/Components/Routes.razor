@@ -1,18 +1,20 @@
-﻿
-<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
-            <NotAuthorized>
-                <RadzenText TextStyle="TextStyle.DisplayH4" Text="Unauthorised" class="rz-color-primary"/>
-            </NotAuthorized>
-        </AuthorizeRouteView>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
-    </Found>
-    <NotFound>
-        <PageTitle>Not Found</PageTitle>
-        <LayoutView Layout="@typeof(Layout.MainLayout)">
-            <RadzenText TextStyle="TextStyle.DisplayH4" Text="404 :(" class="rz-color-primary"/>
-            <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, there's nothing here!" class="rz-color-error"/>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+                <NotAuthorized>
+                    <RadzenText TextStyle="TextStyle.DisplayH4" Text="401 :(" class="rz-color-primary"/>
+                    <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, you're not authorised!" class="rz-color-warning"/>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        </Found>
+        <NotFound>
+            <PageTitle>Not Found</PageTitle>
+            <LayoutView Layout="@typeof(Layout.MainLayout)">
+                <RadzenText TextStyle="TextStyle.DisplayH4" Text="404 :(" class="rz-color-primary"/>
+                <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, there's nothing here!" class="rz-color-warning"/>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

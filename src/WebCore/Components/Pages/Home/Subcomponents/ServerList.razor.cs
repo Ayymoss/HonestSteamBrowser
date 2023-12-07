@@ -18,6 +18,7 @@ namespace BetterSteamBrowser.WebCore.Components.Pages.Home.Subcomponents;
 
 public partial class ServerList : IDisposable
 {
+    [CascadingParameter] public WebInfoContext? WebContext { get; set; }
     [Parameter] public bool Manager { get; set; }
     [Parameter] public bool IsAdmin { get; set; }
     [Parameter] public string? UserId { get; set; }
@@ -35,7 +36,6 @@ public partial class ServerList : IDisposable
     private int _gamePlayerCount;
     private string? _searchString;
     private string _titleText = "Servers";
-    private bool _showFavourites;
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,7 +72,7 @@ public partial class ServerList : IDisposable
             Top = args.Top ?? 20,
             Skip = args.Skip ?? 0,
             UserId = UserId,
-            Favourites = _showFavourites
+            Favourites = WebContext?.IsFavouriteChecked ?? false
         };
 
         var context = await Mediator.Send(paginationQuery);
@@ -121,10 +121,6 @@ public partial class ServerList : IDisposable
         NavigationManager.NavigateTo(newUri, false);
     }
 
-    public void Dispose()
-    {
-        _dataGrid.Dispose();
-    }
 
     private async Task RowClickEvent(DataGridRowMouseEventArgs<Server> arg)
     {
@@ -157,9 +153,10 @@ public partial class ServerList : IDisposable
     private void ShowTooltip(ElementReference elementReference, TooltipOptions? options, string message) =>
         TooltipService.Open(elementReference, message, options);
 
-    private async Task OnFavouriteClick(bool favourites)
+    public Task ReloadTable() => _dataGrid.Reload();
+
+    public void Dispose()
     {
-        _showFavourites = favourites;
-        await _dataGrid.Reload();
+        _dataGrid.Dispose();
     }
 }

@@ -14,8 +14,10 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
     public async Task<PaginationContext<Server>> QueryResourceAsync(GetServerListCommand request,
         CancellationToken cancellationToken)
     {
+        var serverFavourites = new Dictionary<string, bool>();
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var query = context.Servers
+            .AsNoTracking()
             .Where(x => !x.Blacklisted)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
             .AsQueryable();
@@ -37,16 +39,24 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
                 _ => current
             });
-        
+
         if (request.Favourites && !string.IsNullOrWhiteSpace(request.UserId))
         {
             query = query
                 .Join(context.Favourites,
                     server => server.Hash,
                     favourite => favourite.ServerId,
-                    (server, favourite) => new { Server = server, Favourite = favourite })
+                    (server, favourite) => new {Server = server, Favourite = favourite})
                 .Where(x => x.Favourite.UserId == request.UserId)
-                .Select(x => x.Server); 
+                .Select(x => x.Server);
+
+            serverFavourites = await query
+                .Select(server => new
+                {
+                    server.Hash,
+                    IsFavourite = request.Favourites
+                })
+                .ToDictionaryAsync(t => t.Hash, t => t.IsFavourite, cancellationToken);
         }
 
         var count = await query.CountAsync(cancellationToken: cancellationToken);
@@ -57,28 +67,20 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         var pagedData = await query
             .Skip(request.Skip)
             .Take(request.Top)
-            .GroupJoin(context.Favourites,
-                server => server.Hash,
-                favourite => favourite.ServerId,
-                (server, favourites) => new
-                {
-                    Server = server,
-                    Favourites = favourites
-                })
-            .SelectMany(x => x.Favourites.DefaultIfEmpty(), (x, favourite) => new Server
+            .Select(server => new Server
             {
-                IpAddress = x.Server.IpAddress,
-                Port = x.Server.Port,
-                Name = x.Server.Name,
-                SteamGameAppId = x.Server.SteamGame.AppId,
-                SteamGameName = x.Server.SteamGame.Name,
-                SteamGameId = x.Server.SteamGameId,
-                Map = x.Server.Map,
-                Players = x.Server.Players,
-                MaxPlayers = x.Server.MaxPlayers,
-                Country = x.Server.Country ?? "Unknown",
-                LastUpdated = x.Server.LastUpdated,
-                Favourite = favourite != null && favourite.UserId == request.UserId
+                IpAddress = server.IpAddress,
+                Port = server.Port,
+                Name = server.Name,
+                SteamGameAppId = server.SteamGame.AppId,
+                SteamGameName = server.SteamGame.Name,
+                SteamGameId = server.SteamGameId,
+                Map = server.Map,
+                Players = server.Players,
+                MaxPlayers = server.MaxPlayers,
+                Country = server.Country ?? "Unknown",
+                LastUpdated = server.LastUpdated,
+                Favourite = serverFavourites.ContainsKey(server.Hash) && serverFavourites[server.Hash]
             })
             .ToListAsync(cancellationToken: cancellationToken);
 

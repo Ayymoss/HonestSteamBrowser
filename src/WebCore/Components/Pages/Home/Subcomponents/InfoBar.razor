@@ -9,7 +9,10 @@
                 <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="4">
                     <RadzenCard>
                         <RadzenStack Orientation="Orientation.Vertical" Gap="0">
-                            <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary" Style="margin: 0" Text="@_favouriteCount.ToString()"/>
+                            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
+                                <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@(_favouriteCount is 0 ? "--" : _favouriteCount.ToString("N0"))"/>
+                                <RadzenSwitch @bind-Value="_showFavourites" Change="OnFavouriteClick"/>
+                            </RadzenStack>
                             <RadzenText class="rz-text-tertiary-color" Text="Favourites"/>
                         </RadzenStack>
                     </RadzenCard>
@@ -17,10 +20,11 @@
                 <AuthorizeView Context="iContext" Roles="@HelperMethods.GetHigherRolesAsString(IdentityRole.Admin)">
                     <Authorized>
                         <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="4">
-                            <RadzenCard>
-                                <RadzenStack Orientation="Orientation.Vertical" Gap="0">
-                                    <RadzenText TextStyle="TextStyle.H5" class="rz-color-primary" Style="margin: 0" Text="@_blacklistCount.ToString()"/>
+                            <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                                <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@_blacklistCount.ToString()"/>
+                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
                                     <RadzenText class="rz-text-tertiary-color" Text="Blacklists"/>
+                                    <RadzenLink Path="/Manage" Text="Manage?"/>
                                 </RadzenStack>
                             </RadzenCard>
                         </RadzenColumn>

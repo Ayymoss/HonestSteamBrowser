@@ -1,4 +1,6 @@
-﻿using BetterSteamBrowser.Infrastructure.Identity;
+﻿using BetterSteamBrowser.Business.DTOs;
+using BetterSteamBrowser.Infrastructure.Identity;
+using BetterSteamBrowser.WebCore.Components.Pages.Home.Subcomponents;
 using BetterSteamBrowser.WebCore.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -11,10 +13,13 @@ public partial class Home
 {
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; }
-     
+
+    private ServerList? _serverList;
+    private WebInfoContext _webContext = new();
+
     private bool _isAdmin;
     private string? _userId;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var authUser = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -22,5 +27,12 @@ public partial class Home
         var user = await UserManager.GetUserAsync(authUser);
         _userId = user?.Id;
         await base.OnInitializedAsync();
+    }
+
+    private async Task OnWebContextUpdated(WebInfoContext webContext)
+    {
+        _webContext = webContext;
+        await (_serverList?.ReloadTable() ?? Task.CompletedTask);
+        StateHasChanged();
     }
 }

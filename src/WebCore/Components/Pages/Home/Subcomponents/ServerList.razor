@@ -14,14 +14,6 @@
                 </RadzenColumn>
                 <RadzenColumn SizeSM="12" SizeMD="9">
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.End" Wrap="FlexWrap.Wrap">
-                        <AuthorizeView>
-                            <Authorized>
-                                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" class="rz-mb-1">
-                                    <RadzenLabel Text="Favourites?"/>
-                                    <RadzenSwitch @bind-Value="_showFavourites" Change="OnFavouriteClick"/>
-                                </RadzenStack>
-                            </Authorized>
-                        </AuthorizeView>
                         <RadzenDropDown TValue="SteamGame" @bind-Value="@_dropDownSelected" Data="@_dropDownGames" AllowClear="true" FilterAsYouType="true"
                                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         Change="OnDropdownChanged" Placeholder="Select Game" Style="width: 100%; max-width: 300px; height: 42px;"/>
@@ -42,12 +34,6 @@
                             PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
                             RowClick="RowClickEvent" Style="min-height: 200px;" class="rz-selectable">
                 <Columns>
-                    <RadzenDataGridColumn TItem="Server" Width="40px" TextAlign="TextAlign.Center" Sortable="false" Frozen="true">
-                        <Template Context="context">
-                            <RadzenButton Icon="@(context.Favourite ? "star" : "star_border")" ButtonStyle="@(context.Favourite ? ButtonStyle.Success : ButtonStyle.Primary)" Shade="Shade.Lighter" Size="ButtonSize.ExtraSmall"
-                                          MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Top}, context.Favourite ? "Favourited" : "Not Favourited"))"/>
-                        </Template>
-                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="Name" Title="Name" MinWidth="120px" Width="500px"/>
                     <RadzenDataGridColumn TItem="Server" Property="Address" Title="Address" Sortable="false" MinWidth="100px" Width="175px"/>
                     <RadzenDataGridColumn TItem="Server" Property="SteamGameName" Title="Game" Sortable="false" MinWidth="60px"/>
@@ -67,6 +53,15 @@
                             @context.LastUpdated.Humanize()
                         </Template>
                     </RadzenDataGridColumn>
+                    @if (!string.IsNullOrWhiteSpace(UserId) && !Manager)
+                    {
+                        <RadzenDataGridColumn TItem="Server" Width="40px" TextAlign="TextAlign.Center" Sortable="false" Frozen="true">
+                            <Template Context="iContext">
+                                <RadzenButton Icon="@(iContext.Favourite ? "star" : "star_border")" ButtonStyle="@(iContext.Favourite ? ButtonStyle.Success : ButtonStyle.Primary)" Shade="Shade.Lighter" Size="ButtonSize.ExtraSmall"
+                                              MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Top}, iContext.Favourite ? "Favourited" : "Not Favourited"))"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
                 </Columns>
                 <EmptyTemplate>
                     <RadzenText TextAlign="TextAlign.Center" TextStyle="TextStyle.H6" class="rz-my-4" Text="There are no servers..."/>

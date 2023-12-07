@@ -1,6 +1,8 @@
 ﻿@page "/Manage"
 @using BetterSteamBrowser.WebCore.Utilities
 @using BetterSteamBrowser.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <PageTitle>Manage | Better Steam Browser</PageTitle>
 
@@ -18,6 +20,6 @@
     </Authorized>
     <NotAuthorized>
         <RadzenText TextStyle="TextStyle.DisplayH4" Text="401 :(" class="rz-color-primary"/>
-        <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, you're not authorised!" class="rz-color-warning"/>
+        <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, you're not authorised! - ??" class="rz-color-warning"/>
     </NotAuthorized>
 </AuthorizeView>

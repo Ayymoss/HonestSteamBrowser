@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using BetterSteamBrowser.Business.Utilities;
 using BetterSteamBrowser.Domain.Entities;
@@ -14,9 +15,14 @@ using RestEase;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
-public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRepository serverRepository, SetupConfigurationContext config,
-        IBlacklistRepository blacklistRepository, ISteamGameRepository steamGameRepository, IGeoIpService geoIpService,
-        ILogger<SteamServerService> logger)
+public class SteamServerService(
+    IHttpClientFactory httpClientFactory,
+    IServerRepository serverRepository,
+    SetupConfigurationContext config,
+    IBlacklistRepository blacklistRepository,
+    ISteamGameRepository steamGameRepository,
+    IGeoIpService geoIpService,
+    ILogger<SteamServerService> logger)
     : ISteamServerService
 {
     private const int BatchSize = 10;
@@ -36,9 +42,9 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
             _steamGames = await steamGameRepository.GetSteamGamesAsync();
 
             var rawSteamServers = (await RetrieveServerStatisticsAsync())
-                .ToDictionary(
-                    serverStat => serverStat.Address.Compute256Hash(),
-                    serverStat => serverStat);
+                .GroupBy(serverStat => serverStat.Address.Compute256Hash())
+                .ToDictionary(serverStat => serverStat.Key,
+                    serverStat => serverStat.First());
 
             var existingServerHashes = await serverRepository.GetServerByExistingAsync(rawSteamServers.Keys);
             var existingServerDictionary = existingServerHashes.ToDictionary(server => server.Hash, server => server);
@@ -68,37 +74,32 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
     {
         var serverList = new ConcurrentBag<ServerListItem>();
 
-
         for (var i = 0; i < _steamGames.Count; i += BatchSize)
         {
             var batch = _steamGames.Where(x => x.Id > 0).Skip(i).Take(BatchSize);
             var tasks = batch.AsParallel().Select(ProcessGameAsync).ToList();
             var results = await Task.WhenAll(tasks);
 
-            foreach (var result in results.Where(r => r.Item2 is not null))
+            foreach (var result in results)
             {
-                foreach (var item in result.Item2!)
-                {
-                    serverList.Add(item);
-                }
+                if (result is null) continue;
+                foreach (var item in result.Item2) serverList.Add(item);
             }
         }
 
         return serverList.ToList();
     }
 
-    private async Task<Tuple<EFSteamGame, List<ServerListItem>?>> ProcessGameAsync(EFSteamGame game)
+    private async Task<Tuple<EFSteamGame, List<ServerListItem>>?> ProcessGameAsync(EFSteamGame game)
     {
         var blacklistForApi = _blacklisted.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
         var filter = BuildApiFilter(blacklistForApi, game.AppId);
         var serverListItems = await GetServerListAsync(filter);
 
-        if (serverListItems is null)
-        {
-            logger.LogInformation("No results for game: {Game}", game.Name);
-        }
+        if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
 
-        return new Tuple<EFSteamGame, List<ServerListItem>?>(game, serverListItems);
+        logger.LogInformation("No results for game: {Game}", game.Name);
+        return null;
     }
 
     private async Task<List<ServerListItem>?> GetServerListAsync(string filterParam)
@@ -130,7 +131,7 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
         }
     }
 
-    private List<EFServer> BuildBlacklist(List<EFServer> servers)
+    private IEnumerable<EFServer> BuildBlacklist(List<EFServer> servers)
     {
         var blacklistsList = _blacklisted.Where(x => !x.ApiFilter).ToList();
         if (blacklistsList.Count is 0) return servers;
@@ -158,16 +159,17 @@ public class SteamServerService(IHttpClientFactory httpClientFactory, IServerRep
         return servers;
     }
 
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     private static string BuildApiFilter(IEnumerable<EFBlacklist> blacklists, int gameAppId)
     {
-        var blacklistsList = blacklists.Where(x => x.ApiFilter).OrderByDescending(x => x.Type).ToList();
+        var blacklistList = blacklists.Where(x => x.ApiFilter).OrderByDescending(x => x.Type).ToList();
 
         var filterBuilder = new StringBuilder($@"\appid\{gameAppId}\empty\1\dedicated\1\name_match\*");
         filterBuilder.Append(@"\nand\1\gametype\hidden");
 
-        if (blacklistsList.Count is 0) return filterBuilder.ToString();
+        if (blacklistList.Count is 0) return filterBuilder.ToString();
 
-        foreach (var blacklist in blacklistsList)
+        foreach (var blacklist in blacklistList)
         {
             switch (blacklist.Type)
             {

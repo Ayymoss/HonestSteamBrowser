@@ -61,8 +61,8 @@ a {
 }
 
 .scrollable-container {
-    max-height: 200px; /* Adjust this value as needed */
-    overflow-y: auto;  /* Enables vertical scrolling */
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .no-padding-hr {
