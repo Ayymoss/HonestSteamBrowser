@@ -1,4 +1,4 @@
-﻿using BetterSteamBrowser.Business.DTOs;
+﻿using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR.Client;

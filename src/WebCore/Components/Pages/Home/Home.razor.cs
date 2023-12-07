@@ -1,4 +1,4 @@
-﻿using BetterSteamBrowser.Business.DTOs;
+﻿using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Infrastructure.Identity;
 using BetterSteamBrowser.WebCore.Components.Pages.Home.Subcomponents;
 using BetterSteamBrowser.WebCore.Utilities;

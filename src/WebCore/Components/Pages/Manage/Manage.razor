@@ -11,10 +11,20 @@
         <RadzenTabs RenderMode="TabRenderMode.Client">
             <Tabs>
                 <RadzenTabsItem Text="Server List">
-                    <ServerList Manager="true" IsAdmin="_isAdmin" UserId="@_userId"/>
+                    <ServerList @ref="_serverList" Manager="true" IsAdmin="_isAdmin" UserId="@_userId"/>
                 </RadzenTabsItem>
-                <RadzenTabsItem Text="Blacklist"></RadzenTabsItem>
-                <RadzenTabsItem Text="Add Custom Blacklist"></RadzenTabsItem>
+                <RadzenTabsItem Text="Block List">
+                    <BlockList @ref="_blockList" UserId="@_userId"/>
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Add Custom Block">
+                    <AddBlock UserId="@_userId" OnBlockCreated="ReloadTables"/>
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Game List">
+                    <GameList @ref="_gameList" UserId="@_userId"/>
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Add New Game">
+                    <AddSteamGame UserId="@_userId" OnSteamGameCreated="ReloadTables"/>
+                </RadzenTabsItem>
             </Tabs>
         </RadzenTabs>
     </Authorized>

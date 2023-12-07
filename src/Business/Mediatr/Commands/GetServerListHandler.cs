@@ -1,4 +1,4 @@
-﻿using BetterSteamBrowser.Business.DTOs;
+﻿using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using MediatR;

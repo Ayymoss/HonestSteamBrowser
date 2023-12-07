@@ -1,4 +1,4 @@
-﻿namespace BetterSteamBrowser.Business.DTOs;
+﻿namespace BetterSteamBrowser.Business.ViewModels;
 
 public class WebInfoContext
 {

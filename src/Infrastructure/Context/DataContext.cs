@@ -9,14 +9,14 @@ namespace BetterSteamBrowser.Infrastructure.Context;
 public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<EFServer> Servers { get; set; }
-    public DbSet<EFBlacklist> Blacklists { get; set; }
+    public DbSet<EFBlock> Blocks { get; set; }
     public DbSet<EFSteamGame> SteamGames { get; set; }
     public DbSet<EFFavourite> Favourites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<EFServer>().ToTable("EFServers");
-        modelBuilder.Entity<EFBlacklist>().ToTable("EFBlacklists");
+        modelBuilder.Entity<EFBlock>().ToTable("EFBlocks");
         modelBuilder.Entity<EFSteamGame>().ToTable("EFSteamGames");
         modelBuilder.Entity<EFFavourite>(entity =>
         {
@@ -30,7 +30,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
 
         modelBuilder.AddCustomIdentitySeed();
         modelBuilder.AddSteamGamesSeed();
-        modelBuilder.AddBlacklistSeed();
+        modelBuilder.AddBlocksSeed();
 
         base.OnModelCreating(modelBuilder);
     }

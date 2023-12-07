@@ -1,6 +1,6 @@
-﻿using BetterSteamBrowser.Business.DTOs;
-using BetterSteamBrowser.Business.Mediatr.Events;
+﻿using BetterSteamBrowser.Business.Mediatr.Events;
 using BetterSteamBrowser.Business.Services;
+using BetterSteamBrowser.Business.ViewModels;
 using MediatR;
 
 namespace BetterSteamBrowser.Business.Mediatr.Commands;

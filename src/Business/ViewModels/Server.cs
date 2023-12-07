@@ -1,4 +1,4 @@
-﻿namespace BetterSteamBrowser.Business.DTOs;
+﻿namespace BetterSteamBrowser.Business.ViewModels;
 
 public class Server
 {
@@ -13,6 +13,6 @@ public class Server
     public int MaxPlayers { get; set; }
     public string Country { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
-    public string Address => $"{IpAddress}:{Port}";
     public bool Favourite { get; set; }
+    public string Address => $"{IpAddress}:{Port}";
 }

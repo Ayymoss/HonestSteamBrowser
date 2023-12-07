@@ -15,7 +15,7 @@ public class EFServer
     public string? CountryCode { get; set; }
     public string Map { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
-    public bool Blacklisted { get; set; }
+    public bool Blocked { get; set; }
 
     public int SteamGameId { get; set; }
     [ForeignKey(nameof(SteamGameId))] public EFSteamGame SteamGame { get; set; }

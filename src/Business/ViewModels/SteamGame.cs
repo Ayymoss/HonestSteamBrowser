@@ -1,7 +1,8 @@
-﻿namespace BetterSteamBrowser.Business.DTOs;
+﻿namespace BetterSteamBrowser.Business.ViewModels;
 
 public class SteamGame
 {
+    public int Id { get; set; }
     public int AppId { get; set; }
     public string Name { get; set; }
     

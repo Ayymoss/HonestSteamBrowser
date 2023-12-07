@@ -1,7 +1,7 @@
-using BetterSteamBrowser.Business.DTOs;
 using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.Services;
 using BetterSteamBrowser.Business.Utilities;
+using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
 using BetterSteamBrowser.Domain.Interfaces.Services;
@@ -39,7 +39,7 @@ public class Program
         });
 #endif
 
-        configuration.DatabaseName = "SteamBrowserTest12";
+        configuration.DatabaseName = "SteamBrowserTest1";
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
         {
@@ -62,12 +62,14 @@ public class Program
         builder.Services.AddScoped<BsbClientHub>();
         builder.Services.AddScoped<ISteamGameRepository, SteamGameRepository>();
         builder.Services.AddScoped<IServerRepository, ServerRepository>();
-        builder.Services.AddScoped<IBlacklistRepository, BlacklistRepository>();
+        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();
         builder.Services.AddScoped<IGameServerPlayerService, GameServerPlayerService>();
         builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
 
         builder.Services.AddScoped<IResourceQueryHelper<GetServerListCommand, Server>, ServersPaginationQueryHelper>();
+        builder.Services.AddScoped<IResourceQueryHelper<GetBlockListCommand, Block>, BlocksPaginationQueryHelper>();
+        builder.Services.AddScoped<IResourceQueryHelper<GetSteamGameListCommand, SteamGame>, SteamGamesPaginationQueryHelper>();
 
         // Services
         builder.Services.AddHttpClient("BSBClient", options => options.DefaultRequestHeaders.UserAgent

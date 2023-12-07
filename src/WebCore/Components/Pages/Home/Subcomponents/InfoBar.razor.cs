@@ -1,5 +1,5 @@
-﻿using BetterSteamBrowser.Business.DTOs;
-using BetterSteamBrowser.Business.Mediatr.Commands;
+﻿using BetterSteamBrowser.Business.Mediatr.Commands;
+using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Infrastructure.Identity;
 using BetterSteamBrowser.WebCore.Utilities;
 using MediatR;
@@ -19,7 +19,7 @@ public partial class InfoBar
     [Inject] private IMediator Mediator { get; set; }
 
     private int _favouriteCount;
-    private int _blacklistCount;
+    private int _blockCount;
     private bool _loading = true;
 
     private bool _showFavourites;
@@ -30,7 +30,7 @@ public partial class InfoBar
         _loading = true;
         if (UserId is null) return;
 
-        if (IsAdmin) _blacklistCount = await Mediator.Send(new GetBlacklistCountCommand());
+        if (IsAdmin) _blockCount = await Mediator.Send(new GetBlockCountCommand());
         _favouriteCount = await Mediator.Send(new GetUserFavouriteCountCommand {UserId = UserId});
         _loading = false;
         StateHasChanged();

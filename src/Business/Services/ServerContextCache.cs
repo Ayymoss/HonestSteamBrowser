@@ -1,4 +1,4 @@
-﻿using BetterSteamBrowser.Business.DTOs;
+﻿using BetterSteamBrowser.Business.ViewModels;
 
 namespace BetterSteamBrowser.Business.Services;
 

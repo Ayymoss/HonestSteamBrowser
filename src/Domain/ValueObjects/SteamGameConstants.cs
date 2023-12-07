@@ -1,4 +1,4 @@
-﻿namespace BetterSteamBrowser.Domain.Interfaces;
+﻿namespace BetterSteamBrowser.Domain.ValueObjects;
 
 /// <summary>
 /// EFSteamGame Seed Constants for KEY ID values, NOT AppID values.

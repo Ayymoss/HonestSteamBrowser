@@ -1,5 +1,5 @@
-﻿using BetterSteamBrowser.Business.DTOs;
-using BetterSteamBrowser.Business.Mediatr.Commands;
+﻿using BetterSteamBrowser.Business.Mediatr.Commands;
+using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;

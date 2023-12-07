@@ -22,10 +22,10 @@
         </RadzenStack>
     </RadzenStack>
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" class="rz-my-4">
-        <RadzenCheckBox @bind-Value="_forAllGames" Name="BlacklistCheckbox"/>
-        <RadzenText class="rz-ml-2 rz-mb-0" Text="Blacklist for all games or just this one?"/>
+        <RadzenCheckBox @bind-Value="_forAllGames" Name="BlockCheckbox"/>
+        <RadzenText class="rz-ml-2 rz-mb-0" Text="Block for all games or just this one?"/>
     </RadzenStack>
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-        <RadzenButton Click="BlacklistAddress" Text="Blacklist" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Blacklisting..."/>
+        <RadzenButton Click="BlockAddress" Text="Block" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Blocking..."/>
     </RadzenStack>
 </RadzenStack>

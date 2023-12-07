@@ -1,5 +1,5 @@
-﻿using BetterSteamBrowser.Business.DTOs;
-using BetterSteamBrowser.Business.Mediatr.Commands;
+﻿using BetterSteamBrowser.Business.Mediatr.Commands;
+using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using BetterSteamBrowser.Infrastructure.Context;
@@ -18,7 +18,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var query = context.Servers
             .AsNoTracking()
-            .Where(x => !x.Blacklisted)
+            .Where(x => !x.Blocked)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
             .AsQueryable();
 

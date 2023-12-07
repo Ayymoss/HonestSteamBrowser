@@ -1,4 +1,4 @@
-﻿using BetterSteamBrowser.Business.DTOs;
+﻿using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using MediatR;
@@ -14,7 +14,8 @@ public class GetServerListCommand : Pagination, IRequest<PaginationContext<Serve
 }
 
 public class GetSteamGamesCommand : IRequest<List<SteamGame>>;
-public class GetBlacklistCountCommand : IRequest<int>;
+
+public class GetBlockCountCommand : IRequest<int>;
 
 public class GetServerPlayersCommand : IRequest<List<PlayerInfo>?>
 {
@@ -33,3 +34,6 @@ public class GetUserFavouriteCountCommand : IRequest<int>
 {
     public string UserId { get; set; }
 }
+
+public class GetBlockListCommand : Pagination, IRequest<PaginationContext<Block>>;
+public class GetSteamGameListCommand : Pagination, IRequest<PaginationContext<SteamGame>>;

@@ -1,5 +1,5 @@
-﻿using BetterSteamBrowser.Business.DTOs;
-using BetterSteamBrowser.Business.Services;
+﻿using BetterSteamBrowser.Business.Services;
+using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Services;

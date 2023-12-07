@@ -1,4 +1,4 @@
-﻿using BetterSteamBrowser.Business.DTOs;
+﻿using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Infrastructure.SignalR;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;

@@ -1,0 +1,29 @@
+﻿@using Humanizer
+
+<RadzenStack Orientation="Orientation.Vertical" Gap="0">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Value:"/>
+            <RadzenText>@Block.Value</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Type:"/>
+            <RadzenText>@Block.Type.Humanize()</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Game Name:"/>
+            <RadzenText>@Block.SteamGameName</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Added By:"/>
+            <RadzenText>@Block.AddedBy</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Added:"/>
+            <RadzenText>@Block.Added.Humanize()</RadzenText>
+        </RadzenStack>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+        <RadzenButton Click="RemoveBlockAsync" Text="Remove Block" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Removing..."/>
+    </RadzenStack>
+</RadzenStack>

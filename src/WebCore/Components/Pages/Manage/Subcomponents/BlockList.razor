@@ -1,0 +1,53 @@
+﻿@using BetterSteamBrowser.Business.ViewModels
+@using Humanizer
+
+<RadzenRow JustifyContent="JustifyContent.Center">
+    <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
+        <RadzenCard>
+            <RadzenRow JustifyContent="JustifyContent.Center" class="rz-mb-4">
+                <RadzenColumn SizeSM="12" SizeMD="3">
+                    <RadzenText TextAlign="TextAlign.Start" Text="Blocks" TextStyle="TextStyle.DisplayH4" class="rz-mb-0 rz-mt-2"/>
+                </RadzenColumn>
+                <RadzenColumn SizeSM="12" SizeMD="9">
+                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.End" Wrap="FlexWrap.Wrap">
+                        <RadzenDropDown TValue="SteamGame" @bind-Value="@_dropDownSelected" Data="@_dropDownGames" AllowClear="true" FilterAsYouType="true"
+                                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        Change="OnDropdownChanged" Placeholder="Select Game" Style="width: 100%; max-width: 300px; height: 42px;"/>
+                        <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; max-width: 300px;">
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="_searchString" Change="OnSearch"/>
+                            </ChildContent>
+                            <End>
+                                <RadzenIcon Icon="search" IconStyle="IconStyle.Info"/>
+                            </End>
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenDataGrid @ref="_dataGrid" TItem="Block" IsLoading="@_isLoading" Count="@_count" Data="@_blockTable" LoadData="@LoadData"
+                            Density="Density.Compact" AllowPaging="true" PageSize="25" AllowSorting="true" PagerAlwaysVisible="true"
+                            PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="new[] {25, 50, 100}" ShowPagingSummary="true"
+                            PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
+                            RowClick="RowClickEvent" Style="min-height: 200px;" class="rz-selectable">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Block" Property="Value" Title="Value" MinWidth="120px" Width="500px"/>
+                    <RadzenDataGridColumn TItem="Block" Property="Type" Title="Filter" MinWidth="100px" Width="175px">
+                        <Template Context="context">
+                            @context.Type.Humanize().Transform(To.TitleCase)
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Block" Property="SteamGameName" Title="Game" MinWidth="60px"/>
+                    <RadzenDataGridColumn TItem="Block" Property="AddedBy" Title="Added By" Sortable="false" MinWidth="100px"/>
+                    <RadzenDataGridColumn TItem="Block" Property="Added" Title="Added" SortOrder="SortOrder.Descending" MinWidth="100px">
+                        <Template Context="context">
+                            @context.Added.Humanize()
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+                <EmptyTemplate>
+                    <RadzenText TextAlign="TextAlign.Center" TextStyle="TextStyle.H6" class="rz-my-4" Text="There are no blocks..."/>
+                </EmptyTemplate>
+            </RadzenDataGrid>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>

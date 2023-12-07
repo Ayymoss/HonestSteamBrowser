@@ -1,0 +1,65 @@
+﻿@using BetterSteamBrowser.Domain.Enums
+@using BetterSteamBrowser.Business.ViewModels
+
+<RadzenTemplateForm Data="_blockOptions" Submit="@((BlockOptions args) => CreateBlockAsync(args))">
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4" JustifyContent="JustifyContent.Center">
+        <RadzenColumn Size="12" SizeMD="5">
+            <RadzenCard>
+                <RadzenStack>
+                    <RadzenFieldset Text="Block Configuration">
+                        <RadzenStack Gap="1rem">
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="5">
+                                    <RadzenLabel Text="Filter Type" Component="FilterType"/>
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="7">
+                                    <RadzenDropDown Data="@(Enum.GetValues(typeof(FilterType)).Cast<Enum>())" @bind-Value="_blockOptions.FilterType" AllowClear="true" FilterAsYouType="true"
+                                                    AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Name="FilterType" Style="width: 100%"/>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="5">
+                                    <RadzenLabel Text="Filter at API?" Component="ApiFilter"/>
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="7">
+                                    <RadzenSwitch @bind-Value="_blockOptions.ApiFilter" Name="ApiFilter"/>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="5">
+                                    <RadzenLabel Text="Filter Value" Component="ValueBox"/>
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="7">
+                                    <RadzenTextBox @bind-Value="_blockOptions.Value" Name="ValueBox" Placeholder="Enter Value..." Style="width: 100%"/>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            <RadzenRow AlignItems="AlignItems.Center">
+                                <RadzenColumn Size="12" SizeMD="5">
+                                    <RadzenLabel Text="Filter on All Games?" Component="FilterAll"/>
+                                </RadzenColumn>
+                                <RadzenColumn Size="12" SizeMD="7">
+                                    <RadzenSwitch @bind-Value="_blockOptions.FilterAllGames" Name="FilterAll"/>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (!_blockOptions.FilterAllGames)
+                            {
+                                <RadzenRow AlignItems="AlignItems.Center">
+                                    <RadzenColumn Size="12" SizeMD="5">
+                                        <RadzenLabel Text="Filter Game" Component="GameSelection"/>
+                                    </RadzenColumn>
+                                    <RadzenColumn Size="12" SizeMD="7">
+                                        <RadzenDropDown TValue="SteamGame" @bind-Value="_blockOptions.SteamGame" Data="@_dropDownGames" AllowClear="true" FilterAsYouType="true"
+                                                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Placeholder="Select Game..." Name="GameSelection" Style="width: 100%"/>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </RadzenStack>
+                    </RadzenFieldset>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Create Custom Block" BusyText="Adding..." IsBusy="_processing"/>
+    </RadzenStack>
+</RadzenTemplateForm>

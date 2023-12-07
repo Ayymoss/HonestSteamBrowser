@@ -1,4 +1,6 @@
 ﻿using BetterSteamBrowser.Infrastructure.Identity;
+using BetterSteamBrowser.WebCore.Components.Pages.Home.Subcomponents;
+using BetterSteamBrowser.WebCore.Components.Pages.Manage.Subcomponents;
 using BetterSteamBrowser.WebCore.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -15,6 +17,10 @@ public partial class Manage
     private bool _isAdmin;
     private string? _userId;
 
+    private ServerList? _serverList;
+    private BlockList? _blockList;
+    private GameList? _gameList;
+
     protected override async Task OnInitializedAsync()
     {
         var authUser = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -22,5 +28,12 @@ public partial class Manage
         var user = await UserManager.GetUserAsync(authUser);
         _userId = user?.Id;
         await base.OnInitializedAsync();
+    }
+
+    public async Task ReloadTables()
+    {
+        await (_serverList?.ReloadTable() ?? Task.CompletedTask);
+        await (_blockList?.ReloadTable() ?? Task.CompletedTask);
+        await (_gameList?.ReloadTable() ?? Task.CompletedTask);
     }
 }

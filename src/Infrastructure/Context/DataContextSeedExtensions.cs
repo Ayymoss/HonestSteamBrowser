@@ -1,6 +1,7 @@
 ﻿using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Domain.Interfaces;
+using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ public static class DataContextSeed
 
         var adminUser = new ApplicationUser
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = "ADMIN_SEED_ID",
             UserName = "Admin",
             NormalizedUserName = "ADMIN",
             Email = "admin@example.com",
@@ -42,11 +43,11 @@ public static class DataContextSeed
         });
     }
 
-    public static void AddBlacklistSeed(this ModelBuilder modelBuilder)
+    public static void AddBlocksSeed(this ModelBuilder modelBuilder)
     {
-        var blacklists = new[]
+        var blocks = new[]
         {
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -1,
                 Value = "FASTCUP",
@@ -54,8 +55,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -2,
                 Value = "uwujka",
@@ -63,8 +65,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.CounterStrike2,
                 Type = FilterType.GameType,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -3,
                 Value = "nosteam",
@@ -72,8 +75,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.GameType,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -4,
                 Value = "no-steam",
@@ -81,8 +85,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.GameType,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -5,
                 Value = "Develop",
@@ -90,8 +95,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -6,
                 Value = "FACEIT",
@@ -99,8 +105,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -7,
                 Value = "RU",
@@ -108,8 +115,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.CounterStrike2,
                 Type = FilterType.IpAddress,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -8,
                 Value = "JP",
@@ -117,8 +125,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.CounterStrike2,
                 Type = FilterType.IpAddress,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -9,
                 Value = "CN",
@@ -126,8 +135,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.CounterStrike2,
                 Type = FilterType.IpAddress,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -10,
                 Value = "RU",
@@ -135,8 +145,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.Rust,
                 Type = FilterType.IpAddress,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -11,
                 Value = "JP",
@@ -144,8 +155,9 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.Rust,
                 Type = FilterType.IpAddress,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             },
-            new EFBlacklist
+            new EFBlock
             {
                 Id = -12,
                 Value = "CN",
@@ -153,10 +165,11 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.Rust,
                 Type = FilterType.IpAddress,
                 Added = DateTimeOffset.UtcNow,
+                UserId = "ADMIN_SEED_ID"
             }
         };
 
-        modelBuilder.Entity<EFBlacklist>().HasData(blacklists);
+        modelBuilder.Entity<EFBlock>().HasData(blocks);
     }
 
     public static void AddSteamGamesSeed(this ModelBuilder modelBuilder)

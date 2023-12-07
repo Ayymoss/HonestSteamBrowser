@@ -1,0 +1,15 @@
+﻿<RadzenStack Orientation="Orientation.Vertical" Gap="0">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Name:"/>
+            <RadzenText>@SteamGame.Name</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="App ID:"/>
+            <RadzenText>@SteamGame.AppId</RadzenText>
+        </RadzenStack>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+        <RadzenButton Click="RemoveSteamGameAsync" Text="Remove Game" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Removing..."/>
+    </RadzenStack>
+</RadzenStack>

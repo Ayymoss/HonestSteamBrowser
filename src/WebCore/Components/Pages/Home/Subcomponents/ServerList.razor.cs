@@ -1,5 +1,5 @@
-﻿using BetterSteamBrowser.Business.DTOs;
-using BetterSteamBrowser.Business.Mediatr.Commands;
+﻿using BetterSteamBrowser.Business.Mediatr.Commands;
+using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Infrastructure.Identity;
 using BetterSteamBrowser.WebCore.Components.Pages.Home.Dialogs;
@@ -140,7 +140,7 @@ public partial class ServerList : IDisposable
         {
             if (!IsAdmin) return;
 
-            await DialogService.OpenAsync<BlacklistServerDialog>("Blacklist Address?", parameters, options);
+            await DialogService.OpenAsync<BlockServerDialog>("Block Address?", parameters, options);
             await _dataGrid.Reload();
         }
         else

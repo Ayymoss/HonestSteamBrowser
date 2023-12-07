@@ -19,14 +19,14 @@ public class SteamServerService(
     IHttpClientFactory httpClientFactory,
     IServerRepository serverRepository,
     SetupConfigurationContext config,
-    IBlacklistRepository blacklistRepository,
+    IBlockRepository blockRepository,
     ISteamGameRepository steamGameRepository,
     IGeoIpService geoIpService,
     ILogger<SteamServerService> logger)
     : ISteamServerService
 {
     private const int BatchSize = 10;
-    private List<EFBlacklist> _blacklisted = new();
+    private List<EFBlock> _blockList = new();
     private List<EFSteamGame> _steamGames = new();
     private ISteamApi _steamApi = null!;
 
@@ -38,7 +38,7 @@ public class SteamServerService(
 
         try
         {
-            _blacklisted = await blacklistRepository.GetBlacklistAsync();
+            _blockList = await blockRepository.GetBlockListAsync();
             _steamGames = await steamGameRepository.GetSteamGamesAsync();
 
             var rawSteamServers = (await RetrieveServerStatisticsAsync())
@@ -92,8 +92,8 @@ public class SteamServerService(
 
     private async Task<Tuple<EFSteamGame, List<ServerListItem>>?> ProcessGameAsync(EFSteamGame game)
     {
-        var blacklistForApi = _blacklisted.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
-        var filter = BuildApiFilter(blacklistForApi, game.AppId);
+        var blocksForApi = _blockList.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
+        var filter = BuildApiFilter(blocksForApi, game.AppId);
         var serverListItems = await GetServerListAsync(filter);
 
         if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
@@ -131,26 +131,26 @@ public class SteamServerService(
         }
     }
 
-    private IEnumerable<EFServer> BuildBlacklist(List<EFServer> servers)
+    private IEnumerable<EFServer> BuildBlockList(List<EFServer> servers)
     {
-        var blacklistsList = _blacklisted.Where(x => !x.ApiFilter).ToList();
-        if (blacklistsList.Count is 0) return servers;
+        var blockList = _blockList.Where(x => !x.ApiFilter).ToList();
+        if (blockList.Count is 0) return servers;
 
         foreach (var server in servers)
         {
-            var blacklists = blacklistsList.Where(blacklist =>
-                server.SteamGameId == blacklist.SteamGameId || blacklist.SteamGameId == SteamGameConstants.AllGames);
-            foreach (var blacklist in blacklists)
+            var blocks = blockList.Where(b =>
+                server.SteamGameId == b.SteamGameId || b.SteamGameId == SteamGameConstants.AllGames);
+            foreach (var block in blocks)
             {
-                switch (blacklist.Type)
+                switch (block.Type)
                 {
                     case FilterType.Hostname:
-                        if (server.Name.Contains(blacklist.Value, StringComparison.OrdinalIgnoreCase))
-                            server.Blacklisted = true;
+                        if (server.Name.Contains(block.Value, StringComparison.OrdinalIgnoreCase))
+                            server.Blocked = true;
                         break;
                     case FilterType.IpAddress:
-                        if (server.CountryCode == blacklist.Value)
-                            server.Blacklisted = true;
+                        if (server.CountryCode == block.Value)
+                            server.Blocked = true;
                         break;
                 }
             }
@@ -160,24 +160,25 @@ public class SteamServerService(
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    private static string BuildApiFilter(IEnumerable<EFBlacklist> blacklists, int gameAppId)
+    private static string BuildApiFilter(IEnumerable<EFBlock> blocks, int gameAppId)
     {
-        var blacklistList = blacklists.Where(x => x.ApiFilter).OrderByDescending(x => x.Type).ToList();
+        var blockList = blocks.Where(x => x.ApiFilter)
+            .OrderByDescending(x => x.Type)
+            .ToList();
 
         var filterBuilder = new StringBuilder($@"\appid\{gameAppId}\empty\1\dedicated\1\name_match\*");
         filterBuilder.Append(@"\nand\1\gametype\hidden");
+        if (blockList.Count is 0) return filterBuilder.ToString();
 
-        if (blacklistList.Count is 0) return filterBuilder.ToString();
-
-        foreach (var blacklist in blacklistList)
+        foreach (var block in blockList)
         {
-            switch (blacklist.Type)
+            switch (block.Type)
             {
                 case FilterType.GameType:
-                    filterBuilder.Append($@"\nand\1\gametype\{blacklist.Value}");
+                    filterBuilder.Append($@"\nand\1\gametype\{block.Value}");
                     break;
                 case FilterType.IpAddress:
-                    filterBuilder.Append($@"\nand\1\gameaddr\{blacklist.Value}");
+                    filterBuilder.Append($@"\nand\1\gameaddr\{block.Value}");
                     break;
             }
         }
@@ -197,7 +198,7 @@ public class SteamServerService(
             server.Item1.LastUpdated = DateTimeOffset.UtcNow;
         }
 
-        var filtered = BuildBlacklist(servers.Select(x => x.Item1).ToList());
+        var filtered = BuildBlockList(servers.Select(x => x.Item1).ToList());
         return filtered;
     }
 
@@ -227,7 +228,7 @@ public class SteamServerService(
             }).ToList();
 
         geoIpService.PopulateCountries(servers);
-        var filtered = BuildBlacklist(servers);
+        var filtered = BuildBlockList(servers);
 
         return filtered;
     }
