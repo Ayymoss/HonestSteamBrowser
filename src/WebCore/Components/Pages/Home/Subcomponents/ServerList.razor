@@ -30,7 +30,7 @@
             </RadzenRow>
             <RadzenDataGrid @ref="_dataGrid" TItem="Server" IsLoading="@_isLoading" Count="@_count" Data="@_serverTable" LoadData="@LoadData"
                             Density="Density.Compact" AllowPaging="true" PageSize="25" AllowSorting="true" PagerAlwaysVisible="true"
-                            PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="new[] {25, 50, 100}" ShowPagingSummary="true"
+                            PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="@PageSizes" ShowPagingSummary="true"
                             PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
                             RowClick="RowClickEvent" Style="min-height: 200px;" class="rz-selectable">
                 <Columns>
@@ -51,6 +51,11 @@
                     <RadzenDataGridColumn TItem="Server" Property="LastUpdated" Title="Last Seen" MinWidth="120px">
                         <Template Context="context">
                             @context.LastUpdated.Humanize()
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Server" Property="Created" Title="First Seen" MinWidth="120px">
+                        <Template Context="context">
+                            @context.Created.Humanize()
                         </Template>
                     </RadzenDataGridColumn>
                     @if (!string.IsNullOrWhiteSpace(UserId) && !Manager)

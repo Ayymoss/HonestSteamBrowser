@@ -13,7 +13,6 @@ using BetterSteamBrowser.Infrastructure.Services;
 using BetterSteamBrowser.Infrastructure.SignalR;
 using BetterSteamBrowser.WebCore.Components;
 using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -21,6 +20,8 @@ using Serilog;
 using Serilog.Events;
 
 namespace BetterSteamBrowser.WebCore;
+
+// TODO: Some already filtered servers are ending back on the Server List for some reason.
 
 public class Program
 {
@@ -39,7 +40,9 @@ public class Program
         });
 #endif
 
+#if DEBUG
         configuration.DatabaseName = "SteamBrowserTest1";
+#endif
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
         {
@@ -63,6 +66,7 @@ public class Program
         builder.Services.AddScoped<ISteamGameRepository, SteamGameRepository>();
         builder.Services.AddScoped<IServerRepository, ServerRepository>();
         builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();
         builder.Services.AddScoped<IGameServerPlayerService, GameServerPlayerService>();
         builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
@@ -70,6 +74,7 @@ public class Program
         builder.Services.AddScoped<IResourceQueryHelper<GetServerListCommand, Server>, ServersPaginationQueryHelper>();
         builder.Services.AddScoped<IResourceQueryHelper<GetBlockListCommand, Block>, BlocksPaginationQueryHelper>();
         builder.Services.AddScoped<IResourceQueryHelper<GetSteamGameListCommand, SteamGame>, SteamGamesPaginationQueryHelper>();
+        builder.Services.AddScoped<IResourceQueryHelper<GetUserListCommand, User>, UsersPaginationQueryHelper>();
 
         // Services
         builder.Services.AddHttpClient("BSBClient", options => options.DefaultRequestHeaders.UserAgent

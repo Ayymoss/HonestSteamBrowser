@@ -12,6 +12,7 @@ using BetterSteamBrowser.Infrastructure.Interfaces;
 using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.Extensions.Logging;
 using RestEase;
+using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
@@ -58,7 +59,7 @@ public class SteamServerService(
                 .Select(kv => new Tuple<ServerListItem, string>(kv.Value, kv.Key))
                 .ToList();
 
-            var existingServerFinal = ProcessExistingServers(existingServers).ToList();
+            var existingServerFinal = ProcessExistingServers(existingServers);
             var newServersFinal = ProcessNewServers(newServers).ToList();
 
             await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal);
@@ -95,6 +96,7 @@ public class SteamServerService(
         var blocksForApi = _blockList.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
         var filter = BuildApiFilter(blocksForApi, game.AppId);
         var serverListItems = await GetServerListAsync(filter);
+        logger.LogDebug("Filter {GameAppId}: {Filter}", game.AppId, filter);
 
         if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
 
@@ -222,8 +224,9 @@ public class SteamServerService(
                     Country = null,
                     CountryCode = null,
                     Map = x.Item1.Map!,
+                    SteamGameId = steamGameId,
                     LastUpdated = DateTimeOffset.UtcNow,
-                    SteamGameId = steamGameId
+                    Created = DateTimeOffset.UtcNow,
                 };
             }).ToList();
 

@@ -1,8 +1,6 @@
 ﻿@page "/Manage"
 @using BetterSteamBrowser.WebCore.Utilities
 @using BetterSteamBrowser.Domain.Enums
-@using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 
 <PageTitle>Manage | Better Steam Browser</PageTitle>
 
@@ -11,7 +9,7 @@
         <RadzenTabs RenderMode="TabRenderMode.Client">
             <Tabs>
                 <RadzenTabsItem Text="Server List">
-                    <ServerList @ref="_serverList" Manager="true" IsAdmin="_isAdmin" UserId="@_userId"/>
+                    <ServerList @ref="_serverList" Manager="true" IsAdmin="_isAdmin" UserId="@_userId" OnServerBlockCreated="ReloadTables"/>
                 </RadzenTabsItem>
                 <RadzenTabsItem Text="Block List">
                     <BlockList @ref="_blockList" UserId="@_userId"/>
@@ -25,11 +23,14 @@
                 <RadzenTabsItem Text="Add New Game">
                     <AddSteamGame UserId="@_userId" OnSteamGameCreated="ReloadTables"/>
                 </RadzenTabsItem>
+                <RadzenTabsItem Text="User List">
+                    <UserList @ref="_userList" UserId="@_userId"/>
+                </RadzenTabsItem>
             </Tabs>
         </RadzenTabs>
     </Authorized>
     <NotAuthorized>
         <RadzenText TextStyle="TextStyle.DisplayH4" Text="401 :(" class="rz-color-primary"/>
-        <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, you're not authorised! - ??" class="rz-color-warning"/>
+        <RadzenText TextStyle="TextStyle.DisplayH5" Text="Whoops, you're not authorised!" class="rz-color-warning"/>
     </NotAuthorized>
 </AuthorizeView>

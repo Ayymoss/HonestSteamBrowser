@@ -13,6 +13,7 @@ public class Server
     public int MaxPlayers { get; set; }
     public string Country { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
+    public DateTimeOffset Created { get; set; }
     public bool Favourite { get; set; }
     public string Address => $"{IpAddress}:{Port}";
 }

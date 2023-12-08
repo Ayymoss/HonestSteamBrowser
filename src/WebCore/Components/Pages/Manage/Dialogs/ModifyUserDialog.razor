@@ -1,0 +1,24 @@
+﻿<RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="ID:"/>
+            <RadzenText>@User.Id</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Name:"/>
+            <RadzenText>@User.UserName</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary" Text="Role:"/>
+            <RadzenText>@User.RoleName</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <RadzenLabel Text="Is Admin?" Component="Checkbox" Style="margin-right: 8px; vertical-align: middle;" />
+            <RadzenCheckBox @bind-Value="_isAdmin" Name="Checkbox"/>
+        </RadzenStack>
+    </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.25rem">
+        <RadzenButton Click="ModifyUserAsync" Text="Change User Group" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Modifying..."/>
+        <RadzenButton Click="ResetUserPasswordAsync" Text="Reset User Password" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Resetting..."/>
+    </RadzenStack>
+</RadzenStack>

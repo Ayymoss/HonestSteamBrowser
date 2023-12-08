@@ -43,3 +43,15 @@ public class CreateSteamGameCommand : INotification
     public int AppId { get; set; }
     public string Name { get; set; }
 }
+
+public class ChangeUserRoleCommand : INotification
+{
+    public string Id { get; set; }
+    public bool IsAdmin { get; set; }
+}
+
+public class ResetUserPasswordCommand : INotification
+{
+    public string Id { get; set; }
+    public string? Password { get; set; }
+}

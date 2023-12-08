@@ -15,13 +15,9 @@ public partial class RegisterComponent
 
     private string? _errorMessage;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
-        {
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        }
-    }
+    protected override Task OnInitializedAsync() => HttpMethods.IsGet(HttpContext.Request.Method)
+        ? HttpContext.SignOutAsync(IdentityConstants.ExternalScheme)
+        : Task.CompletedTask;
 
     public async Task RegisterUser()
     {
@@ -47,7 +43,7 @@ public partial class RegisterComponent
         public string Username { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(64, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 

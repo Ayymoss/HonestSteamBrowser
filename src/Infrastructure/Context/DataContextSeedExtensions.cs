@@ -119,26 +119,6 @@ public static class DataContextSeed
             },
             new EFBlock
             {
-                Id = -8,
-                Value = "JP",
-                ApiFilter = false,
-                SteamGameId = SteamGameConstants.CounterStrike2,
-                Type = FilterType.IpAddress,
-                Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
-            },
-            new EFBlock
-            {
-                Id = -9,
-                Value = "CN",
-                ApiFilter = false,
-                SteamGameId = SteamGameConstants.CounterStrike2,
-                Type = FilterType.IpAddress,
-                Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
-            },
-            new EFBlock
-            {
                 Id = -10,
                 Value = "RU",
                 ApiFilter = false,
@@ -149,21 +129,11 @@ public static class DataContextSeed
             },
             new EFBlock
             {
-                Id = -11,
-                Value = "JP",
-                ApiFilter = false,
-                SteamGameId = SteamGameConstants.Rust,
-                Type = FilterType.IpAddress,
-                Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
-            },
-            new EFBlock
-            {
                 Id = -12,
-                Value = "CN",
+                Value = "Counter-Strike 2",
                 ApiFilter = false,
-                SteamGameId = SteamGameConstants.Rust,
-                Type = FilterType.IpAddress,
+                SteamGameId = SteamGameConstants.CounterStrike2,
+                Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
                 UserId = "ADMIN_SEED_ID"
             }

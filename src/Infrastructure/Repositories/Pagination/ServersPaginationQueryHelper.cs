@@ -14,7 +14,6 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
     public async Task<PaginationContext<Server>> QueryResourceAsync(GetServerListCommand request,
         CancellationToken cancellationToken)
     {
-        var serverFavourites = new Dictionary<string, bool>();
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var query = context.Servers
             .AsNoTracking()
@@ -37,26 +36,28 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "Name" => current.ApplySort(sort, p => p.Name),
                 "Players" => current.ApplySort(sort, p => p.Players),
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
+                "Created" => current.ApplySort(sort, p => p.Created),
                 _ => current
             });
 
-        if (request.Favourites && !string.IsNullOrWhiteSpace(request.UserId))
+        var serverFavourites = new Dictionary<string, bool>();
+        var favouriteServerHashes = new List<string>();
+        if (!string.IsNullOrWhiteSpace(request.UserId))
         {
-            query = query
-                .Join(context.Favourites,
-                    server => server.Hash,
-                    favourite => favourite.ServerId,
-                    (server, favourite) => new {Server = server, Favourite = favourite})
-                .Where(x => x.Favourite.UserId == request.UserId)
-                .Select(x => x.Server);
+            favouriteServerHashes = await context.Favourites
+                .Where(favourite => favourite.UserId == request.UserId)
+                .Select(favourite => favourite.ServerId)
+                .ToListAsync(cancellationToken);
 
-            serverFavourites = await query
-                .Select(server => new
-                {
-                    server.Hash,
-                    IsFavourite = request.Favourites
-                })
-                .ToDictionaryAsync(t => t.Hash, t => t.IsFavourite, cancellationToken);
+            foreach (var hash in favouriteServerHashes)
+            {
+                serverFavourites[hash] = true;
+            }
+        }
+
+        if (request.Favourites)
+        {
+            query = query.Where(server => favouriteServerHashes.Contains(server.Hash));
         }
 
         var count = await query.CountAsync(cancellationToken: cancellationToken);
@@ -80,6 +81,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 MaxPlayers = server.MaxPlayers,
                 Country = server.Country ?? "Unknown",
                 LastUpdated = server.LastUpdated,
+                Created = server.Created,
                 Favourite = serverFavourites.ContainsKey(server.Hash) && serverFavourites[server.Hash]
             })
             .ToListAsync(cancellationToken: cancellationToken);

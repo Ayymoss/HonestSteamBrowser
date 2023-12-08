@@ -15,6 +15,7 @@ public class EFServer
     public string? CountryCode { get; set; }
     public string Map { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
+    public DateTimeOffset Created { get; set; }
     public bool Blocked { get; set; }
 
     public int SteamGameId { get; set; }

@@ -22,6 +22,7 @@ public partial class ServerList : IDisposable
     [Parameter] public bool Manager { get; set; }
     [Parameter] public bool IsAdmin { get; set; }
     [Parameter] public string? UserId { get; set; }
+    [Parameter] public EventCallback OnServerBlockCreated { get; set; }
     [Inject] private IMediator Mediator { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
     [Inject] private DialogService DialogService { get; set; }
@@ -36,6 +37,8 @@ public partial class ServerList : IDisposable
     private int _gamePlayerCount;
     private string? _searchString;
     private string _titleText = "Servers";
+
+    private IEnumerable<int> PageSizes => Manager ? new[] {20, 50, 100, 500} : new[] {20, 50, 100};
 
     protected override async Task OnInitializedAsync()
     {
@@ -141,6 +144,7 @@ public partial class ServerList : IDisposable
             if (!IsAdmin) return;
 
             await DialogService.OpenAsync<BlockServerDialog>("Block Address?", parameters, options);
+            await OnServerBlockCreated.InvokeAsync();
             await _dataGrid.Reload();
         }
         else

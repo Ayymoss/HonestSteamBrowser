@@ -1,6 +1,5 @@
 ﻿using BetterSteamBrowser.Business.Mediatr.Events;
 using BetterSteamBrowser.Business.ViewModels;
-using BetterSteamBrowser.Domain.Interfaces;
 using BetterSteamBrowser.Domain.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Components;

@@ -17,6 +17,7 @@ public partial class Manage
     private bool _isAdmin;
     private string? _userId;
 
+    private UserList? _userList;
     private ServerList? _serverList;
     private BlockList? _blockList;
     private GameList? _gameList;
@@ -32,6 +33,8 @@ public partial class Manage
 
     public async Task ReloadTables()
     {
+        // I realise this isn't in the spirit of least amount of work possible, but very few people will ever use this
+        await (_userList?.ReloadTable() ?? Task.CompletedTask);
         await (_serverList?.ReloadTable() ?? Task.CompletedTask);
         await (_blockList?.ReloadTable() ?? Task.CompletedTask);
         await (_gameList?.ReloadTable() ?? Task.CompletedTask);

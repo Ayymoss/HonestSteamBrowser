@@ -17,7 +17,7 @@ public partial class AddSteamGame
 
     private async Task CreateSteamGameAsync(SteamGameOptions args)
     {
-        if (args.AppId is 0) return;
+        if (args.AppId < 1) return;
         if (string.IsNullOrWhiteSpace(args.Name)) return;
         if (string.IsNullOrWhiteSpace(UserId)) return;
 

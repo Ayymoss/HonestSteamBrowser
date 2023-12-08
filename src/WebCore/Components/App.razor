@@ -2,13 +2,26 @@
 <html lang="en">
 
 <head>
+
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://bettersteambrowser.app/"/>
+    <meta property="og:title" content="Better Steam Browser"/>
+    <meta property="og:description" content="An alternative to Steam's built-in Server Browser that rids the garbage."/>
+    <meta property="og:image" content="https://bettersteambrowser.app/android-chrome-512x512.png"/>
+
+    <meta name="title" content="Better Steam Browser">
+    <meta name="description" content="An alternative to Steam's built-in Server Browser that rids the garbage.">
+    <meta name="keywords" content="Steam, Gaming, Browser, Servers">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
     <link rel="stylesheet" href="css/material3-dark-base.css"/>
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/app.css"/>
-    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link rel="icon" type="image/png" href="favicon.ico"/>
     <HeadOutlet @rendermode="@GetRenderMode()"/>
 </head>
 
@@ -23,8 +36,7 @@
 
 @code {
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
 
     private IComponentRenderMode? GetRenderMode() => HttpContext.Request.Path.StartsWithSegments("/Account")
         ? null
