@@ -18,6 +18,7 @@ public class UsersPaginationQueryHelper(IDbContextFactory<DataContext> contextFa
             .AsNoTracking()
             .AsQueryable();
 
+        // Filtering and sorting
         if (!string.IsNullOrWhiteSpace(request.SearchString))
             query = query.Where(search =>
                 (search.UserName != null && EF.Functions.ILike(search.UserName, $"%{request.SearchString}%")));
@@ -29,14 +30,30 @@ public class UsersPaginationQueryHelper(IDbContextFactory<DataContext> contextFa
                 _ => current
             });
 
+        // Favourites
+        var userIds = await query
+            .Skip(request.Skip)
+            .Take(request.Top)
+            .Select(u => u.Id)
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        var favouriteCounts = await context.Favourites
+            .Where(fav => userIds.Contains(fav.UserId))
+            .GroupBy(fav => fav.UserId)
+            .Select(group => new {UserId = group.Key, Count = group.Count()})
+            .ToDictionaryAsync(fav => fav.UserId, fav => fav.Count, cancellationToken);
+
+        // Roles
         var allUserRoles = await context.UserRoles
             .ToListAsync(cancellationToken: cancellationToken);
 
         var allRoles = await context.Roles
             .ToListAsync(cancellationToken: cancellationToken);
 
+        // Total count
         var count = await query.CountAsync(cancellationToken: cancellationToken);
 
+        // Object mapping
         var pagedData = await query
             .Skip(request.Skip)
             .Take(request.Top)
@@ -53,6 +70,7 @@ public class UsersPaginationQueryHelper(IDbContextFactory<DataContext> contextFa
                     role => role.Id,
                     (userRole, role) => role.Name)
                 .FirstOrDefault() ?? "User",
+            FavouriteCount = favouriteCounts.GetValueOrDefault(user.Id, 0),
         }).ToList();
 
         return new PaginationContext<User>

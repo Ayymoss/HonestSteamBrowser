@@ -1,6 +1,6 @@
 ﻿@using Humanizer
 <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.Left">
-    <RadzenText TextStyle="TextStyle.DisplayH5" TextAlign="TextAlign.Center" Text="@Server.Name" class="rz-mb-0"/>
+    <RadzenLink Path="@SteamUrl" Text="@Server.Name" class="rz-text-display-h5 rz-mb-0 rz-text-align-center"/>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="@Server.SteamGameName" class="rz-mb-0"/>
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" class="rz-mb-0">

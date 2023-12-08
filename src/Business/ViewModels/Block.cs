@@ -10,4 +10,5 @@ public class Block
     public DateTimeOffset Added { get; set; }
     public string SteamGameName { get; set; }
     public string AddedBy { get; set; }
+    public bool ApiFilter { get; set; }
 }

@@ -9,5 +9,7 @@ public enum FilterType
     [Display(Description = "Game Type")]
     GameType,
     [Display(Description = "Hostname")]
-    Hostname
+    Hostname,
+    [Display(Description = "Country Code")]
+    CountryCode
 }

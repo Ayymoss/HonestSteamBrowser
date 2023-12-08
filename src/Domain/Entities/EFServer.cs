@@ -6,8 +6,17 @@ namespace BetterSteamBrowser.Domain.Entities;
 public class EFServer
 {
     [Key] public string Hash { get; set; }
+
+    /// <summary>
+    /// The IP Address. Excludes the port.
+    /// </summary>
     public string IpAddress { get; set; }
+
+    /// <summary>
+    /// The Port number.
+    /// </summary>
     public int Port { get; set; }
+
     public string Name { get; set; }
     public int Players { get; set; }
     public int MaxPlayers { get; set; }

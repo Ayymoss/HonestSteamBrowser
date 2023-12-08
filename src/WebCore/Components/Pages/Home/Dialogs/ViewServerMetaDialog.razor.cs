@@ -16,7 +16,10 @@ public partial class ViewServerMetaDialog
     private List<PlayerInfo>? _players;
     private bool _isFavourite;
     private bool _processing;
-
+    
+ 
+    private string SteamUrl => $"steam://connect/{Server.Address}";
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;

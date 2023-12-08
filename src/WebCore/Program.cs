@@ -21,7 +21,7 @@ using Serilog.Events;
 
 namespace BetterSteamBrowser.WebCore;
 
-// TODO: Some already filtered servers are ending back on the Server List for some reason.
+// TODO: Registered Users area list favourite count
 
 public class Program
 {
@@ -41,7 +41,7 @@ public class Program
 #endif
 
 #if DEBUG
-        configuration.DatabaseName = "SteamBrowserTest1";
+        configuration.DatabaseName = "SteamBrowserTest2";
 #endif
 
         builder.Services.AddDbContextFactory<DataContext>(options =>

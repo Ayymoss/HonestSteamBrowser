@@ -4,7 +4,6 @@ using System.Text;
 using BetterSteamBrowser.Business.Utilities;
 using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Enums;
-using BetterSteamBrowser.Domain.Interfaces;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Services;
 using BetterSteamBrowser.Domain.ValueObjects;
@@ -12,7 +11,6 @@ using BetterSteamBrowser.Infrastructure.Interfaces;
 using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.Extensions.Logging;
 using RestEase;
-using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
@@ -135,6 +133,9 @@ public class SteamServerService(
 
     private IEnumerable<EFServer> BuildBlockList(List<EFServer> servers)
     {
+        // Reset all servers to unblocked state as we may have removed some filters
+        foreach (var server in servers) server.Blocked = false;
+
         var blockList = _blockList.Where(x => !x.ApiFilter).ToList();
         if (blockList.Count is 0) return servers;
 
@@ -150,9 +151,11 @@ public class SteamServerService(
                         if (server.Name.Contains(block.Value, StringComparison.OrdinalIgnoreCase))
                             server.Blocked = true;
                         break;
+                    case FilterType.CountryCode:
+                        if (server.CountryCode == block.Value) server.Blocked = true;
+                        break;
                     case FilterType.IpAddress:
-                        if (server.CountryCode == block.Value)
-                            server.Blocked = true;
+                        if (server.IpAddress.Contains(block.Value)) server.Blocked = true;
                         break;
                 }
             }

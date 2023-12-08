@@ -11,17 +11,19 @@ namespace BetterSteamBrowser.Infrastructure.Context;
 
 public static class DataContextSeed
 {
+    private const string SuperAdminId = "ADMIN_SEED_ID";
+
     public static void AddCustomIdentitySeed(this ModelBuilder modelBuilder)
     {
         var hasher = new PasswordHasher<ApplicationUser>();
 
         var adminUser = new ApplicationUser
         {
-            Id = "ADMIN_SEED_ID",
-            UserName = "Admin",
-            NormalizedUserName = "ADMIN",
-            Email = "admin@example.com",
-            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            Id = SuperAdminId,
+            UserName = "SuperAdmin",
+            NormalizedUserName = "SUPERADMIN",
+            Email = "superadmin@example.com",
+            NormalizedEmail = "SUPERADMIN@EXAMPLE.COM",
             EmailConfirmed = true,
             PasswordHash = hasher.HashPassword(null, "adminadmin"),
             SecurityStamp = string.Empty
@@ -55,7 +57,7 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
@@ -65,7 +67,7 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.CounterStrike2,
                 Type = FilterType.GameType,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
@@ -75,7 +77,7 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.GameType,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
@@ -85,7 +87,7 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.GameType,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
@@ -95,7 +97,7 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
@@ -105,7 +107,7 @@ public static class DataContextSeed
                 SteamGameId = SteamGameConstants.AllGames,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
@@ -113,29 +115,29 @@ public static class DataContextSeed
                 Value = "RU",
                 ApiFilter = false,
                 SteamGameId = SteamGameConstants.CounterStrike2,
-                Type = FilterType.IpAddress,
+                Type = FilterType.CountryCode,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
-                Id = -10,
+                Id = -8,
                 Value = "RU",
                 ApiFilter = false,
                 SteamGameId = SteamGameConstants.Rust,
-                Type = FilterType.IpAddress,
+                Type = FilterType.CountryCode,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             },
             new EFBlock
             {
-                Id = -12,
+                Id = -9,
                 Value = "Counter-Strike 2",
                 ApiFilter = false,
                 SteamGameId = SteamGameConstants.CounterStrike2,
                 Type = FilterType.Hostname,
                 Added = DateTimeOffset.UtcNow,
-                UserId = "ADMIN_SEED_ID"
+                UserId = SuperAdminId
             }
         };
 

@@ -32,6 +32,7 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
                 "Value" => current.ApplySort(sort, p => p.Value),
                 "Added" => current.ApplySort(sort, p => p.Added),
                 "SteamGameName" => current.ApplySort(sort, p => p.SteamGame.Name),
+                "ApiFilter" => current.ApplySort(sort, p => p.ApiFilter),
                 _ => current
             });
 
@@ -51,6 +52,7 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
                 Type = bu.Block.Type,
                 Added = bu.Block.Added,
                 SteamGameName = bu.Block.SteamGame.Name,
+                ApiFilter = bu.Block.ApiFilter,
                 AddedBy = bu.User.UserName ?? "< UNSET >",
             })
             .ToListAsync(cancellationToken: cancellationToken);
