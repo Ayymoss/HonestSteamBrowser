@@ -15,12 +15,9 @@ public static partial class ExtensionMethods
     };
 
     public static IQueryable<TDomain> ApplySort<TDomain>(this IQueryable<TDomain> query, SortDescriptor sort,
-        Expression<Func<TDomain, object>> property)
-    {
-        return sort.SortOrder is SortDirection.Ascending
-            ? query.OrderBy(property)
-            : query.OrderByDescending(property);
-    }
+        Expression<Func<TDomain, object>> property) => sort.SortOrder is SortDirection.Ascending
+        ? query.OrderBy(property)
+        : query.OrderByDescending(property);
 
     public static async Task<TResponse?> DeserializeHttpResponseContentAsync<TResponse>(this HttpResponseMessage response)
         where TResponse : class
@@ -38,4 +35,14 @@ public static partial class ExtensionMethods
 
         return null;
     }
+
+    public static string FilterEmojis(this string input)
+    {
+        var regex = EmojiRangeRegex();
+        var cleanedName = regex.Replace(input, "•");
+        return string.IsNullOrEmpty(cleanedName) ? "Unknown" : cleanedName;
+    }
+
+    [GeneratedRegex(@"[^\p{L}\p{P}\p{N}\s\u2500-\u257F\u2580-\u259F\u25A0-\u25FF\u0021-\u007E]")]
+    private static partial Regex EmojiRangeRegex();
 }

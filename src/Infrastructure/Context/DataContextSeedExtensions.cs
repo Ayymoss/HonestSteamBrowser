@@ -178,15 +178,14 @@ public static class DataContextSeed
             new EFSteamGame {Id = 26, AppId = 251570, Name = "7 Days to Die"},
             new EFSteamGame {Id = 27, AppId = 252490, Name = "Rust"},
             new EFSteamGame {Id = 28, AppId = 304930, Name = "Unturned"},
-            new EFSteamGame {Id = 29, AppId = 311210, Name = "Call of Duty: Black Ops III"},
-            new EFSteamGame {Id = 30, AppId = 312660, Name = "Sniper Elite 4"},
-            new EFSteamGame {Id = 31, AppId = 393380, Name = "Squad"},
-            new EFSteamGame {Id = 32, AppId = 394690, Name = "Tower Unite"},
-            new EFSteamGame {Id = 33, AppId = 466560, Name = "Northgard"},
-            new EFSteamGame {Id = 34, AppId = 632360, Name = "Risk of Rain 2"},
-            new EFSteamGame {Id = 35, AppId = 686810, Name = "Hell Let Loose"},
-            new EFSteamGame {Id = 36, AppId = 1604030, Name = "V Rising"},
-            new EFSteamGame {Id = 37, AppId = 346110, Name = "ARK: Survival Evolved"},
+            new EFSteamGame {Id = 29, AppId = 312660, Name = "Sniper Elite 4"},
+            new EFSteamGame {Id = 30, AppId = 393380, Name = "Squad"},
+            new EFSteamGame {Id = 31, AppId = 394690, Name = "Tower Unite"},
+            new EFSteamGame {Id = 32, AppId = 466560, Name = "Northgard"},
+            new EFSteamGame {Id = 33, AppId = 632360, Name = "Risk of Rain 2"},
+            new EFSteamGame {Id = 34, AppId = 686810, Name = "Hell Let Loose"},
+            new EFSteamGame {Id = 35, AppId = 1604030, Name = "V Rising"},
+            new EFSteamGame {Id = 36, AppId = 346110, Name = "ARK: Survival Evolved"},
         };
 
         modelBuilder.Entity<EFSteamGame>().HasData(gameList);

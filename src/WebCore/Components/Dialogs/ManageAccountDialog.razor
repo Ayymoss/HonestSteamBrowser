@@ -1,0 +1,10 @@
+﻿<RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="0">
+    <RadzenButton Click="RedirectToAccount" Text="Logout" ButtonStyle="ButtonStyle.Primary"/>
+    <hr/>
+    <RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
+        <RadzenText TextStyle="TextStyle.DisplayH5" Text="Change Password"/>
+        <RadzenPassword @bind-Value="_password" Placeholder="Enter password..."/>
+        <RadzenPassword @bind-Value="_confirmPassword" Placeholder="Confirm password..."/>
+        <RadzenButton Click="ResetUserPasswordAsync" Text="Reset" ButtonStyle="ButtonStyle.Warning" IsBusy="_processing" BusyText="Changing..."/>
+    </RadzenStack>
+</RadzenStack>

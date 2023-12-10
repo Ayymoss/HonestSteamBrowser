@@ -30,34 +30,43 @@ public partial class ServerList : IDisposable
 
     private RadzenDataGrid<Server> _dataGrid;
     private IEnumerable<Server> _serverTable;
-    private IEnumerable<SteamGame> _dropDownGames;
-    private SteamGame? _dropDownSelected;
+
+    private List<SteamGame> _gamesFilterList = [];
+    private IEnumerable<SteamGame> _gamesFilterData;
+    private SteamGame? _gamesFilterSelected;
+
+    private IEnumerable<string> _regionFilterData = ["Europe", "Americas", "Asia", "Africa", "Oceania"];
+    private string? _regionFilterSelected;
+
     private bool _isLoading = true;
     private int _count;
     private int _gamePlayerCount;
     private string? _searchString;
     private string _titleText = "Servers";
 
-    private IEnumerable<int> PageSizes => Manager ? new[] {20, 50, 100, 500} : new[] {20, 50, 100};
+    private IEnumerable<int> PageSizes => Manager ? [25, 50, 100, 500] : [25, 50, 100];
 
     protected override async Task OnInitializedAsync()
     {
         var steamGames = await Mediator.Send(new GetSteamGamesCommand());
-        _dropDownGames = steamGames.OrderBy(x => x.Name);
+        _gamesFilterList = steamGames.OrderBy(x => x.Name).ToList();
+        _gamesFilterData = _gamesFilterList;
 
         var uri = new Uri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
 
+        query.TryGetValue("region", out var region);
         query.TryGetValue("game", out var game);
-        query.TryGetValue("filter", out var filter);
-        _dropDownSelected = int.TryParse(game.FirstOrDefault(), out var gameAppId)
-            ? _dropDownGames.FirstOrDefault(x => x.AppId == gameAppId)
+        query.TryGetValue("search", out var search);
+        _regionFilterSelected = region.FirstOrDefault();
+        _gamesFilterSelected = int.TryParse(game.FirstOrDefault(), out var gameAppId)
+            ? _gamesFilterList.FirstOrDefault(x => x.AppId == gameAppId)
             : null;
-        _searchString = filter.FirstOrDefault();
+        _searchString = search.FirstOrDefault();
         await base.OnInitializedAsync();
     }
 
-    private async Task LoadData(LoadDataArgs args)
+    private async Task TableLoadData(LoadDataArgs args)
     {
         _isLoading = true;
 
@@ -70,20 +79,55 @@ public partial class ServerList : IDisposable
                     ? SortDirection.Ascending
                     : SortDirection.Descending
             }),
-            SearchString = _searchString,
-            Data = _dropDownSelected?.AppId,
+            Search = _searchString,
             Top = args.Top ?? 20,
             Skip = args.Skip ?? 0,
             UserId = UserId,
-            Favourites = WebContext?.IsFavouriteChecked ?? false
+            Favourites = WebContext?.IsFavouriteChecked ?? false,
+            AppId = _gamesFilterSelected?.AppId,
+            Region = _regionFilterSelected,
         };
 
-        var context = await Mediator.Send(paginationQuery);
+        var cancellationToken = new CancellationTokenSource();
+        cancellationToken.CancelAfter(TimeSpan.FromSeconds(5));
+        var context = await Mediator.Send(paginationQuery, cancellationToken.Token);
         _serverTable = context.Data;
         _count = context.Count;
         _gamePlayerCount = context.Players;
         _isLoading = false;
         UpdateTitle();
+    }
+
+    private void GameLoadData(LoadDataArgs args)
+    {
+        var gameAliasLookup = new Dictionary<int, string[]>
+        {
+            [730] = ["cs", "cs2"],
+            [240] = ["cs", "css"],
+            [10] = ["cs", "cs16"],
+            [500] = ["l4d"],
+            [550] = ["l4d", "l4d2"],
+            [440] = ["tf2"],
+            [4000] = ["gmod"]
+        };
+
+        var query = _gamesFilterList.AsQueryable();
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            var matchingAppIds = gameAliasLookup
+                .Where(kvp => kvp.Value.Any(alias => alias.Equals(args.Filter, StringComparison.OrdinalIgnoreCase)))
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            query = query.Where(x => x.Name.Contains(args.Filter, StringComparison.OrdinalIgnoreCase)
+                                     || x.AppId.ToString().Contains(args.Filter, StringComparison.OrdinalIgnoreCase)
+                                     || matchingAppIds.Contains(x.AppId));
+        }
+
+        _gamesFilterData = query.ToList();
+
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task OnDropdownChanged()
@@ -101,7 +145,7 @@ public partial class ServerList : IDisposable
 
     private void UpdateTitle()
     {
-        _titleText = _dropDownSelected is not null ? $"Players {_gamePlayerCount:N0}" : "Servers";
+        _titleText = _gamesFilterSelected is not null ? $"Players {_gamePlayerCount:N0}" : "Servers";
         StateHasChanged();
     }
 
@@ -110,20 +154,25 @@ public partial class ServerList : IDisposable
         var baseUri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).GetLeftPart(UriPartial.Path);
 
         var queryString = new Dictionary<string, string?>();
-        if (_dropDownSelected is not null)
+
+        if (!string.IsNullOrEmpty(_regionFilterSelected))
         {
-            queryString["game"] = _dropDownSelected.AppId.ToString();
+            queryString["region"] = _regionFilterSelected;
+        }
+
+        if (_gamesFilterSelected is not null)
+        {
+            queryString["game"] = _gamesFilterSelected.AppId.ToString();
         }
 
         if (!string.IsNullOrEmpty(_searchString))
         {
-            queryString["filter"] = _searchString;
+            queryString["search"] = _searchString;
         }
 
         var newUri = QueryHelpers.AddQueryString(baseUri, queryString);
         NavigationManager.NavigateTo(newUri, false);
     }
-
 
     private async Task RowClickEvent(DataGridRowMouseEventArgs<Server> arg)
     {
@@ -149,6 +198,7 @@ public partial class ServerList : IDisposable
         }
         else
         {
+            options.ShowTitle = false;
             await DialogService.OpenAsync<ViewServerMetaDialog>("Server Meta", parameters, options);
             await _dataGrid.Reload();
         }

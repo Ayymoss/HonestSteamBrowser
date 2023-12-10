@@ -1,8 +1,9 @@
 ﻿using System.Security.Principal;
+using System.Text.RegularExpressions;
 
 namespace BetterSteamBrowser.WebCore.Utilities;
 
-public static class ExtensionMethods
+public static partial class ExtensionMethods
 {
     public static bool IsInEqualOrHigherRole<TEnum>(this IPrincipal principal, TEnum role) where TEnum : Enum
     {
@@ -14,5 +15,4 @@ public static class ExtensionMethods
 
         return higherRoles.Any(higherRole => principal.IsInRole(higherRole.ToString()));
     }
-
 }

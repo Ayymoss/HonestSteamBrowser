@@ -13,6 +13,7 @@ using BetterSteamBrowser.Infrastructure.Services;
 using BetterSteamBrowser.Infrastructure.SignalR;
 using BetterSteamBrowser.WebCore.Components;
 using Blazored.LocalStorage;
+using ClipLazor.Extention;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -20,8 +21,6 @@ using Serilog;
 using Serilog.Events;
 
 namespace BetterSteamBrowser.WebCore;
-
-// TODO: Registered Users area list favourite count
 
 public class Program
 {
@@ -80,6 +79,7 @@ public class Program
         builder.Services.AddHttpClient("BSBClient", options => options.DefaultRequestHeaders.UserAgent
             .ParseAdd("BetterSteamBrowser/1.0.0"));
         builder.Services.AddLogging();
+        builder.Services.AddClipboard();
         builder.Services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(GetServerListHandler).Assembly); });
 
         // Add services to the container.
@@ -92,6 +92,15 @@ public class Program
         builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<DataContext>();
+        builder.Services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 1;
+        });
         // Identity end
 
         if (!Directory.Exists(Path.Join(AppContext.BaseDirectory, "Log")))

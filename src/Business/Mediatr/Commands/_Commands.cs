@@ -11,6 +11,8 @@ public class GetServerListCommand : Pagination, IRequest<PaginationContext<Serve
 {
     public string? UserId { get; set; }
     public bool Favourites { get; set; }
+    public int? AppId { get; set; }
+    public string? Region { get; set; }
 }
 
 public class GetSteamGamesCommand : IRequest<List<SteamGame>>;

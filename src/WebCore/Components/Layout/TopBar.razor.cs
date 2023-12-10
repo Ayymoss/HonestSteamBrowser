@@ -16,12 +16,9 @@ namespace BetterSteamBrowser.WebCore.Components.Layout;
 
 public partial class TopBar : IAsyncDisposable
 {
-    // TODO: Move Password Reset to a more appropriate location ResetPasswordAsync
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; }
     [Inject] private DialogService DialogService { get; set; }
-    // END
-
     [Inject] private BsbClientHub? HubConnection { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
     [Inject] private IHttpContextAccessor httpContextAccessor { get; set; }
@@ -33,56 +30,33 @@ public partial class TopBar : IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         if (HubConnection is null) return;
-        HubConnection.OnInformationUpdated += OnInformationUpdatedReceived;
-        HubConnection.SiteViewerCountUpdated += UpdatePageViewersCountReceived;
+        HubConnection.OnInformationUpdated += cacheInfo => OnInformationUpdatedReceived(cacheInfo);
+        HubConnection.SiteViewerCountUpdated += count => OnUpdatePageViewersCountReceived(count);
         await HubConnection.InitializeAsync(httpContextAccessor);
         await base.OnInitializedAsync();
     }
 
-    private void UpdatePageViewersCountReceived(int count)
-    {
-        try
-        {
-            _ = UpdatePageViewersCountAsync(count);
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private async Task UpdatePageViewersCountAsync(int count)
+    private Task OnUpdatePageViewersCountReceived(int count)
     {
         _activeUserCount = count;
-        await InvokeAsync(StateHasChanged);
+        return InvokeAsync(StateHasChanged);
     }
 
-    private void OnInformationUpdatedReceived(CacheInfo cache)
-    {
-        try
-        {
-            _ = OnInformationUpdatedReceivedAsync(cache);
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private async Task OnInformationUpdatedReceivedAsync(CacheInfo cache)
+    private Task OnInformationUpdatedReceived(CacheInfo cache)
     {
         _players = cache.PlayerCount;
         _servers = cache.ServerCount;
-        await InvokeAsync(StateHasChanged);
+        return InvokeAsync(StateHasChanged);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         if (HubConnection is not null)
         {
-            HubConnection.OnInformationUpdated -= OnInformationUpdatedReceived;
-            await HubConnection.DisposeAsync();
+            return HubConnection.DisposeAsync();
         }
+
+        return ValueTask.CompletedTask;
     }
 
     public void RedirectToAccount()
@@ -90,7 +64,7 @@ public partial class TopBar : IAsyncDisposable
         NavigationManager.NavigateTo("/Account", true);
     }
 
-    public async Task ResetPasswordAsync()
+    public async Task ManageAccountAsync()
     {
         var authUser = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var isAuthenticated = authUser.Identity?.IsAuthenticated ?? false;
@@ -100,7 +74,7 @@ public partial class TopBar : IAsyncDisposable
 
         var parameters = new Dictionary<string, object>
         {
-            {"UserId", user.Id}
+            ["UserId"] = user.Id
         };
 
         var options = new DialogOptions
@@ -109,6 +83,6 @@ public partial class TopBar : IAsyncDisposable
             CloseDialogOnOverlayClick = true
         };
 
-        await DialogService.OpenAsync<PasswordResetDialog>("Reset Password?", parameters, options);
+        await DialogService.OpenAsync<ManageAccountDialog>("Manage Account", parameters, options);
     }
 }

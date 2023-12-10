@@ -19,10 +19,10 @@ public class SteamGamesPaginationQueryHelper(IDbContextFactory<DataContext> cont
             .Where(x => x.AppId > 0)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.SearchString))
+        if (!string.IsNullOrWhiteSpace(request.Search))
             query = query.Where(search =>
-                EF.Functions.ILike(search.Name, $"%{request.SearchString}%") ||
-                EF.Functions.ILike(search.AppId.ToString(), $"%{request.SearchString}%"));
+                EF.Functions.ILike(search.Name, $"%{request.Search}%") ||
+                EF.Functions.ILike(search.AppId.ToString(), $"%{request.Search}%"));
 
         if (request.Sorts.Any())
             query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch

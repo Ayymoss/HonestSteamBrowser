@@ -35,7 +35,7 @@ public partial class UserList : IDisposable
                     ? SortDirection.Ascending
                     : SortDirection.Descending
             }),
-            SearchString = _searchString,
+            Search = _searchString,
             Top = args.Top ?? 20,
             Skip = args.Skip ?? 0,
         };

@@ -36,7 +36,7 @@ public partial class GameList : IDisposable
                     ? SortDirection.Ascending
                     : SortDirection.Descending
             }),
-            SearchString = _searchString,
+            Search = _searchString,
             Data = _dropDownSelected?.AppId,
             Top = args.Top ?? 20,
             Skip = args.Skip ?? 0,

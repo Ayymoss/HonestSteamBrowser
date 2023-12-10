@@ -11,6 +11,7 @@ using BetterSteamBrowser.Infrastructure.Interfaces;
 using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.Extensions.Logging;
 using RestEase;
+using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
@@ -195,7 +196,7 @@ public class SteamServerService(
     {
         foreach (var server in servers.Where(server => server.Item2.Map is not null && server.Item2.Name is not null))
         {
-            server.Item1.Name = server.Item2.Name!;
+            server.Item1.Name = server.Item2.Name?.FilterEmojis() ?? "Unknown";
             server.Item1.SteamGame.AppId = server.Item2.AppId;
             server.Item1.Players = server.Item2.Players;
             server.Item1.MaxPlayers = server.Item2.MaxPlayers;
@@ -221,7 +222,7 @@ public class SteamServerService(
                     Hash = x.Item2,
                     IpAddress = address[0],
                     Port = int.Parse(address[1]),
-                    Name = x.Item1.Name!,
+                    Name = x.Item1.Name?.FilterEmojis() ?? "Unknown",
                     Players = x.Item1.Players,
                     MaxPlayers = x.Item1.MaxPlayers,
                     Country = null,

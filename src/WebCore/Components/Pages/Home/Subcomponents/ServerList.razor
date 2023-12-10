@@ -14,10 +14,21 @@
                 </RadzenColumn>
                 <RadzenColumn SizeSM="12" SizeMD="9">
                     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.End" Wrap="FlexWrap.Wrap">
-                        <RadzenDropDown TValue="SteamGame" @bind-Value="@_dropDownSelected" Data="@_dropDownGames" AllowClear="true" FilterAsYouType="true"
-                                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        Change="OnDropdownChanged" Placeholder="Select Game" Style="width: 100%; max-width: 300px; height: 42px;"/>
-                        <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; max-width: 300px;">
+                        <RadzenFormField Text="Select Region" Variant="Variant.Outlined" Style="width: 100%; max-width: 250px;">
+                            <ChildContent>
+                                <RadzenDropDown TValue="string" @bind-Value="@_regionFilterSelected" Data="@_regionFilterData" AllowClear="true"
+                                                FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                Change="OnDropdownChanged" Placeholder="Select Region"/>
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Text="Select Game" Variant="Variant.Outlined" Style="width: 100%; max-width: 250px;">
+                            <ChildContent>
+                                <RadzenDropDown TValue="SteamGame" @bind-Value="@_gamesFilterSelected" Data="@_gamesFilterData" AllowClear="true"
+                                                FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                Change="OnDropdownChanged" Placeholder="Select Game" LoadData="GameLoadData"/>
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; max-width: 250px;">
                             <ChildContent>
                                 <RadzenTextBox @bind-Value="_searchString" Change="OnSearch"/>
                             </ChildContent>
@@ -28,7 +39,7 @@
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
-            <RadzenDataGrid @ref="_dataGrid" TItem="Server" IsLoading="@_isLoading" Count="@_count" Data="@_serverTable" LoadData="@LoadData"
+            <RadzenDataGrid @ref="_dataGrid" TItem="Server" IsLoading="@_isLoading" Count="@_count" Data="@_serverTable" LoadData="@TableLoadData"
                             Density="Density.Compact" AllowPaging="true" PageSize="25" AllowSorting="true" PagerAlwaysVisible="true"
                             PagerHorizontalAlign="HorizontalAlign.Center" PageSizeOptions="@PageSizes" ShowPagingSummary="true"
                             PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
@@ -43,7 +54,7 @@
                             @context.Players.ToString("N0")/@context.MaxPlayers.ToString("N0")
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Server" Property="Region" Title="Region" Sortable="false" MinWidth="100px">
+                    <RadzenDataGridColumn TItem="Server" Property="Country" Title="Country" MinWidth="100px">
                         <Template Context="context">
                             @context.Country.Humanize().Transform(To.TitleCase)
                         </Template>
@@ -63,7 +74,7 @@
                         <RadzenDataGridColumn TItem="Server" Width="40px" TextAlign="TextAlign.Center" Sortable="false" Frozen="true">
                             <Template Context="iContext">
                                 <RadzenButton Icon="@(iContext.Favourite ? "star" : "star_border")" ButtonStyle="@(iContext.Favourite ? ButtonStyle.Success : ButtonStyle.Primary)" Shade="Shade.Lighter" Size="ButtonSize.ExtraSmall"
-                                              MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Top}, iContext.Favourite ? "Favourited" : "Not Favourited"))"/>
+                                              MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Left}, iContext.Favourite ? "Favourited" : "Not Favourited"))"/>
                             </Template>
                         </RadzenDataGridColumn>
                     }

@@ -19,9 +19,9 @@ public class UsersPaginationQueryHelper(IDbContextFactory<DataContext> contextFa
             .AsQueryable();
 
         // Filtering and sorting
-        if (!string.IsNullOrWhiteSpace(request.SearchString))
+        if (!string.IsNullOrWhiteSpace(request.Search))
             query = query.Where(search =>
-                (search.UserName != null && EF.Functions.ILike(search.UserName, $"%{request.SearchString}%")));
+                (search.UserName != null && EF.Functions.ILike(search.UserName, $"%{request.Search}%")));
 
         if (request.Sorts.Any())
             query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch

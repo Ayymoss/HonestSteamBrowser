@@ -20,10 +20,10 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
         int? gameSearch = request.Data is int game ? game : null;
         if (gameSearch is not null) query = query.Where(server => server.SteamGame.AppId == gameSearch);
 
-        if (!string.IsNullOrWhiteSpace(request.SearchString))
+        if (!string.IsNullOrWhiteSpace(request.Search))
             query = query.Where(search =>
-                EF.Functions.ILike(search.Value, $"%{request.SearchString}%") ||
-                EF.Functions.ILike(search.SteamGame.Name, $"%{request.SearchString}%"));
+                EF.Functions.ILike(search.Value, $"%{request.Search}%") ||
+                EF.Functions.ILike(search.SteamGame.Name, $"%{request.Search}%"));
 
         if (request.Sorts.Any())
             query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch

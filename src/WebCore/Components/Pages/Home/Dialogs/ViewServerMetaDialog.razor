@@ -1,19 +1,27 @@
 ﻿@using Humanizer
 <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.Left">
-    <RadzenLink Path="@SteamUrl" Text="@Server.Name" class="rz-text-display-h5 rz-mb-0 rz-text-align-center"/>
+    <RadzenText Text="@Server.Name" TextStyle="TextStyle.DisplayH5" TextAlign="TextAlign.Center" class="rz-mb-0 rz-color-primary"/>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="@Server.SteamGameName" class="rz-mb-0"/>
+        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="@Server.Country" class="rz-mb-0"/>
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" class="rz-mb-0">
             @Server.Players.ToString("N0")/@Server.MaxPlayers.ToString("N0")
         </RadzenText>
     </RadzenStack>
-    @if (!string.IsNullOrWhiteSpace(UserId))
-    {
-        var favouriteText = _isFavourite ? "Remove from favourites" : "Add to favourites";
-        var favouriteIcon = _isFavourite ? "star" : "star_border";
-        var favouriteStyle = _isFavourite ? ButtonStyle.Danger : ButtonStyle.Info;
-        <RadzenButton ButtonStyle="@favouriteStyle" Icon="@favouriteIcon" Click="AddToFavouriteAsync" Text="@favouriteText" IsBusy="_processing" BusyText="Working..."/>
-    }
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="arrow_forward" Click="ConnectToServer" Text="Connect"/>
+        @if (_isClipboardSupported)
+        {
+            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="content_copy" Click="CopyToClipboardAsync" Text="Copy Address"/>
+        }
+        @if (!string.IsNullOrWhiteSpace(UserId))
+        {
+            var favouriteText = _isFavourite ? "Remove from Favourites" : "Add to Favourites";
+            var favouriteIcon = _isFavourite ? "star" : "star_border";
+            var favouriteStyle = _isFavourite ? ButtonStyle.Danger : ButtonStyle.Info;
+            <RadzenButton ButtonStyle="@favouriteStyle" Icon="@favouriteIcon" Click="AddToFavouriteAsync" Text="@favouriteText" IsBusy="_processing" BusyText="Working..."/>
+        }
+    </RadzenStack>
     @if (_players is null)
     {
         <div class="rz-m-12">
@@ -24,7 +32,7 @@
     {
         if (_players.Count is not 0)
         {
-            <div class="scrollable-container">
+            <div class="scrollable-container rz-scrollbars">
                 <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
                     <RadzenColumn SizeSM="12" SizeMD="2">
                         <RadzenText class="rz-mb-0">Index</RadzenText>
