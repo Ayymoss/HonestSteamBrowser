@@ -35,7 +35,7 @@ public partial class ServerList : IDisposable
     private IEnumerable<SteamGame> _gamesFilterData;
     private SteamGame? _gamesFilterSelected;
 
-    private IEnumerable<string> _regionFilterData = ["Europe", "Americas", "Asia", "Africa", "Oceania"];
+    private IEnumerable<string> _regionFilterData = ["Africa", "Americas", "Asia", "Europe", "Oceania"];
     private string? _regionFilterSelected;
 
     private bool _isLoading = true;
@@ -132,6 +132,7 @@ public partial class ServerList : IDisposable
 
     private async Task OnDropdownChanged()
     {
+        await _dataGrid.GoToPage(0);
         await _dataGrid.Reload();
         UpdateUrl();
     }
@@ -139,13 +140,23 @@ public partial class ServerList : IDisposable
     private async Task OnSearch(string text)
     {
         _searchString = text;
+        await _dataGrid.GoToPage(0);
         await _dataGrid.Reload();
         UpdateUrl();
     }
 
     private void UpdateTitle()
     {
-        _titleText = _gamesFilterSelected is not null ? $"Players {_gamePlayerCount:N0}" : "Servers";
+        if (_gamesFilterSelected is not null || !string.IsNullOrWhiteSpace(_regionFilterSelected) ||
+            !string.IsNullOrWhiteSpace(_searchString))
+        {
+            _titleText = $"Players {_gamePlayerCount:N0}";
+        }
+        else
+        {
+            _titleText = "Servers";
+        }
+
         StateHasChanged();
     }
 

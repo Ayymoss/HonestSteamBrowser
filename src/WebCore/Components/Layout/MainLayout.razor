@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using BetterSteamBrowser.WebCore.Utilities
+@inherits LayoutComponentBase
 
 <RadzenDialog/>
 <RadzenNotification/>
@@ -13,6 +14,13 @@
         <ChildContent>
             <RadzenContentContainer Name="main">
                 @Body
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" class="rz-mt-4">
+                    @{
+                        var version = HelperMethods.GetVersionAsString();
+                        var versionString = $"Better Steam Browser | By Amos | Version {version}";
+                    }
+                    <RadzenText TextAlign="TextAlign.Center" Text="@versionString" TextStyle="TextStyle.Caption" class="rz-mb-0 rz-color-secondary-dark"/>
+                </RadzenStack>
             </RadzenContentContainer>
         </ChildContent>
     </RadzenBody>

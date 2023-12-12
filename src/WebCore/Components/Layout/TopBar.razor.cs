@@ -22,6 +22,7 @@ public partial class TopBar : IAsyncDisposable
     [Inject] private BsbClientHub? HubConnection { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
     [Inject] private IHttpContextAccessor httpContextAccessor { get; set; }
+    [Inject] private TooltipService TooltipService { get; set; }
 
     private int _players;
     private int _servers;
@@ -85,4 +86,7 @@ public partial class TopBar : IAsyncDisposable
 
         await DialogService.OpenAsync<ManageAccountDialog>("Manage Account", parameters, options);
     }
+
+    private void ShowTooltip(ElementReference elementReference, TooltipOptions? options, string message) =>
+        TooltipService.Open(elementReference, message, options);
 }

@@ -1,4 +1,5 @@
-﻿<RadzenRow JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
+﻿@using BetterSteamBrowser.WebCore.Utilities
+<RadzenRow JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
     <RadzenColumn SizeMD="3" class="hide-on-small rz-pl-4">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Left">
             <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" IsPill="true" Variant="Variant.Flat">
@@ -16,7 +17,7 @@
     <RadzenColumn SizeSM="12" SizeMD="6">
         <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="0">
             <RadzenLink Path="/" Text="Better Steam Browser" class="rz-text-display-h3 rz-mb-0 rz-text-align-center"/>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" Gap="1rem">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap" Gap="0.5rem">
                 <RadzenText TextAlign="TextAlign.Center" Text="Because Valve can't do it" TextStyle="TextStyle.Caption" class="rz-mb-0"/>
                 <AuthorizeView>
                     <Authorized>
@@ -40,7 +41,7 @@
                 </svg>
             </a>
             <RadzenButton Icon="visibility" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Lighter" Text="@_activeUserCount.ToString()"
-                          Size="ButtonSize.ExtraSmall"/>
+                          Size="ButtonSize.ExtraSmall" MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Left}, "Active Viewers"))"/>
         </RadzenStack>
     </RadzenColumn>
 </RadzenRow>

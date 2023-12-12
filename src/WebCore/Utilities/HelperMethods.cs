@@ -1,4 +1,5 @@
-﻿using BetterSteamBrowser.Domain.Enums;
+﻿using System.Reflection;
+using BetterSteamBrowser.Domain.Enums;
 
 namespace BetterSteamBrowser.WebCore.Utilities;
 
@@ -13,4 +14,6 @@ public class HelperMethods
             .ToList();
         return string.Join(", ", identityRoles);
     }
+
+    public static string GetVersionAsString() => Assembly.GetCallingAssembly().GetName().Version?.ToString() ?? "Unknown";
 }

@@ -1,14 +1,17 @@
 ﻿@using Humanizer
+
 <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.Left">
-    <RadzenText Text="@Server.Name" TextStyle="TextStyle.DisplayH5" TextAlign="TextAlign.Center" class="rz-mb-0 rz-color-primary"/>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
+    <RadzenText Text="@Server.Name" TextStyle="TextStyle.DisplayH5" TextAlign="TextAlign.Center" class="rz-mb-0 rz-color-secondary"/>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="0.25rem">
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="@Server.SteamGameName" class="rz-mb-0"/>
+        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="&bull;" class="rz-mb-0"/>
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="@Server.Country" class="rz-mb-0"/>
+        <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" Text="&bull;" class="rz-mb-0"/>
         <RadzenText TextStyle="TextStyle.H6" TextAlign="TextAlign.Center" class="rz-mb-0">
             @Server.Players.ToString("N0")/@Server.MaxPlayers.ToString("N0")
         </RadzenText>
     </RadzenStack>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap">
         <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="arrow_forward" Click="ConnectToServer" Text="Connect"/>
         @if (_isClipboardSupported)
         {

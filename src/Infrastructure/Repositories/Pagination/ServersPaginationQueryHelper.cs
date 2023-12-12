@@ -31,6 +31,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 .Aggregate(query, (current, searchWord) => current.Where(search =>
                     (search.Country != null && EF.Functions.ILike(search.Country, $"%{searchWord}%"))
                     || EF.Functions.ILike(search.IpAddress, $"%{searchWord}%")
+                    || EF.Functions.ILike(search.Map, $"%{searchWord}%")
                     || EF.Functions.ILike(search.Name, $"%{searchWord}%")));
 
         if (request.Sorts.Any())
@@ -39,6 +40,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "Name" => current.ApplySort(sort, p => p.Name),
                 "Players" => current.ApplySort(sort, p => p.Players),
                 "Country" => current.ApplySort(sort, p => p.Country ?? string.Empty),
+                "Map" => current.ApplySort(sort, p => p.Map),
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
                 "Created" => current.ApplySort(sort, p => p.Created),
                 _ => current
@@ -64,10 +66,11 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             query = query.Where(server => favouriteServerHashes.Contains(server.Hash));
         }
 
-        var count = await query.CountAsync(cancellationToken: cancellationToken);
-        var playerCount = 0;
-        if (request.AppId is not null)
-            playerCount = await query.SumAsync(server => server.Players, cancellationToken: cancellationToken);
+        var queryServerCount = await query.CountAsync(cancellationToken: cancellationToken);
+        var queryPlayerCount = 0;
+
+        if (request.AppId.HasValue || !string.IsNullOrWhiteSpace(request.Region) || !string.IsNullOrWhiteSpace(request.Search))
+            queryPlayerCount = await query.SumAsync(server => server.Players, cancellationToken: cancellationToken);
 
         var pagedData = await query
             .Skip(request.Skip)
@@ -93,8 +96,8 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         return new PaginationContext<Server>
         {
             Data = pagedData,
-            Count = count,
-            Players = playerCount
+            Count = queryServerCount,
+            Players = queryPlayerCount
         };
     }
 
