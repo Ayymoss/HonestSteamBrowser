@@ -1,7 +1,7 @@
 # Better Steam Browser
 The Better Steam Browser project is to better the problematic Steam Browser. Quashing spoofers and building a much better experience for server owners and players alike.
 
-**Website:** [Ban Hub](https://BetterSteamBrowser.app/)
+**Website:** [Better Steam Browser](https://BetterSteamBrowser.app/)
 
 ***
 ## Requirements

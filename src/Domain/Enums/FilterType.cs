@@ -11,5 +11,7 @@ public enum FilterType
     [Display(Description = "Hostname")]
     Hostname,
     [Display(Description = "Country Code")]
-    CountryCode
+    CountryCode,
+    [Display(Description = "CIDR Subnet")]
+    Subnet
 }

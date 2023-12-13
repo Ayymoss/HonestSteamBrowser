@@ -6,6 +6,7 @@ using ClipLazor.Components;
 using ClipLazor.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using Radzen;
 
 namespace BetterSteamBrowser.WebCore.Components.Pages.Home.Dialogs;
 
@@ -16,6 +17,7 @@ public partial class ViewServerMetaDialog
     [Inject] private IMediator Mediator { get; set; }
     [Inject] private IClipLazor Clipboard { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private NotificationService NotificationService { get; set; }
 
     private List<PlayerInfo>? _players;
     private bool _isFavourite;
@@ -55,6 +57,8 @@ public partial class ViewServerMetaDialog
     {
         if (!_isClipboardSupported) return;
         await Clipboard.WriteTextAsync(Server.Address.AsMemory());
+        NotificationService.Notify(NotificationSeverity.Info, "Copied IP to Clipboard", Server.Address);
+
     }
     
     public void ConnectToServer()

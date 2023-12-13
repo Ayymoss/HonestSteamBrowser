@@ -50,16 +50,6 @@ public partial class TopBar : IAsyncDisposable
         return InvokeAsync(StateHasChanged);
     }
 
-    public ValueTask DisposeAsync()
-    {
-        if (HubConnection is not null)
-        {
-            return HubConnection.DisposeAsync();
-        }
-
-        return ValueTask.CompletedTask;
-    }
-
     public void RedirectToAccount()
     {
         NavigationManager.NavigateTo("/Account", true);
@@ -89,4 +79,9 @@ public partial class TopBar : IAsyncDisposable
 
     private void ShowTooltip(ElementReference elementReference, TooltipOptions? options, string message) =>
         TooltipService.Open(elementReference, message, options);
+
+    public ValueTask DisposeAsync()
+    {
+        return HubConnection?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
 }

@@ -1,5 +1,4 @@
 ﻿using BetterSteamBrowser.Domain.Entities;
-using BetterSteamBrowser.Domain.Interfaces;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Infrastructure.Context;
@@ -9,12 +8,13 @@ namespace BetterSteamBrowser.Infrastructure.Repositories;
 
 public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : IServerRepository
 {
-    public async Task AddAndUpdateServerListAsync(IEnumerable<EFServer> existingServers, IEnumerable<EFServer> newServers)
+    public async Task AddAndUpdateServerListAsync(IEnumerable<EFServer> existingServers, IEnumerable<EFServer> newServers,
+        CancellationToken cancellationToken)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         context.Servers.AddRange(newServers);
         context.Servers.UpdateRange(existingServers);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var count = await context.Servers
             .Where(x => !x.Blocked)
-            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
+            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .SumAsync(x => x.Players, cancellationToken: cancellationToken);
         return count;
     }
@@ -32,7 +32,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var count = await context.Servers
             .Where(x => !x.Blocked)
-            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
+            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .CountAsync(cancellationToken: cancellationToken);
         return count;
     }
@@ -54,6 +54,26 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
         var servers = await query.ToListAsync(cancellationToken: cancellationToken);
         foreach (var server in servers) server.Blocked = true;
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<List<string>> GetOlderServerHashesAsync(DateTimeOffset from, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var hashes = await context.Servers
+            .Where(x => x.Created < from)
+            .Select(x => x.Hash)
+            .ToListAsync(cancellationToken: cancellationToken);
+        return hashes;
+    }
+
+    public async Task DeleteServersByHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var servers = await context.Servers
+            .Where(x => serverHashes.Contains(x.Hash))
+            .ToListAsync(cancellationToken: cancellationToken);
+        context.Servers.RemoveRange(servers);
         await context.SaveChangesAsync(cancellationToken);
     }
 }

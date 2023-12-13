@@ -15,8 +15,7 @@ public class GetSteamGamesHandler(ISteamGameRepository steamGameRepository) : IR
             .Where(x => x.Id is not SteamGameConstants.AllGames)
             .Select(x => new SteamGame
             {
-                Id = x.Id,
-                AppId = x.AppId,
+                AppId = x.Id,
                 Name = x.Name
             }).ToList();
         return result;

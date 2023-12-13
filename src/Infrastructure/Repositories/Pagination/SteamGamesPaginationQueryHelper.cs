@@ -16,19 +16,19 @@ public class SteamGamesPaginationQueryHelper(IDbContextFactory<DataContext> cont
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var query = context.SteamGames
             .AsNoTracking()
-            .Where(x => x.AppId > 0)
+            .Where(x => x.Id > 0)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
             query = query.Where(search =>
                 EF.Functions.ILike(search.Name, $"%{request.Search}%") ||
-                EF.Functions.ILike(search.AppId.ToString(), $"%{request.Search}%"));
+                EF.Functions.ILike(search.Id.ToString(), $"%{request.Search}%"));
 
         if (request.Sorts.Any())
             query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch
             {
                 "Name" => current.ApplySort(sort, p => p.Name),
-                "AppId" => current.ApplySort(sort, p => p.AppId),
+                "AppId" => current.ApplySort(sort, p => p.Id),
                 _ => current
             });
 
@@ -39,8 +39,7 @@ public class SteamGamesPaginationQueryHelper(IDbContextFactory<DataContext> cont
             .Take(request.Top)
             .Select(x => new SteamGame
             {
-                Id = x.Id,
-                AppId = x.AppId,
+                AppId = x.Id,
                 Name = x.Name,
             })
             .ToListAsync(cancellationToken: cancellationToken);

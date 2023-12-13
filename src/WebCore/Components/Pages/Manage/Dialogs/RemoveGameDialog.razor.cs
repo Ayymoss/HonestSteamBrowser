@@ -20,7 +20,7 @@ public partial class RemoveGameDialog
     {
         if (string.IsNullOrWhiteSpace(UserId)) return;
         _processing = true;
-        await Mediator.Publish(new RemoveSteamGameCommand {Id = SteamGame.Id});
+        await Mediator.Publish(new RemoveSteamGameCommand {Id = SteamGame.AppId});
         NotificationService.Notify(NotificationSeverity.Success, "Game removed!");
         _processing = false;
         DialogService.Close();

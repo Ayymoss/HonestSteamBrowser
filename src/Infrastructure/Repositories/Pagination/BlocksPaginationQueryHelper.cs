@@ -18,7 +18,7 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
             .AsQueryable();
 
         int? gameSearch = request.Data is int game ? game : null;
-        if (gameSearch is not null) query = query.Where(server => server.SteamGame.AppId == gameSearch);
+        if (gameSearch is not null) query = query.Where(server => server.SteamGame.Id == gameSearch);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
             query = query.Where(search =>

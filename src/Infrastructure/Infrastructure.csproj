@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MaxMind.GeoIP2" Version="5.1.0" />
+      <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
@@ -23,8 +23,8 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-      <PackageReference Include="Npgsql" Version="8.0.0-rc.2" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-rc.2" />
+      <PackageReference Include="Npgsql" Version="8.0.1" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
       <PackageReference Include="QueryMaster" Version="1.1.2" />
       <PackageReference Include="RestEase" Version="1.6.4" />
     </ItemGroup>

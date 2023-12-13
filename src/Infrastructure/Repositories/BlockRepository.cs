@@ -7,12 +7,12 @@ namespace BetterSteamBrowser.Infrastructure.Repositories;
 
 public class BlockRepository(IDbContextFactory<DataContext> contextFactory) : IBlockRepository
 {
-    public async Task<List<EFBlock>> GetBlockListAsync()
+    public async Task<List<EFBlock>> GetBlockListAsync(CancellationToken cancellationToken)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var blockList = await context.Blocks
             .Include(x => x.SteamGame)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
         return blockList;
     }
 

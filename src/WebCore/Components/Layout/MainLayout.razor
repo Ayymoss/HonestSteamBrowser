@@ -8,7 +8,7 @@
 
 <RadzenLayout Style="height: 100vh; grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
     <RadzenHeader>
-        <TopBar/>
+        <TopBar @ref="_topBar"/>
     </RadzenHeader>
     <RadzenBody @ref="_body" class="rz-p-8">
         <ChildContent>

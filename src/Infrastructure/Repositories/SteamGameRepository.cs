@@ -27,7 +27,7 @@ public class SteamGameRepository(IDbContextFactory<DataContext> contextFactory) 
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var alreadyExists = await context.SteamGames
-            .Where(x => x.AppId == steamGame.AppId)
+            .Where(x => x.Id == steamGame.Id)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (alreadyExists is not null) return;
         context.SteamGames.Add(steamGame);

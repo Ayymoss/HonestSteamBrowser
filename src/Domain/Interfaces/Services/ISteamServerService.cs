@@ -1,8 +1,6 @@
-﻿using BetterSteamBrowser.Domain.ValueObjects;
-
-namespace BetterSteamBrowser.Domain.Interfaces.Services;
+﻿namespace BetterSteamBrowser.Domain.Interfaces.Services;
 
 public interface ISteamServerService
 {
-    Task StartSteamFetchAsync();
+    Task StartSteamFetchAsync(CancellationToken cancellationToken);
 }

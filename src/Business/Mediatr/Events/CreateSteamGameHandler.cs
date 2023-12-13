@@ -10,7 +10,7 @@ public class CreateSteamGameHandler(ISteamGameRepository steamGameRepository) : 
     {
         var efSteamGame = new EFSteamGame
         {
-            AppId = notification.AppId,
+            Id = notification.AppId,
             Name = notification.Name
         };
         return steamGameRepository.AddAsync(efSteamGame, cancellationToken);

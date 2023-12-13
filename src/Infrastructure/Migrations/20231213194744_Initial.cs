@@ -59,7 +59,6 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AppId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -254,78 +253,72 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "fea5f7a9-b2e4-4e12-9790-977ca690cc89", null, "Admin", "ADMIN" });
+                values: new object[] { "edb9f7df-2489-4864-8a58-97470291f8f2", null, "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "ADMIN_SEED_ID", 0, "5d0316ab-6a64-41f3-b1d7-50f88e465c43", "superadmin@example.com", true, false, null, "SUPERADMIN@EXAMPLE.COM", "SUPERADMIN", "AQAAAAIAAYagAAAAELnQmDSM9pPHpB+9exdpzz5E11W0lGEJmrnXXYSdkBreKDWCG0iItB/9qRQ/iCFmCw==", null, false, "", false, "SuperAdmin" });
+                values: new object[] { "ADMIN_SEED_ID", 0, "c443cbad-9a78-4c12-9904-7e7239187f57", "superadmin@example.com", true, false, null, "SUPERADMIN@EXAMPLE.COM", "SUPERADMIN", "AQAAAAIAAYagAAAAEOSO1D5iO2OvDn4lZbA9mvBlxy548zmMQgET68L9a//rawahrHWO7UQ6o4d+6pHKzA==", null, false, "", false, "SuperAdmin" });
 
             migrationBuilder.InsertData(
                 table: "EFSteamGames",
-                columns: new[] { "Id", "AppId", "Name" },
+                columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { -2, -2, "All Games" },
-                    { -1, -1, "Unknown" },
-                    { 1, 10, "Counter-Strike" },
-                    { 2, 30, "Day of Defeat" },
-                    { 3, 50, "Half-Life: Opposing Force" },
-                    { 4, 70, "Half-Life" },
-                    { 5, 80, "Condition Zero" },
-                    { 6, 240, "Counter-Strike: Source" },
-                    { 7, 300, "Day of Defeat: Source" },
-                    { 8, 320, "Half-Life 2: Deathmatch" },
-                    { 9, 440, "Team Fortress 2" },
-                    { 10, 500, "Left 4 Dead" },
-                    { 11, 550, "Left 4 Dead 2" },
-                    { 12, 730, "Counter-Strike 2" },
-                    { 13, 1250, "Killing Floor" },
-                    { 14, 4000, "Garry's Mod" },
-                    { 15, 4920, "Natural Selection 2" },
-                    { 16, 17520, "Synergy" },
-                    { 17, 17550, "Eternal Silence" },
-                    { 18, 33930, "Arma 2: Operation Arrowhead" },
-                    { 19, 107410, "Arma 3" },
-                    { 20, 108600, "Project Zomboid" },
-                    { 21, 221100, "DayZ" },
-                    { 22, 222880, "Insurgency" },
-                    { 23, 232090, "Killing Floor 2" },
-                    { 24, 242760, "The Forest" },
-                    { 25, 246900, "Viscera Cleanup Detail" },
-                    { 26, 251570, "7 Days to Die" },
-                    { 27, 252490, "Rust" },
-                    { 28, 304930, "Unturned" },
-                    { 29, 311210, "Call of Duty: Black Ops III" },
-                    { 30, 312660, "Sniper Elite 4" },
-                    { 31, 393380, "Squad" },
-                    { 32, 394690, "Tower Unite" },
-                    { 33, 466560, "Northgard" },
-                    { 34, 632360, "Risk of Rain 2" },
-                    { 35, 686810, "Hell Let Loose" },
-                    { 36, 1604030, "V Rising" },
-                    { 37, 346110, "ARK: Survival Evolved" }
+                    { -2, "All Games" },
+                    { -1, "Unknown" },
+                    { 10, "Counter-Strike" },
+                    { 30, "Day of Defeat" },
+                    { 50, "Half-Life: Opposing Force" },
+                    { 70, "Half-Life" },
+                    { 80, "Condition Zero" },
+                    { 240, "Counter-Strike: Source" },
+                    { 300, "Day of Defeat: Source" },
+                    { 320, "Half-Life 2: Deathmatch" },
+                    { 440, "Team Fortress 2" },
+                    { 500, "Left 4 Dead" },
+                    { 550, "Left 4 Dead 2" },
+                    { 730, "Counter-Strike 2" },
+                    { 1250, "Killing Floor" },
+                    { 4000, "Garry's Mod" },
+                    { 17520, "Synergy" },
+                    { 33930, "Arma 2: Operation Arrowhead" },
+                    { 107410, "Arma 3" },
+                    { 108600, "Project Zomboid" },
+                    { 221100, "DayZ" },
+                    { 222880, "Insurgency" },
+                    { 242760, "The Forest" },
+                    { 251570, "7 Days to Die" },
+                    { 252490, "Rust" },
+                    { 304930, "Unturned" },
+                    { 312660, "Sniper Elite 4" },
+                    { 346110, "ARK: Survival Evolved" },
+                    { 393380, "Squad" },
+                    { 394690, "Tower Unite" },
+                    { 632360, "Risk of Rain 2" },
+                    { 686810, "Hell Let Loose" },
+                    { 1604030, "V Rising" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "fea5f7a9-b2e4-4e12-9790-977ca690cc89", "ADMIN_SEED_ID" });
+                values: new object[] { "edb9f7df-2489-4864-8a58-97470291f8f2", "ADMIN_SEED_ID" });
 
             migrationBuilder.InsertData(
                 table: "EFBlocks",
                 columns: new[] { "Id", "Added", "ApiFilter", "SteamGameId", "Type", "UserId", "Value" },
                 values: new object[,]
                 {
-                    { -9, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8748), new TimeSpan(0, 0, 0, 0, 0)), false, 12, 2, "ADMIN_SEED_ID", "Counter-Strike 2" },
-                    { -8, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8747), new TimeSpan(0, 0, 0, 0, 0)), false, 27, 3, "ADMIN_SEED_ID", "RU" },
-                    { -7, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8745), new TimeSpan(0, 0, 0, 0, 0)), false, 12, 3, "ADMIN_SEED_ID", "RU" },
-                    { -6, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8679), new TimeSpan(0, 0, 0, 0, 0)), false, -2, 2, "ADMIN_SEED_ID", "FACEIT" },
-                    { -5, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8678), new TimeSpan(0, 0, 0, 0, 0)), false, -2, 2, "ADMIN_SEED_ID", "Develop" },
-                    { -4, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8677), new TimeSpan(0, 0, 0, 0, 0)), true, -2, 1, "ADMIN_SEED_ID", "no-steam" },
-                    { -3, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8676), new TimeSpan(0, 0, 0, 0, 0)), true, -2, 1, "ADMIN_SEED_ID", "nosteam" },
-                    { -2, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8674), new TimeSpan(0, 0, 0, 0, 0)), true, 12, 1, "ADMIN_SEED_ID", "uwujka" },
-                    { -1, new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8666), new TimeSpan(0, 0, 0, 0, 0)), false, -2, 2, "ADMIN_SEED_ID", "FASTCUP" }
+                    { -9, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6634), new TimeSpan(0, 0, 0, 0, 0)), false, 730, 2, "ADMIN_SEED_ID", "Counter-Strike 2" },
+                    { -8, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6633), new TimeSpan(0, 0, 0, 0, 0)), false, 252490, 3, "ADMIN_SEED_ID", "RU" },
+                    { -7, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6632), new TimeSpan(0, 0, 0, 0, 0)), false, 730, 3, "ADMIN_SEED_ID", "RU" },
+                    { -6, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6631), new TimeSpan(0, 0, 0, 0, 0)), false, -2, 2, "ADMIN_SEED_ID", "FACEIT" },
+                    { -5, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6630), new TimeSpan(0, 0, 0, 0, 0)), false, -2, 2, "ADMIN_SEED_ID", "Develop" },
+                    { -4, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6629), new TimeSpan(0, 0, 0, 0, 0)), true, -2, 1, "ADMIN_SEED_ID", "no-steam" },
+                    { -3, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6628), new TimeSpan(0, 0, 0, 0, 0)), true, -2, 1, "ADMIN_SEED_ID", "nosteam" },
+                    { -2, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6627), new TimeSpan(0, 0, 0, 0, 0)), true, 730, 1, "ADMIN_SEED_ID", "uwujka" },
+                    { -1, new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6618), new TimeSpan(0, 0, 0, 0, 0)), false, -2, 2, "ADMIN_SEED_ID", "FASTCUP" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -379,6 +372,21 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                 name: "IX_EFFavourites_UserId",
                 table: "EFFavourites",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EFServers_IpAddress",
+                table: "EFServers",
+                column: "IpAddress");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EFServers_Map",
+                table: "EFServers",
+                column: "Map");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EFServers_Name",
+                table: "EFServers",
+                column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EFServers_SteamGameId",

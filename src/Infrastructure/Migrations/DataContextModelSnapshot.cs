@@ -60,7 +60,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -1,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8666), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6618), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
                             Type = 2,
@@ -70,9 +70,9 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -2,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8674), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6627), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
-                            SteamGameId = 12,
+                            SteamGameId = 730,
                             Type = 1,
                             UserId = "ADMIN_SEED_ID",
                             Value = "uwujka"
@@ -80,7 +80,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -3,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8676), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6628), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = -2,
                             Type = 1,
@@ -90,7 +90,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -4,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8677), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6629), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = -2,
                             Type = 1,
@@ -100,7 +100,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -5,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8678), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6630), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
                             Type = 2,
@@ -110,7 +110,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -6,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8679), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6631), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
                             Type = 2,
@@ -120,9 +120,9 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -7,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8745), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6632), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
-                            SteamGameId = 12,
+                            SteamGameId = 730,
                             Type = 3,
                             UserId = "ADMIN_SEED_ID",
                             Value = "RU"
@@ -130,9 +130,9 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -8,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8747), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6633), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
-                            SteamGameId = 27,
+                            SteamGameId = 252490,
                             Type = 3,
                             UserId = "ADMIN_SEED_ID",
                             Value = "RU"
@@ -140,9 +140,9 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -9,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 8, 20, 25, 7, 727, DateTimeKind.Unspecified).AddTicks(8748), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6634), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
-                            SteamGameId = 12,
+                            SteamGameId = 730,
                             Type = 2,
                             UserId = "ADMIN_SEED_ID",
                             Value = "Counter-Strike 2"
@@ -219,6 +219,12 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
 
                     b.HasKey("Hash");
 
+                    b.HasIndex("IpAddress");
+
+                    b.HasIndex("Map");
+
+                    b.HasIndex("Name");
+
                     b.HasIndex("SteamGameId");
 
                     b.ToTable("EFServers", (string)null);
@@ -232,9 +238,6 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AppId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -247,235 +250,166 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -2,
-                            AppId = -2,
                             Name = "All Games"
                         },
                         new
                         {
                             Id = -1,
-                            AppId = -1,
                             Name = "Unknown"
                         },
                         new
                         {
-                            Id = 1,
-                            AppId = 10,
+                            Id = 10,
                             Name = "Counter-Strike"
                         },
                         new
                         {
-                            Id = 2,
-                            AppId = 30,
+                            Id = 30,
                             Name = "Day of Defeat"
                         },
                         new
                         {
-                            Id = 3,
-                            AppId = 50,
+                            Id = 50,
                             Name = "Half-Life: Opposing Force"
                         },
                         new
                         {
-                            Id = 4,
-                            AppId = 70,
+                            Id = 70,
                             Name = "Half-Life"
                         },
                         new
                         {
-                            Id = 5,
-                            AppId = 80,
+                            Id = 80,
                             Name = "Condition Zero"
                         },
                         new
                         {
-                            Id = 6,
-                            AppId = 240,
+                            Id = 240,
                             Name = "Counter-Strike: Source"
                         },
                         new
                         {
-                            Id = 7,
-                            AppId = 300,
+                            Id = 300,
                             Name = "Day of Defeat: Source"
                         },
                         new
                         {
-                            Id = 8,
-                            AppId = 320,
+                            Id = 320,
                             Name = "Half-Life 2: Deathmatch"
                         },
                         new
                         {
-                            Id = 9,
-                            AppId = 440,
+                            Id = 440,
                             Name = "Team Fortress 2"
                         },
                         new
                         {
-                            Id = 10,
-                            AppId = 500,
+                            Id = 500,
                             Name = "Left 4 Dead"
                         },
                         new
                         {
-                            Id = 11,
-                            AppId = 550,
+                            Id = 550,
                             Name = "Left 4 Dead 2"
                         },
                         new
                         {
-                            Id = 12,
-                            AppId = 730,
+                            Id = 730,
                             Name = "Counter-Strike 2"
                         },
                         new
                         {
-                            Id = 13,
-                            AppId = 1250,
+                            Id = 1250,
                             Name = "Killing Floor"
                         },
                         new
                         {
-                            Id = 14,
-                            AppId = 4000,
+                            Id = 4000,
                             Name = "Garry's Mod"
                         },
                         new
                         {
-                            Id = 15,
-                            AppId = 4920,
-                            Name = "Natural Selection 2"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            AppId = 17520,
+                            Id = 17520,
                             Name = "Synergy"
                         },
                         new
                         {
-                            Id = 17,
-                            AppId = 17550,
-                            Name = "Eternal Silence"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            AppId = 33930,
+                            Id = 33930,
                             Name = "Arma 2: Operation Arrowhead"
                         },
                         new
                         {
-                            Id = 19,
-                            AppId = 107410,
+                            Id = 107410,
                             Name = "Arma 3"
                         },
                         new
                         {
-                            Id = 20,
-                            AppId = 108600,
+                            Id = 108600,
                             Name = "Project Zomboid"
                         },
                         new
                         {
-                            Id = 21,
-                            AppId = 221100,
+                            Id = 221100,
                             Name = "DayZ"
                         },
                         new
                         {
-                            Id = 22,
-                            AppId = 222880,
+                            Id = 222880,
                             Name = "Insurgency"
                         },
                         new
                         {
-                            Id = 23,
-                            AppId = 232090,
-                            Name = "Killing Floor 2"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            AppId = 242760,
+                            Id = 242760,
                             Name = "The Forest"
                         },
                         new
                         {
-                            Id = 25,
-                            AppId = 246900,
-                            Name = "Viscera Cleanup Detail"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            AppId = 251570,
+                            Id = 251570,
                             Name = "7 Days to Die"
                         },
                         new
                         {
-                            Id = 27,
-                            AppId = 252490,
+                            Id = 252490,
                             Name = "Rust"
                         },
                         new
                         {
-                            Id = 28,
-                            AppId = 304930,
+                            Id = 304930,
                             Name = "Unturned"
                         },
                         new
                         {
-                            Id = 29,
-                            AppId = 311210,
-                            Name = "Call of Duty: Black Ops III"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            AppId = 312660,
+                            Id = 312660,
                             Name = "Sniper Elite 4"
                         },
                         new
                         {
-                            Id = 31,
-                            AppId = 393380,
+                            Id = 393380,
                             Name = "Squad"
                         },
                         new
                         {
-                            Id = 32,
-                            AppId = 394690,
+                            Id = 394690,
                             Name = "Tower Unite"
                         },
                         new
                         {
-                            Id = 33,
-                            AppId = 466560,
-                            Name = "Northgard"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            AppId = 632360,
+                            Id = 632360,
                             Name = "Risk of Rain 2"
                         },
                         new
                         {
-                            Id = 35,
-                            AppId = 686810,
+                            Id = 686810,
                             Name = "Hell Let Loose"
                         },
                         new
                         {
-                            Id = 36,
-                            AppId = 1604030,
+                            Id = 1604030,
                             Name = "V Rising"
                         },
                         new
                         {
-                            Id = 37,
-                            AppId = 346110,
+                            Id = 346110,
                             Name = "ARK: Survival Evolved"
                         });
                 });
@@ -548,13 +482,13 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         {
                             Id = "ADMIN_SEED_ID",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5d0316ab-6a64-41f3-b1d7-50f88e465c43",
+                            ConcurrencyStamp = "c443cbad-9a78-4c12-9904-7e7239187f57",
                             Email = "superadmin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@EXAMPLE.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELnQmDSM9pPHpB+9exdpzz5E11W0lGEJmrnXXYSdkBreKDWCG0iItB/9qRQ/iCFmCw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOSO1D5iO2OvDn4lZbA9mvBlxy548zmMQgET68L9a//rawahrHWO7UQ6o4d+6pHKzA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -590,7 +524,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fea5f7a9-b2e4-4e12-9790-977ca690cc89",
+                            Id = "edb9f7df-2489-4864-8a58-97470291f8f2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -686,7 +620,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             UserId = "ADMIN_SEED_ID",
-                            RoleId = "fea5f7a9-b2e4-4e12-9790-977ca690cc89"
+                            RoleId = "edb9f7df-2489-4864-8a58-97470291f8f2"
                         });
                 });
 

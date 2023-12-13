@@ -55,4 +55,14 @@ public class FavouriteRepository(IDbContextFactory<DataContext> contextFactory) 
             .CountAsync(cancellationToken: cancellationToken);
         return count;
     }
+
+    public async Task DeleteFavouritesByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var favourites = await context.Favourites
+            .Where(x => serverHashes.Contains(x.ServerId))
+            .ToListAsync(cancellationToken: cancellationToken);
+        context.Favourites.RemoveRange(favourites);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

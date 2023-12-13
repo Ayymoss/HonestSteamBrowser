@@ -1,5 +1,4 @@
 ﻿using BetterSteamBrowser.Domain.Entities;
-using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +14,13 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<EFServer>().ToTable("EFServers");
+        modelBuilder.Entity<EFServer>(entity =>
+        {
+            entity.ToTable("EFServers");
+            entity.HasIndex(e => e.IpAddress);
+            entity.HasIndex(e => e.Map);
+            entity.HasIndex(e => e.Name);
+        });
         modelBuilder.Entity<EFBlock>().ToTable("EFBlocks");
         modelBuilder.Entity<EFSteamGame>().ToTable("EFSteamGames");
         modelBuilder.Entity<EFFavourite>(entity =>

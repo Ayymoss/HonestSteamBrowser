@@ -11,7 +11,6 @@ using BetterSteamBrowser.Infrastructure.Interfaces;
 using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.Extensions.Logging;
 using RestEase;
-using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
@@ -26,11 +25,11 @@ public class SteamServerService(
     : ISteamServerService
 {
     private const int BatchSize = 10;
-    private List<EFBlock> _blockList = new();
-    private List<EFSteamGame> _steamGames = new();
+    private List<EFBlock> _blockList = [];
+    private List<EFSteamGame> _steamGames = [];
     private ISteamApi _steamApi = null!;
 
-    public async Task StartSteamFetchAsync()
+    public async Task StartSteamFetchAsync(CancellationToken cancellationToken)
     {
         var client = httpClientFactory.CreateClient("BSBClient");
         client.BaseAddress = new Uri("https://api.steampowered.com/");
@@ -38,8 +37,8 @@ public class SteamServerService(
 
         try
         {
-            _blockList = await blockRepository.GetBlockListAsync();
-            _steamGames = await steamGameRepository.GetSteamGamesAsync();
+            _blockList = await blockRepository.GetBlockListAsync(cancellationToken);
+            _steamGames = await steamGameRepository.GetSteamGamesAsync(cancellationToken);
 
             var rawSteamServers = (await RetrieveServerStatisticsAsync())
                 .GroupBy(serverStat => serverStat.Address.Compute256Hash())
@@ -61,7 +60,7 @@ public class SteamServerService(
             var existingServerFinal = ProcessExistingServers(existingServers);
             var newServersFinal = ProcessNewServers(newServers).ToList();
 
-            await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal);
+            await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal, cancellationToken);
             logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
         }
         catch (Exception e)
@@ -93,9 +92,9 @@ public class SteamServerService(
     private async Task<Tuple<EFSteamGame, List<ServerListItem>>?> ProcessGameAsync(EFSteamGame game)
     {
         var blocksForApi = _blockList.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
-        var filter = BuildApiFilter(blocksForApi, game.AppId);
+        var filter = BuildApiFilter(blocksForApi, game.Id);
         var serverListItems = await GetServerListAsync(filter);
-        logger.LogDebug("Filter {GameAppId}: {Filter}", game.AppId, filter);
+        logger.LogDebug("Filter {GameAppId}: {Filter}", game.Id, filter);
 
         if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
 
@@ -156,7 +155,10 @@ public class SteamServerService(
                         if (server.CountryCode == block.Value) server.Blocked = true;
                         break;
                     case FilterType.IpAddress:
-                        if (server.IpAddress.Contains(block.Value)) server.Blocked = true;
+                        if (server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture)) server.Blocked = true;
+                        break;
+                    case FilterType.Subnet:
+                        if (server.IpAddress.IsInCidrRange(block.Value)) server.Blocked = true;
                         break;
                 }
             }
@@ -197,7 +199,7 @@ public class SteamServerService(
         foreach (var server in servers.Where(server => server.Item2.Map is not null && server.Item2.Name is not null))
         {
             server.Item1.Name = server.Item2.Name?.FilterEmojis() ?? "Unknown";
-            server.Item1.SteamGame.AppId = server.Item2.AppId;
+            server.Item1.SteamGame.Id = server.Item2.AppId;
             server.Item1.Players = server.Item2.Players;
             server.Item1.MaxPlayers = server.Item2.MaxPlayers;
             server.Item1.Map = server.Item2.Map!;
@@ -214,7 +216,6 @@ public class SteamServerService(
             .Where(x => x.Item1 is {Name: not null, Map: not null})
             .Select(x =>
             {
-                var steamGameId = _steamGames.FirstOrDefault(s => s.AppId == x.Item1.AppId)?.Id ?? SteamGameConstants.Unknown;
                 var address = x.Item1.Address.Split(':');
 
                 return new EFServer
@@ -228,7 +229,7 @@ public class SteamServerService(
                     Country = null,
                     CountryCode = null,
                     Map = x.Item1.Map!,
-                    SteamGameId = steamGameId,
+                    SteamGameId = x.Item1.AppId,
                     LastUpdated = DateTimeOffset.UtcNow,
                     Created = DateTimeOffset.UtcNow,
                 };

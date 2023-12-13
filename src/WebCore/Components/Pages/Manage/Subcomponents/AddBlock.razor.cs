@@ -40,7 +40,7 @@ public partial class AddBlock
         var command = new CreateBlockCommand
         {
             UserId = UserId,
-            SteamGameId = args.FilterAllGames ? SteamGameConstants.AllGames : args.SteamGame.Id,
+            SteamGameId = args.FilterAllGames ? SteamGameConstants.AllGames : args.SteamGame.AppId,
             Value = args.Value,
             Type = args.FilterType,
             ApiFilter = args.ApiFilter,

@@ -11,11 +11,17 @@
             @Server.Players.ToString("N0")/@Server.MaxPlayers.ToString("N0")
         </RadzenText>
     </RadzenStack>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Wrap="FlexWrap.Wrap">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
         <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="arrow_forward" Click="ConnectToServer" Text="Connect"/>
         @if (_isClipboardSupported)
         {
             <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="content_copy" Click="CopyToClipboardAsync" Text="Copy Address"/>
+        }
+        else
+        {
+            <RadzenCard Style="padding:0.5rem">
+                <RadzenText TextStyle="TextStyle.Body2" TextAlign="TextAlign.Center" Text="@Server.Address" class="rz-mb-0"/>
+            </RadzenCard>
         }
         @if (!string.IsNullOrWhiteSpace(UserId))
         {

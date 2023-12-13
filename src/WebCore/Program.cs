@@ -40,7 +40,7 @@ public class Program
 #endif
 
 #if DEBUG
-        configuration.DatabaseName = "SteamBrowserTest2";
+        configuration.DatabaseName = "SteamBrowserTest3";
 #endif
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
@@ -67,6 +67,7 @@ public class Program
         builder.Services.AddScoped<IBlockRepository, BlockRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();
+        builder.Services.AddScoped<IDatabaseCleanupService, DatabaseCleanupService>();
         builder.Services.AddScoped<IGameServerPlayerService, GameServerPlayerService>();
         builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
 
@@ -116,6 +117,9 @@ public class Program
 #endif
             .Enrich.FromLogContext()
             .Enrich.With<ShortSourceContextEnricher>()
+            .Filter.ByExcluding(logEvent =>
+                logEvent.Exception is HttpRequestException httpRequestEx &&
+                httpRequestEx.Message.Contains("SSL connection could not be established"))
             .WriteTo.Console()
             .WriteTo.File(
                 Path.Join(AppContext.BaseDirectory, "Log", "bsb-.log"),

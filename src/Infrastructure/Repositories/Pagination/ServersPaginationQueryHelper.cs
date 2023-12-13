@@ -18,13 +18,13 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         var query = context.Servers
             .AsNoTracking()
             .Where(x => !x.Blocked)
-            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddDays(-1))
+            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Region) && _countryMap.TryGetValue(request.Region, out var countryCodesInRegion))
             query = query.Where(server => server.CountryCode != null && countryCodesInRegion.Contains(server.CountryCode));
 
-        if (request.AppId.HasValue) query = query.Where(server => server.SteamGame.AppId == request.AppId);
+        if (request.AppId.HasValue) query = query.Where(server => server.SteamGame.Id == request.AppId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
             query = request.Search.Split(' ')
@@ -46,8 +46,9 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 _ => current
             });
 
-        var serverFavourites = new Dictionary<string, bool>();
+        var favouriteServers = new Dictionary<string, bool>();
         var favouriteServerHashes = new List<string>();
+        
         if (!string.IsNullOrWhiteSpace(request.UserId))
         {
             favouriteServerHashes = await context.Favourites
@@ -57,7 +58,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
 
             foreach (var hash in favouriteServerHashes)
             {
-                serverFavourites[hash] = true;
+                favouriteServers[hash] = true;
             }
         }
 
@@ -80,7 +81,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 IpAddress = server.IpAddress,
                 Port = server.Port,
                 Name = server.Name,
-                SteamGameAppId = server.SteamGame.AppId,
+                SteamGameAppId = server.SteamGame.Id,
                 SteamGameName = server.SteamGame.Name,
                 SteamGameId = server.SteamGameId,
                 Map = server.Map,
@@ -89,7 +90,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 Country = server.Country ?? "Unknown",
                 LastUpdated = server.LastUpdated,
                 Created = server.Created,
-                Favourite = serverFavourites.ContainsKey(server.Hash) && serverFavourites[server.Hash]
+                Favourite = favouriteServers.ContainsKey(server.Hash) && favouriteServers[server.Hash]
             })
             .ToListAsync(cancellationToken: cancellationToken);
 
@@ -119,23 +120,23 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         ],
         ["Asia"] =
         [
-            "AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "CY", "GE", "IN", "ID", "IR",
-            "IQ", "IL", "JP", "JO", "KZ", "KP", "KR", "KW", "KG", "LA", "LB", "MO", "MY", "MV",
-            "MN", "MM", "NP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "LK", "SY", "TW", "TJ",
-            "TH", "TL", "TM", "AE", "UZ", "VN", "YE"
+            "AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "CY", "GE", "IN", "ID",
+            "IR", "IQ", "IL", "JP", "JO", "KZ", "KP", "KR", "KW", "KG", "LA", "LB", "MO",
+            "MY", "MV", "MN", "MM", "NP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "LK",
+            "SY", "TW", "TJ", "TH", "TL", "TM", "AE", "UZ", "VN", "YE"
         ],
         ["Africa"] =
         [
-            "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CG", "CD", "DJ",
-            "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "CI", "KE", "LS", "LR",
-            "LY", "MG", "MW", "ML", "MR", "MU", "YT", "MA", "MZ", "NA", "NE", "NG", "RE", "RW",
-            "SH", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "EH",
-            "ZM", "ZW"
+            "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CG", "CD",
+            "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "CI", "KE",
+            "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU", "YT", "MA", "MZ", "NA", "NE",
+            "NG", "RE", "RW", "SH", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "TZ",
+            "TG", "TN", "UG", "EH", "ZM", "ZW"
         ],
         ["Oceania"] =
         [
-            "AS", "AU", "CK", "FJ", "PF", "GU", "KI", "MH", "FM", "NR", "NC", "NZ", "NU", "NF",
-            "MP", "PW", "PG", "PN", "WS", "SB", "TK", "TO", "TV", "UM", "VU", "WF"
+            "AS", "AU", "CK", "FJ", "PF", "GU", "KI", "MH", "FM", "NR", "NC", "NZ", "NU",
+            "NF", "MP", "PW", "PG", "PN", "WS", "SB", "TK", "TO", "TV", "UM", "VU", "WF"
         ]
     };
 }

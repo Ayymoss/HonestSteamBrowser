@@ -7,7 +7,7 @@
     <UserSecretsId>aspnet-WebCore-d32094a3-1311-45ac-b49a-8370c73b46ff</UserSecretsId>
     <RootNamespace>BetterSteamBrowser.WebCore</RootNamespace>
     <AssemblyName>BetterSteamBrowser.WebCore</AssemblyName>
-    <Version>2023.12.12.02</Version>
+    <Version>2023.12.13.01</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,12 +23,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql" Version="8.0.0-rc.2" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-rc.2" />
-    <PackageReference Include="Radzen.Blazor" Version="4.21.1" />
+    <PackageReference Include="Npgsql" Version="8.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageReference Include="Radzen.Blazor" Version="4.23.2" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968" />
   </ItemGroup>
 

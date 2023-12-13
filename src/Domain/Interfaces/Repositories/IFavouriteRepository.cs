@@ -5,4 +5,5 @@ public interface IFavouriteRepository
     Task<bool> IsFavouriteAsync(string userId, string ipAddress, int port, CancellationToken cancellationToken);
     Task ToggleFavouriteAsync(string userId, string ipAddress, int port, CancellationToken cancellationToken);
     Task<int> GetUserFavouriteCountAsync(string userId, CancellationToken cancellationToken);
+    Task DeleteFavouritesByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
 }

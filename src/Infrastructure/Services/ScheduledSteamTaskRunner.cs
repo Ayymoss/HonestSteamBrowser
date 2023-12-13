@@ -26,21 +26,25 @@ public class ScheduledSteamTaskRunner(IServiceProvider serviceProvider) : IDispo
         }
 #endif
 
+        var cancellationTokenSource = new CancellationTokenSource();
+
         Task.Run(async () =>
         {
             using var scope = serviceProvider.CreateScope();
             var steamService = scope.ServiceProvider.GetRequiredService<ISteamServerService>();
+            var databasePurgeService = scope.ServiceProvider.GetRequiredService<IDatabaseCleanupService>();
             var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
             try
             {
-                await steamService.StartSteamFetchAsync();
-                await publisher.Publish(new UpdateInformationCommand());
+                await steamService.StartSteamFetchAsync(cancellationTokenSource.Token);
+                await databasePurgeService.PurgeOldRecordsAsync(DateTimeOffset.UtcNow.AddDays(-7), cancellationTokenSource.Token);
+                await publisher.Publish(new UpdateInformationCommand(), cancellationTokenSource.Token);
             }
             catch (Exception e)
             {
                 Log.Error(e, "Error executing scheduled action");
             }
-        });
+        }, cancellationTokenSource.Token);
     }
 
     public void Dispose()
