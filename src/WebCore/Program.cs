@@ -22,6 +22,9 @@ using Serilog.Events;
 
 namespace BetterSteamBrowser.WebCore;
 
+// TODO: If previously authenticated and privileged, if they're demoted they will still have access to privileged pages until they log out and back in again.
+//      And the ability action moderation stuff.
+
 public class Program
 {
     public static void Main(string[] args)

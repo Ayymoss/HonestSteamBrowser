@@ -7,6 +7,7 @@ namespace BetterSteamBrowser.Infrastructure.Services;
 public class DatabaseCleanupService(
     IServerRepository serverRepository,
     IFavouriteRepository favouriteRepository,
+    ISnapshotRepository snapshotRepository,
     ILogger<DatabaseCleanupService> logger)
     : IDatabaseCleanupService
 {
@@ -17,5 +18,7 @@ public class DatabaseCleanupService(
         await favouriteRepository.DeleteFavouritesByServerHashesAsync(serverHashes, cancellationToken);
         await serverRepository.DeleteServersByHashesAsync(serverHashes, cancellationToken);
         logger.LogInformation("Purged {ServerHashesCount} servers", serverHashes.Count);
+        await snapshotRepository.DeleteSnapshotsByDateAsync(DateTimeOffset.UtcNow.AddYears(-1), cancellationToken);
+        logger.LogInformation("Purged snapshots older than 1 year");
     }
 }

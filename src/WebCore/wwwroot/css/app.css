@@ -70,3 +70,23 @@ a {
     padding: 0;
     border: none;
 }
+
+.custom-rz-link {
+    background-color: var(--rz-body-background-color);
+    border: none;
+    color: var(--rz-link-color);
+    padding: 0;
+    margin: 0;
+    font-size: var(--rz-body-font-size);
+    font-family: var(--rz-text-font-family);
+    text-decoration: var(--rz-link-text-decoration);
+    line-height: var(--rz-body-line-height);
+    font-weight: var(--bs-body-font-weight);
+    cursor: pointer;
+}
+
+.custom-rz-link:hover,
+.custom-rz-link:focus {
+    text-decoration: var(--rz-link-hover-text-decoration);
+    color: var(--rz-link-hover-color);
+}

@@ -21,4 +21,14 @@ public class SnapshotRepository(IDbContextFactory<DataContext> contextFactory) :
         context.Snapshots.Add(snapshot);
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task DeleteSnapshotsByDateAsync(DateTimeOffset from, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var snapshots = await context.Snapshots
+            .Where(x => x.Stored < from)
+            .ToListAsync(cancellationToken: cancellationToken);
+        context.Snapshots.RemoveRange(snapshots);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

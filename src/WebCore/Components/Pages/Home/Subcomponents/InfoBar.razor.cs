@@ -18,25 +18,20 @@ public partial class InfoBar
     [Parameter] public string? UserId { get; set; }
     [Parameter] public EventCallback<WebInfoContext> OnWebContextUpdated { get; set; }
     [Inject] private IMediator Mediator { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
 
     private int _favouriteCount;
     private int _blockCount;
-    private bool _loading = true;
-
     private bool _showFavourites;
 
-    // Get a count of enum SnapshotType
-    private int SnapshotCount => Enum.GetNames(typeof(SnapshotType)).Length;
+    private static int SnapshotCount => Enum.GetNames(typeof(SnapshotType)).Length;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        _loading = true;
         if (UserId is null) return;
-
         if (IsAdmin) _blockCount = await Mediator.Send(new GetBlockCountCommand());
         _favouriteCount = await Mediator.Send(new GetUserFavouriteCountCommand {UserId = UserId});
-        _loading = false;
         StateHasChanged();
     }
 
@@ -45,5 +40,10 @@ public partial class InfoBar
         if (WebContext is null) return Task.CompletedTask;
         WebContext.IsFavouriteChecked = _showFavourites;
         return OnWebContextUpdated.InvokeAsync(WebContext);
+    }
+
+    public void RedirectToAccount()
+    {
+        NavigationManager.NavigateTo("/Account", true);
     }
 }

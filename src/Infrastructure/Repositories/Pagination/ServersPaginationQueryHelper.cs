@@ -21,7 +21,8 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.Region) && UtilityMethods.CountryMap.TryGetValue(request.Region, out var countryCodesInRegion))
+        if (!string.IsNullOrWhiteSpace(request.Region) &&
+            UtilityMethods.CountryMap.TryGetValue(request.Region, out var countryCodesInRegion))
             query = query.Where(server => server.CountryCode != null && countryCodesInRegion.Contains(server.CountryCode));
 
         if (request.AppId.HasValue) query = query.Where(server => server.SteamGame.Id == request.AppId);
@@ -49,7 +50,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
 
         var favouriteServers = new Dictionary<string, bool>();
         var favouriteServerHashes = new List<string>();
-        
+
         if (!string.IsNullOrWhiteSpace(request.UserId))
         {
             favouriteServerHashes = await context.Favourites
@@ -102,6 +103,4 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             Players = queryPlayerCount
         };
     }
-
-   
 }

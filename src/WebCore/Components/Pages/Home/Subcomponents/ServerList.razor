@@ -7,36 +7,42 @@
     <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
         <RadzenCard>
             <RadzenRow JustifyContent="JustifyContent.Center" class="rz-mb-4">
-                <RadzenColumn SizeSM="12" SizeMD="3">
+                <RadzenColumn SizeSM="12" SizeMD="12" SizeLG="3" SizeXL="5" SizeXX="6">
                     <RadzenText TextAlign="TextAlign.Start" TextStyle="TextStyle.DisplayH4" class="rz-mb-0 rz-mt-2">
                         @_titleText
                     </RadzenText>
                 </RadzenColumn>
-                <RadzenColumn SizeSM="12" SizeMD="9">
-                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.End" Wrap="FlexWrap.Wrap">
-                        <RadzenFormField Text="Select Region" Variant="Variant.Outlined" Style="width: 100%; max-width: 250px;">
-                            <ChildContent>
-                                <RadzenDropDown TValue="string" @bind-Value="@_regionFilterSelected" Data="@_regionFilterData" AllowClear="true"
-                                                FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                Change="OnDropdownChanged" Placeholder="Select Region"/>
-                            </ChildContent>
-                        </RadzenFormField>
-                        <RadzenFormField Text="Select Game" Variant="Variant.Outlined" Style="width: 100%; max-width: 250px;">
-                            <ChildContent>
-                                <RadzenDropDown TValue="SteamGame" @bind-Value="@_gamesFilterSelected" Data="@_gamesFilterData" AllowClear="true"
-                                                FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                Change="OnDropdownChanged" Placeholder="Select Game" LoadData="GameLoadData"/>
-                            </ChildContent>
-                        </RadzenFormField>
-                        <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; max-width: 250px;">
-                            <ChildContent>
-                                <RadzenTextBox @bind-Value="_searchString" Change="OnSearch"/>
-                            </ChildContent>
-                            <End>
-                                <RadzenIcon Icon="search" IconStyle="IconStyle.Info"/>
-                            </End>
-                        </RadzenFormField>
-                    </RadzenStack>
+                <RadzenColumn SizeSM="12" SizeMD="12" SizeLG="9" SizeXL="7" SizeXX="6">
+                    <RadzenRow AlignItems="AlignItems.End" JustifyContent="JustifyContent.End">
+                        <RadzenColumn SizeSM="12" SizeMD="4">
+                            <RadzenFormField Text="Select Region" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
+                                <ChildContent>
+                                    <RadzenDropDown TValue="string" @bind-Value="@_regionFilterSelected" Data="@_regionFilterData" AllowClear="true"
+                                                    FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                    Change="OnDropdownChanged" Placeholder="Select Region"/>
+                                </ChildContent>
+                            </RadzenFormField>
+                        </RadzenColumn>
+                        <RadzenColumn SizeSM="12" SizeMD="4">
+                            <RadzenFormField Text="Select Game" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
+                                <ChildContent>
+                                    <RadzenDropDown TValue="SteamGame" @bind-Value="@_gamesFilterSelected" Data="@_gamesFilterData" AllowClear="true"
+                                                    FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                    Change="OnDropdownChanged" Placeholder="Select Game" LoadData="GameLoadData"/>
+                                </ChildContent>
+                            </RadzenFormField>
+                        </RadzenColumn>
+                        <RadzenColumn SizeSM="12" SizeMD="4">
+                            <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
+                                <ChildContent>
+                                    <RadzenTextBox @bind-Value="_searchString" Change="OnSearch"/>
+                                </ChildContent>
+                                <End>
+                                    <RadzenIcon Icon="search" IconStyle="IconStyle.Info"/>
+                                </End>
+                            </RadzenFormField>
+                        </RadzenColumn>
+                    </RadzenRow>
                 </RadzenColumn>
             </RadzenRow>
             <RadzenDataGrid @ref="_dataGrid" TItem="Server" IsLoading="@_isLoading" Count="@_count" Data="@_serverTable" LoadData="@TableLoadData"

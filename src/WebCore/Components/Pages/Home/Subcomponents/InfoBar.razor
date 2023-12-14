@@ -1,45 +1,43 @@
 ﻿@using BetterSteamBrowser.WebCore.Utilities
 @using BetterSteamBrowser.Domain.Enums
 
-@if (!_loading)
-{
-    <AuthorizeView>
-        <Authorized Context="oContext">
-            <RadzenRow JustifyContent="JustifyContent.Center">
-                <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
-                    <RadzenCard>
-                        <RadzenStack Orientation="Orientation.Vertical" Gap="0">
-                            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
-                                <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@(_favouriteCount is 0 ? "--" : _favouriteCount.ToString("N0"))"/>
-                                <RadzenSwitch @bind-Value="_showFavourites" Change="OnFavouriteClick"/>
-                            </RadzenStack>
-                            <RadzenText class="rz-text-tertiary-color" Text="Favourites"/>
-                        </RadzenStack>
-                    </RadzenCard>
-                </RadzenColumn>
-                <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
-                    <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                        <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@SnapshotCount.ToString()"/>
-                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
-                            <RadzenText class="rz-text-tertiary-color" Text="Statistics"/>
-                            <RadzenLink Path="/Statistics" Text="Statistics?"/>
-                        </RadzenStack>
-                    </RadzenCard>
-                </RadzenColumn>
-                <AuthorizeView Context="iContext" Roles="@HelperMethods.GetHigherRolesAsString(IdentityRole.Admin)">
-                    <Authorized>
-                        <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
-                            <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                                <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@_blockCount.ToString()"/>
-                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
-                                    <RadzenText class="rz-text-tertiary-color" Text="Blocks"/>
-                                    <RadzenLink Path="/Manage" Text="Manage?"/>
-                                </RadzenStack>
-                            </RadzenCard>
-                        </RadzenColumn>
-                    </Authorized>
-                </AuthorizeView>
-            </RadzenRow>
-        </Authorized>
-    </AuthorizeView>
-}
+<RadzenRow JustifyContent="JustifyContent.Center">
+    <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+        <RadzenCard>
+            <RadzenStack Orientation="Orientation.Vertical" Gap="0">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
+                    <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@(_favouriteCount is 0 ? "--" : _favouriteCount.ToString("N0"))"/>
+                    <RadzenSwitch @bind-Value="_showFavourites" Change="OnFavouriteClick" Disabled="@string.IsNullOrWhiteSpace(UserId)"/>
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
+                    <RadzenText class="rz-text-tertiary-color" Text="Favourites"/>
+                    @if (string.IsNullOrWhiteSpace(UserId))
+                    {
+                        <button class="custom-rz-link" @onclick="RedirectToAccount">Login?</button>
+                    }
+                </RadzenStack>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+        <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+            <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@SnapshotCount.ToString()"/>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
+                <RadzenText class="rz-text-tertiary-color" Text="Statistics"/>
+                <RadzenLink Path="/Statistics" Text="View?"/>
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+    @if (IsAdmin)
+    {
+        <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+            <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@_blockCount.ToString()"/>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
+                    <RadzenText class="rz-text-tertiary-color" Text="Blocks"/>
+                    <RadzenLink Path="/Manage" Text="Manage?"/>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenColumn>
+    }
+</RadzenRow>

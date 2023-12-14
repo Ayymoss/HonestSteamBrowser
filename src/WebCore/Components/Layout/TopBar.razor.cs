@@ -21,7 +21,7 @@ public partial class TopBar : IAsyncDisposable
     [Inject] private DialogService DialogService { get; set; }
     [Inject] private BsbClientHub? HubConnection { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
-    [Inject] private IHttpContextAccessor httpContextAccessor { get; set; }
+    [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; }
     [Inject] private TooltipService TooltipService { get; set; }
 
     private int _players;
@@ -33,7 +33,7 @@ public partial class TopBar : IAsyncDisposable
         if (HubConnection is null) return;
         HubConnection.OnInformationUpdated += cacheInfo => OnInformationUpdatedReceived(cacheInfo);
         HubConnection.SiteViewerCountUpdated += count => OnUpdatePageViewersCountReceived(count);
-        await HubConnection.InitializeAsync(httpContextAccessor);
+        await HubConnection.InitializeAsync(HttpContextAccessor);
         await base.OnInitializedAsync();
     }
 
