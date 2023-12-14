@@ -37,30 +37,22 @@ public partial class ViewServerMetaDialog
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(2000));
 
-        try
+        _players = await Mediator.Send(new GetServerPlayersCommand
         {
-            _players = await Mediator.Send(new GetServerPlayersCommand
-            {
-                IpAddress = Server.IpAddress,
-                Port = Server.Port
-            }, cancellationTokenSource.Token) ?? [];
-        }
-        catch (OperationCanceledException)
-        {
-            _players = new List<PlayerInfo>();
-        }
+            IpAddress = Server.IpAddress,
+            Port = Server.Port
+        }, cancellationTokenSource.Token) ?? [];
 
         StateHasChanged();
     }
-    
+
     private async Task CopyToClipboardAsync()
     {
         if (!_isClipboardSupported) return;
         await Clipboard.WriteTextAsync(Server.Address.AsMemory());
         NotificationService.Notify(NotificationSeverity.Info, "Copied IP to Clipboard", Server.Address);
-
     }
-    
+
     public void ConnectToServer()
     {
         NavigationManager.NavigateTo(SteamUrl, true);

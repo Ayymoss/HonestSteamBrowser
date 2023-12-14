@@ -1,5 +1,6 @@
 ﻿using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.ViewModels;
+using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Infrastructure.Identity;
 using BetterSteamBrowser.WebCore.Utilities;
 using MediatR;
@@ -23,6 +24,9 @@ public partial class InfoBar
     private bool _loading = true;
 
     private bool _showFavourites;
+
+    // Get a count of enum SnapshotType
+    private int SnapshotCount => Enum.GetNames(typeof(SnapshotType)).Length;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

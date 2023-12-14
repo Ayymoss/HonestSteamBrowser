@@ -40,7 +40,7 @@ public class Program
 #endif
 
 #if DEBUG
-        configuration.DatabaseName = "SteamBrowserTest3";
+        configuration.DatabaseName = "SteamBrowserTest1";
 #endif
 
         builder.Services.AddDbContextFactory<DataContext>(options =>
@@ -50,7 +50,7 @@ public class Program
 
         // Custom Services
         builder.Services.AddSingleton(configuration);
-        builder.Services.AddSingleton<ScheduledSteamTaskRunner>();
+        builder.Services.AddSingleton<ScheduledTaskRunner>();
         builder.Services.AddSingleton<ServerContextCache>();
 
         builder.Services.AddScoped<DialogService>();
@@ -66,8 +66,10 @@ public class Program
         builder.Services.AddScoped<IServerRepository, ServerRepository>();
         builder.Services.AddScoped<IBlockRepository, BlockRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<ISnapshotRepository, SnapshotRepository>();
         builder.Services.AddScoped<ISteamServerService, SteamServerService>();
         builder.Services.AddScoped<IDatabaseCleanupService, DatabaseCleanupService>();
+        builder.Services.AddScoped<IStatisticsService, StatisticsService>();
         builder.Services.AddScoped<IGameServerPlayerService, GameServerPlayerService>();
         builder.Services.AddScoped<IFavouriteRepository, FavouriteRepository>();
 
@@ -139,7 +141,7 @@ public class Program
             dbContext.Database.Migrate();
         }
 
-        app.Services.GetRequiredService<ScheduledSteamTaskRunner>().StartTimer();
+        app.Services.GetRequiredService<ScheduledTaskRunner>().StartTimer();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

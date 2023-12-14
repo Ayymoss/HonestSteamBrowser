@@ -21,7 +21,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.Region) && _countryMap.TryGetValue(request.Region, out var countryCodesInRegion))
+        if (!string.IsNullOrWhiteSpace(request.Region) && UtilityMethods.CountryMap.TryGetValue(request.Region, out var countryCodesInRegion))
             query = query.Where(server => server.CountryCode != null && countryCodesInRegion.Contains(server.CountryCode));
 
         if (request.AppId.HasValue) query = query.Where(server => server.SteamGame.Id == request.AppId);
@@ -41,6 +41,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "Players" => current.ApplySort(sort, p => p.Players),
                 "Country" => current.ApplySort(sort, p => p.Country ?? string.Empty),
                 "Map" => current.ApplySort(sort, p => p.Map),
+                "Address" => current.ApplySort(sort, p => p.IpAddress),
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
                 "Created" => current.ApplySort(sort, p => p.Created),
                 _ => current
@@ -102,41 +103,5 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         };
     }
 
-    private readonly Dictionary<string, List<string>> _countryMap = new()
-    {
-        ["Europe"] =
-        [
-            "AL", "AD", "AM", "AT", "AZ", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK",
-            "EE", "FO", "FI", "FR", "GE", "DE", "GI", "GR", "HU", "IS", "IE", "IT", "KZ",
-            "XK", "LV", "LI", "LT", "LU", "MT", "MC", "ME", "NL", "MK", "NO", "PL", "PT",
-            "MD", "RO", "RU", "SM", "RS", "SK", "SI", "ES", "SJ", "SE", "CH", "TR", "UA",
-            "GB", "VA"
-        ],
-        ["Americas"] =
-        [
-            "AG", "BS", "BB", "BZ", "CA", "CR", "CU", "DM", "DO", "SV", "GL", "GD", "GT",
-            "HT", "HN", "JM", "MX", "NI", "PA", "PR", "KN", "LC", "VC", "TT", "US", "AR",
-            "BO", "BR", "CL", "CO", "EC", "FK", "GF", "GY", "PY", "PE", "SR", "UY", "VE"
-        ],
-        ["Asia"] =
-        [
-            "AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "CY", "GE", "IN", "ID",
-            "IR", "IQ", "IL", "JP", "JO", "KZ", "KP", "KR", "KW", "KG", "LA", "LB", "MO",
-            "MY", "MV", "MN", "MM", "NP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "LK",
-            "SY", "TW", "TJ", "TH", "TL", "TM", "AE", "UZ", "VN", "YE"
-        ],
-        ["Africa"] =
-        [
-            "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CG", "CD",
-            "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "CI", "KE",
-            "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU", "YT", "MA", "MZ", "NA", "NE",
-            "NG", "RE", "RW", "SH", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "TZ",
-            "TG", "TN", "UG", "EH", "ZM", "ZW"
-        ],
-        ["Oceania"] =
-        [
-            "AS", "AU", "CK", "FJ", "PF", "GU", "KI", "MH", "FM", "NR", "NC", "NZ", "NU",
-            "NF", "MP", "PW", "PG", "PN", "WS", "SB", "TK", "TO", "TV", "UM", "VU", "WF"
-        ]
-    };
+   
 }

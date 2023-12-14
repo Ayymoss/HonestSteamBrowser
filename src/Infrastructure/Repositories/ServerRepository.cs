@@ -2,6 +2,7 @@
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Infrastructure.Context;
+using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BetterSteamBrowser.Infrastructure.Repositories;
@@ -21,6 +22,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var count = await context.Servers
+            .AsNoTracking()
             .Where(x => !x.Blocked)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .SumAsync(x => x.Players, cancellationToken: cancellationToken);
@@ -31,6 +33,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var count = await context.Servers
+            .AsNoTracking()
             .Where(x => !x.Blocked)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
             .CountAsync(cancellationToken: cancellationToken);
@@ -75,5 +78,19 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
             .ToListAsync(cancellationToken: cancellationToken);
         context.Servers.RemoveRange(servers);
         await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<int> GetTotalPlayerCountByContinentAsync(string continent, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var mapSuccess = UtilityMethods.CountryMap.TryGetValue(continent, out var countryCodesInRegion);
+        if (!mapSuccess || countryCodesInRegion is null) return 0;
+        var count = await context.Servers
+            .AsNoTracking()
+            .Where(x => !x.Blocked)
+            .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
+            .Where(server => server.CountryCode != null && countryCodesInRegion.Contains(server.CountryCode))
+            .SumAsync(x => x.Players, cancellationToken: cancellationToken);
+        return count;
     }
 }

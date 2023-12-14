@@ -60,7 +60,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -1,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6618), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1483), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
                             Type = 2,
@@ -70,7 +70,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -2,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6627), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1489), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = 730,
                             Type = 1,
@@ -80,7 +80,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -3,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6628), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1490), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = -2,
                             Type = 1,
@@ -90,7 +90,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -4,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6629), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1491), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = -2,
                             Type = 1,
@@ -100,7 +100,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -5,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6630), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1493), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
                             Type = 2,
@@ -110,7 +110,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -6,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6631), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1494), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
                             Type = 2,
@@ -120,7 +120,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -7,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6632), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1495), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = 730,
                             Type = 3,
@@ -130,7 +130,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -8,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6633), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1496), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = 252490,
                             Type = 3,
@@ -140,7 +140,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -9,
-                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 19, 47, 43, 743, DateTimeKind.Unspecified).AddTicks(6634), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2023, 12, 13, 23, 30, 1, 465, DateTimeKind.Unspecified).AddTicks(1497), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = 730,
                             Type = 2,
@@ -228,6 +228,28 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                     b.HasIndex("SteamGameId");
 
                     b.ToTable("EFServers", (string)null);
+                });
+
+            modelBuilder.Entity("BetterSteamBrowser.Domain.Entities.EFSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Snapshot")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Stored")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EFSnapshots", (string)null);
                 });
 
             modelBuilder.Entity("BetterSteamBrowser.Domain.Entities.EFSteamGame", b =>
@@ -482,13 +504,13 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         {
                             Id = "ADMIN_SEED_ID",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c443cbad-9a78-4c12-9904-7e7239187f57",
+                            ConcurrencyStamp = "62c7cfd8-01c3-4ff8-9ace-19c2216ca565",
                             Email = "superadmin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@EXAMPLE.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOSO1D5iO2OvDn4lZbA9mvBlxy548zmMQgET68L9a//rawahrHWO7UQ6o4d+6pHKzA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH88I3W2CIRvFQh4Qh4REspiPte+/Ff+5Upg3d1gaji3Eidf3f+1zCLXkbzhAAzJIw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -524,7 +546,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "edb9f7df-2489-4864-8a58-97470291f8f2",
+                            Id = "35e41962-0016-42f2-b7b8-bea97c77bb7e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -620,7 +642,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             UserId = "ADMIN_SEED_ID",
-                            RoleId = "edb9f7df-2489-4864-8a58-97470291f8f2"
+                            RoleId = "35e41962-0016-42f2-b7b8-bea97c77bb7e"
                         });
                 });
 

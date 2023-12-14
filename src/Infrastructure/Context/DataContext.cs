@@ -11,6 +11,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public DbSet<EFBlock> Blocks { get; set; }
     public DbSet<EFSteamGame> SteamGames { get; set; }
     public DbSet<EFFavourite> Favourites { get; set; }
+    public DbSet<EFSnapshot> Snapshots { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +22,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             entity.HasIndex(e => e.Map);
             entity.HasIndex(e => e.Name);
         });
+        modelBuilder.Entity<EFSnapshot>().ToTable("EFSnapshots");
         modelBuilder.Entity<EFBlock>().ToTable("EFBlocks");
         modelBuilder.Entity<EFSteamGame>().ToTable("EFSteamGames");
         modelBuilder.Entity<EFFavourite>(entity =>

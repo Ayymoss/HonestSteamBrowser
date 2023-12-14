@@ -11,4 +11,5 @@ public interface IServerRepository
     Task BlockAddressAsync(string address, int steamGameId, CancellationToken cancellationToken);
     Task<List<string>> GetOlderServerHashesAsync(DateTimeOffset from, CancellationToken cancellationToken);
     Task DeleteServersByHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
+    Task<int> GetTotalPlayerCountByContinentAsync(string continent, CancellationToken cancellationToken);
 }

@@ -17,6 +17,15 @@
                         </RadzenStack>
                     </RadzenCard>
                 </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+                    <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@SnapshotCount.ToString()"/>
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
+                            <RadzenText class="rz-text-tertiary-color" Text="Statistics"/>
+                            <RadzenLink Path="/Statistics" Text="Statistics?"/>
+                        </RadzenStack>
+                    </RadzenCard>
+                </RadzenColumn>
                 <AuthorizeView Context="iContext" Roles="@HelperMethods.GetHigherRolesAsString(IdentityRole.Admin)">
                     <Authorized>
                         <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
