@@ -7,12 +7,12 @@
     <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
         <RadzenCard>
             <RadzenRow JustifyContent="JustifyContent.Center" class="rz-mb-4">
-                <RadzenColumn SizeSM="12" SizeMD="12" SizeLG="3" SizeXL="5" SizeXX="6">
+                <RadzenColumn SizeSM="12" SizeMD="12" SizeLG="3" SizeXL="6" SizeXX="6">
                     <RadzenText TextAlign="TextAlign.Start" TextStyle="TextStyle.DisplayH4" class="rz-mb-0 rz-mt-2">
                         @_titleText
                     </RadzenText>
                 </RadzenColumn>
-                <RadzenColumn SizeSM="12" SizeMD="12" SizeLG="9" SizeXL="7" SizeXX="6">
+                <RadzenColumn SizeSM="12" SizeMD="12" SizeLG="9" SizeXL="6" SizeXX="6">
                     <RadzenRow AlignItems="AlignItems.End" JustifyContent="JustifyContent.End">
                         <RadzenColumn SizeSM="12" SizeMD="4">
                             <RadzenFormField Text="Select Region" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
@@ -72,7 +72,9 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="Created" Title="First Seen" MinWidth="120px">
                         <Template Context="context">
-                            @context.Created.Humanize()
+                            <RadzenText TextStyle="TextStyle.Body2" Text="@context.Created.Humanize()"
+                                        MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Position = TooltipPosition.Left}, context.Created.ToString("yyyy-MM-dd @ HH:mm:ss")))">
+                            </RadzenText>
                         </Template>
                     </RadzenDataGridColumn>
                     @if (!string.IsNullOrWhiteSpace(UserId) && !Manager)

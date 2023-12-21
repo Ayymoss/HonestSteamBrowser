@@ -22,9 +22,6 @@ using Serilog.Events;
 
 namespace BetterSteamBrowser.WebCore;
 
-// TODO: If previously authenticated and privileged, if they're demoted they will still have access to privileged pages until they log out and back in again.
-//      And the ability action moderation stuff.
-
 public class Program
 {
     public static void Main(string[] args)
@@ -109,8 +106,8 @@ public class Program
         });
         // Identity end
 
-        if (!Directory.Exists(Path.Join(AppContext.BaseDirectory, "Log")))
-            Directory.CreateDirectory(Path.Join(AppContext.BaseDirectory, "Log"));
+        if (!Directory.Exists(Path.Join(AppContext.BaseDirectory, "_Log")))
+            Directory.CreateDirectory(Path.Join(AppContext.BaseDirectory, "_Log"));
 
         Log.Logger = new LoggerConfiguration()
 #if DEBUG
@@ -119,6 +116,7 @@ public class Program
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
 #else
             .MinimumLevel.Warning()
+            .MinimumLevel.Override("BanHub", LogEventLevel.Information)
 #endif
             .Enrich.FromLogContext()
             .Enrich.With<ShortSourceContextEnricher>()
@@ -127,7 +125,7 @@ public class Program
                 httpRequestEx.Message.Contains("SSL connection could not be established"))
             .WriteTo.Console()
             .WriteTo.File(
-                Path.Join(AppContext.BaseDirectory, "Log", "bsb-.log"),
+                Path.Join(AppContext.BaseDirectory, "_Log", "bsb-.log"),
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 10,
                 outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] [{ShortSourceContext}] {Message:lj}{NewLine}{Exception}")

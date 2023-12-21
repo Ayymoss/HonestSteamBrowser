@@ -2,7 +2,7 @@
 @using BetterSteamBrowser.Domain.Enums
 
 <RadzenRow JustifyContent="JustifyContent.Center">
-    <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+    <RadzenColumn SizeXS="12" SizeSM="4" SizeMD="3" SizeXX="2">
         <RadzenCard>
             <RadzenStack Orientation="Orientation.Vertical" Gap="0">
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
@@ -19,7 +19,7 @@
             </RadzenStack>
         </RadzenCard>
     </RadzenColumn>
-    <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+    <RadzenColumn SizeXS="12" SizeSM="4" SizeMD="3" SizeXX="2">
         <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
             <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@SnapshotCount.ToString()"/>
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">
@@ -30,7 +30,7 @@
     </RadzenColumn>
     @if (IsAdmin)
     {
-        <RadzenColumn SizeXS="12" SizeSM="6" SizeMD="3" SizeXX="2">
+        <RadzenColumn SizeXS="12" SizeSM="4" SizeMD="3" SizeXX="2">
             <RadzenCard Style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                 <RadzenText TextStyle="TextStyle.H4" class="rz-color-primary rz-mb-0" Text="@_blockCount.ToString()"/>
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.Wrap">

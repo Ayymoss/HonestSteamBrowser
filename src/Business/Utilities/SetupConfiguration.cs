@@ -9,7 +9,7 @@ public static class SetupConfiguration
     public static SetupConfigurationContext ReadConfiguration()
     {
         var workingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var fileName = Path.Join(workingDirectory, "Configuration", "Configuration.json");
+        var fileName = Path.Join(workingDirectory, "_Configuration", "Configuration.json");
         var jsonString = File.ReadAllText(fileName);
         var configuration = JsonSerializer.Deserialize<SetupConfigurationContext>(jsonString);
 

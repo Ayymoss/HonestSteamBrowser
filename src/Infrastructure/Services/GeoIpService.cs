@@ -11,7 +11,7 @@ public class GeoIpService(SetupConfigurationContext configuration) : IGeoIpServi
     public void PopulateCountries(IEnumerable<EFServer> servers)
     {
         var workingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var fileName = Path.Join(workingDirectory, "Resources", configuration.MaxMindGeoIp2DatabaseName);
+        var fileName = Path.Join(workingDirectory, "_Resources", configuration.MaxMindGeoIp2DatabaseName);
         var parallelOptions = new ParallelOptions {MaxDegreeOfParallelism = 10};
         using var reader = new DatabaseReader(fileName);
 

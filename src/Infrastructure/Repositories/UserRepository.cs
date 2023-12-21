@@ -22,6 +22,7 @@ public class UserRepository(UserManager<ApplicationUser> userManager) : IUserRep
                 break;
             case false when isInAdminRole:
                 await userManager.RemoveFromRoleAsync(user, adminRole);
+                await userManager.UpdateSecurityStampAsync(user);
                 break;
         }
     }
@@ -34,5 +35,6 @@ public class UserRepository(UserManager<ApplicationUser> userManager) : IUserRep
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         var resultPassword = string.IsNullOrWhiteSpace(password) ? "BetterSteamBrowser123!" : password;
         await userManager.ResetPasswordAsync(user, token, resultPassword);
+        await userManager.UpdateSecurityStampAsync(user);
     }
 }

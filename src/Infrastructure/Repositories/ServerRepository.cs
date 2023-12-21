@@ -64,7 +64,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var hashes = await context.Servers
-            .Where(x => x.Created < from)
+            .Where(x => x.LastUpdated < from)
             .Select(x => x.Hash)
             .ToListAsync(cancellationToken: cancellationToken);
         return hashes;

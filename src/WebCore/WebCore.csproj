@@ -7,7 +7,7 @@
     <UserSecretsId>aspnet-WebCore-d32094a3-1311-45ac-b49a-8370c73b46ff</UserSecretsId>
     <RootNamespace>BetterSteamBrowser.WebCore</RootNamespace>
     <AssemblyName>BetterSteamBrowser.WebCore</AssemblyName>
-    <Version>2023.12.14.02</Version>
+    <Version>2023.12.14.05</Version>
   </PropertyGroup>
 
   <ItemGroup>
