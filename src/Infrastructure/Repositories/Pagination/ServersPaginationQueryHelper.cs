@@ -36,6 +36,16 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                     || EF.Functions.ILike(search.Name, $"%{searchWord}%")));
 
         if (request.Sorts.Any())
+        {
+            // If we're sorting, let's remove any servers that don't have the data we're sorting by
+            query = request.Sorts.First().Property switch
+            {
+                "PlayerStandardDeviation" => query.Where(x => x.PlayerStandardDeviation != null),
+                "PlayerGlobalStandardDeviationRatio" => query.Where(x => x.PlayerGlobalStandardDeviationRatio != null),
+                _ => query
+            };
+
+            // Apply the sort
             query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch
             {
                 "Name" => current.ApplySort(sort, p => p.Name),
@@ -45,8 +55,11 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "Address" => current.ApplySort(sort, p => p.IpAddress),
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
                 "Created" => current.ApplySort(sort, p => p.Created),
+                "PlayerStandardDeviation" => current.ApplySort(sort, p => p.PlayerStandardDeviation ?? 0),
+                "PlayerGlobalStandardDeviationRatio" => current.ApplySort(sort, p => p.PlayerGlobalStandardDeviationRatio ?? 0),
                 _ => current
             });
+        }
 
         var favouriteServers = new Dictionary<string, bool>();
         var favouriteServerHashes = new List<string>();
@@ -92,6 +105,11 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 Country = server.Country ?? "Unknown",
                 LastUpdated = server.LastUpdated,
                 Created = server.Created,
+                UpperBoundPlayers = server.UpperBoundPlayers,
+                LowerBoundPlayers = server.LowerBoundPlayers,
+                PlayerHistory = server.PlayerHistory,
+                PlayerStandardDeviation = server.PlayerStandardDeviation,
+                PlayerGlobalStandardDeviationRatio = server.PlayerGlobalStandardDeviationRatio,
                 Favourite = favouriteServers.ContainsKey(server.Hash) && favouriteServers[server.Hash]
             })
             .ToListAsync(cancellationToken: cancellationToken);

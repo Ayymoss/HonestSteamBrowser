@@ -57,8 +57,12 @@ public class SteamServerService(
                 .Select(kv => new Tuple<ServerListItem, string>(kv.Value, kv.Key))
                 .ToList();
 
-            var existingServerFinal = ProcessExistingServers(existingServers);
+            var existingServerFinal = ProcessExistingServers(existingServers).ToList();
             var newServersFinal = ProcessNewServers(newServers).ToList();
+
+            var allServers = existingServerFinal.Concat(newServersFinal).ToList();
+            var nonBlocked = allServers.Where(x => !x.Blocked).ToList();
+            AssignStandardDeviationToServers(nonBlocked);
 
             await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal, cancellationToken);
             logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
@@ -66,6 +70,37 @@ public class SteamServerService(
         catch (Exception e)
         {
             logger.LogError(e, "Error executing scheduled action");
+        }
+    }
+
+    private static void AssignStandardDeviationToServers(IEnumerable<EFServer> servers)
+    {
+        const int lowPlayerCountThreshold = 5;
+        var serversByGame = servers.GroupBy(server => server.SteamGameId);
+
+        foreach (var gameGroup in serversByGame)
+        {
+            var gameMean = gameGroup.Average(server => server.Players);
+            var gameSumOfSquares = gameGroup.Sum(server => Math.Pow(server.Players - gameMean, 2));
+            var gameStandardDeviation = Math.Sqrt(gameSumOfSquares / gameGroup.Count());
+
+            var groupedServers = gameGroup
+                .GroupBy(server => server.IpAddress)
+                .Where(group => group.Count() > 1 && !group.All(server => server.Players <= lowPlayerCountThreshold));
+
+            foreach (var group in groupedServers)
+            {
+                var groupMean = group.Average(server => server.Players);
+                var sumOfSquaresOfDifferences = group.Sum(server => Math.Pow(server.Players - groupMean, 2));
+                var groupStandardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / group.Count());
+                var deviationRatio = groupStandardDeviation / gameStandardDeviation;
+
+                foreach (var server in group)
+                {
+                    server.PlayerGlobalStandardDeviationRatio = deviationRatio;
+                    server.PlayerStandardDeviation = groupStandardDeviation;
+                }
+            }
         }
     }
 
@@ -204,6 +239,9 @@ public class SteamServerService(
             server.Item1.MaxPlayers = server.Item2.MaxPlayers;
             server.Item1.Map = server.Item2.Map!;
             server.Item1.LastUpdated = DateTimeOffset.UtcNow;
+
+            server.Item1.UpdateBounds(server.Item2.Players);
+            server.Item1.AddToHistory(server.Item2.Players);
         }
 
         var filtered = BuildBlockList(servers.Select(x => x.Item1).ToList());

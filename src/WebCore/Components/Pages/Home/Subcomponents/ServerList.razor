@@ -77,6 +77,50 @@
                             </RadzenText>
                         </Template>
                     </RadzenDataGridColumn>
+                    @if (Manager)
+                    {
+                        <RadzenDataGridColumn TItem="Server" Sortable="false" Property="AveragePlayers" Title="Player Avg." MinWidth="100px">
+                            <Template Context="context">
+                                <RadzenText TextStyle="TextStyle.Body2">@context.AveragePlayers.ToString("N2")</RadzenText>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Server" Property="PlayerStandardDeviation" Title="Player Std." MinWidth="100px">
+                            <Template Context="context">
+                                <RadzenText TextStyle="TextStyle.Body2" class="@PlayerStandardDeviationColour(context.PlayerStandardDeviation)">
+                                    @(context.PlayerStandardDeviation?.ToString("N2") ?? "--")
+                                </RadzenText>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Server" Property="PlayerGlobalStandardDeviationRatio" Title="Player Glo. Rat." MinWidth="120px">
+                            <Template Context="context">
+                                <RadzenText TextStyle="TextStyle.Body2" class="@PlayerGlobalStandardDeviationRatioColour(context.PlayerGlobalStandardDeviationRatio)">
+                                    @(context.PlayerGlobalStandardDeviationRatio?.ToString("N2") ?? "--")
+                                </RadzenText>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Server" Sortable="false" Title="Player Bounds" MinWidth="160px">
+                            <Template Context="context">
+                                @{
+                                    var hasBounds = context.UpperBoundPlayers > 0;
+                                }
+                                <RadzenText TextStyle="TextStyle.Body2">
+                                    @(hasBounds ? $"LB: {context.LowerBoundPlayers:N0}, UB: {context.UpperBoundPlayers:N0}" : "--")
+                                </RadzenText>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Server" Sortable="false" Title="Player Hist." MinWidth="120px">
+                            <Template Context="context">
+                                @{
+                                    var historyCount = context.PlayerHistory?.Count;
+                                    var historyTooltip = "No history available.";
+                                    if (historyCount is not 0)
+                                        historyTooltip = string.Join(", ", context.PlayerHistory!.Select((value, index) => $"{index}:{value:N0}"));
+                                }
+                                <RadzenText TextStyle="TextStyle.Body2" Text="@($"{historyCount ?? 0} item(s)")"
+                                            MouseEnter="@(args => ShowTooltip(args, new TooltipOptions {Duration = null, Position = TooltipPosition.Left}, historyTooltip))"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
                     @if (!string.IsNullOrWhiteSpace(UserId) && !Manager)
                     {
                         <RadzenDataGridColumn TItem="Server" Width="40px" TextAlign="TextAlign.Center" Sortable="false" Frozen="true">

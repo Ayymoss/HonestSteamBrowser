@@ -126,7 +126,6 @@ public partial class ServerList : IDisposable
         }
 
         _gamesFilterData = query.ToList();
-
         InvokeAsync(StateHasChanged);
     }
 
@@ -219,6 +218,28 @@ public partial class ServerList : IDisposable
         TooltipService.Open(elementReference, message, options);
 
     public Task ReloadTable() => _dataGrid.Reload();
+
+    private static string PlayerStandardDeviationColour(double? standard)
+    {
+        if (standard is null) return string.Empty;
+        return standard switch
+        {
+            < 10 => "rz-color-danger-light",
+            < 50 => "rz-color-warning-light",
+            _ => "rz-color-success-light"
+        };
+    }
+
+    private static string PlayerGlobalStandardDeviationRatioColour(double? ratio)
+    {
+        if (ratio is null) return string.Empty;
+        return ratio switch
+        {
+            < 0.5 => "rz-color-danger-light",
+            < 1 => "rz-color-warning-light",
+            _ => "rz-color-success-light"
+        };
+    }
 
     public void Dispose()
     {
