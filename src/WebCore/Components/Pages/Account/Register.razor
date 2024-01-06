@@ -1,0 +1,12 @@
+﻿@page "/Account/Register"
+<PageTitle>Register | Better Steam Browser</PageTitle>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <RadzenRow JustifyContent="JustifyContent.Center">
+            <RadzenColumn SizeSM="12" SizeMD="4" SizeXL="3">
+                <RegisterComponent/>
+            </RadzenColumn>
+        </RadzenRow>
+    </NotAuthorized>
+</AuthorizeView>

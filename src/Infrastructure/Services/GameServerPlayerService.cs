@@ -16,7 +16,6 @@ public class GameServerPlayerService : IGameServerPlayerService
             // This approach is problematic as if 'server.GetPlayers()' hangs from the library, the timeout will kill this task before we can try the next port.
             // We can't have the timeout too long either as it hangs the UI thread. This really needs to be a background thread. 
             // It's only a problem with a few servers, but it's still a problem.
-            // It's likely that this code does nothing since the timeout for the first query will be greater than the task timeout.
             using var server = ServerQuery.GetServerInstance(EngineType.Source, serverIp, port);
             using var query = ServerQuery.GetServerInstance(EngineType.Source, serverIp, ++port);
             var players = server.GetPlayers();

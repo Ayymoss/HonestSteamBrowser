@@ -12,4 +12,6 @@ public interface IServerRepository
     Task<List<string>> GetOlderServerHashesAsync(DateTimeOffset from, CancellationToken cancellationToken);
     Task DeleteServersByHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
     Task<int> GetTotalPlayerCountByContinentAsync(string continent, CancellationToken cancellationToken);
+    Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
+    Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken);
 }

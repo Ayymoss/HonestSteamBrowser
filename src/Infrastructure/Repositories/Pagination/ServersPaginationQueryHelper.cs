@@ -1,6 +1,7 @@
 ﻿using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
+using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using BetterSteamBrowser.Infrastructure.Context;
 using BetterSteamBrowser.Infrastructure.Utilities;
@@ -19,6 +20,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             .AsNoTracking()
             .Where(x => !x.Blocked)
             .Where(server => server.LastUpdated > DateTimeOffset.UtcNow.AddHours(-2))
+            .Include(x => x.SteamGame)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Region) &&
@@ -40,8 +42,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             // If we're sorting, let's remove any servers that don't have the data we're sorting by
             query = request.Sorts.First().Property switch
             {
-                "PlayerStandardDeviation" => query.Where(x => x.PlayerStandardDeviation != null),
-                "PlayerGlobalStandardDeviationRatio" => query.Where(x => x.PlayerGlobalStandardDeviationRatio != null),
+                "PlayersStandardDeviation" => query.Where(x => x.PlayersStandardDeviation != null),
                 _ => query
             };
 
@@ -55,8 +56,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "Address" => current.ApplySort(sort, p => p.IpAddress),
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),
                 "Created" => current.ApplySort(sort, p => p.Created),
-                "PlayerStandardDeviation" => current.ApplySort(sort, p => p.PlayerStandardDeviation ?? 0),
-                "PlayerGlobalStandardDeviationRatio" => current.ApplySort(sort, p => p.PlayerGlobalStandardDeviationRatio ?? 0),
+                "PlayersStandardDeviation" => current.ApplySort(sort, p => p.PlayersStandardDeviation ?? 0),
                 _ => current
             });
         }
@@ -93,6 +93,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             .Take(request.Top)
             .Select(server => new Server
             {
+                Hash = server.Hash,
                 IpAddress = server.IpAddress,
                 Port = server.Port,
                 Name = server.Name,
@@ -105,11 +106,11 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 Country = server.Country ?? "Unknown",
                 LastUpdated = server.LastUpdated,
                 Created = server.Created,
-                UpperBoundPlayers = server.UpperBoundPlayers,
-                LowerBoundPlayers = server.LowerBoundPlayers,
-                PlayerHistory = server.PlayerHistory,
-                PlayerStandardDeviation = server.PlayerStandardDeviation,
-                PlayerGlobalStandardDeviationRatio = server.PlayerGlobalStandardDeviationRatio,
+                CountryCode = server.CountryCode,
+                PlayersStandardDeviation = server.PlayersStandardDeviation,
+                PlayerAverage = server.PlayerAverage ?? 0,
+                PlayerUpper = server.PlayerUpperBound ?? 0,
+                PlayerLower = server.PlayerLowerBound ?? 0,
                 Favourite = favouriteServers.ContainsKey(server.Hash) && favouriteServers[server.Hash]
             })
             .ToListAsync(cancellationToken: cancellationToken);

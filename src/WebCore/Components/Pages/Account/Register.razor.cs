@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BetterSteamBrowser.WebCore.Components.Pages.Account;
 
-public partial class Account
+public partial class Register
 {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
     [Inject] private SignInManager<ApplicationUser> SignInManager { get; set; }

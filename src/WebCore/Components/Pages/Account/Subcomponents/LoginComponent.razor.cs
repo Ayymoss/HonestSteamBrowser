@@ -23,7 +23,7 @@ public partial class LoginComponent
         }
     }
 
-    public async Task LoginUser()
+    private async Task LoginUser()
     {
         _errorMessage = string.Empty;
 
@@ -45,6 +45,7 @@ public partial class LoginComponent
 
         [Required, DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+
         public bool RememberMe { get; set; } = true;
     }
 }

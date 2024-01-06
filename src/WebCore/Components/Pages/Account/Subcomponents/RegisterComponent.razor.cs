@@ -19,7 +19,7 @@ public partial class RegisterComponent
         ? HttpContext.SignOutAsync(IdentityConstants.ExternalScheme)
         : Task.CompletedTask;
 
-    public async Task RegisterUser()
+    private async Task RegisterUser()
     {
         _errorMessage = string.Empty;
 

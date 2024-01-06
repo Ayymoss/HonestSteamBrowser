@@ -52,7 +52,7 @@ public partial class TopBar : IAsyncDisposable
 
     public void RedirectToAccount()
     {
-        NavigationManager.NavigateTo("/Account", true);
+        NavigationManager.NavigateTo("/Account/Login", true);
     }
 
     public async Task ManageAccountAsync()

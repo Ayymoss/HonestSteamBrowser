@@ -20,7 +20,7 @@ public partial class ManageAccountDialog
 
     public void RedirectToAccount()
     {
-        NavigationManager.NavigateTo("/Account", true);
+        NavigationManager.NavigateTo("/Account/Login", true);
     }
 
     private async Task ResetUserPasswordAsync()

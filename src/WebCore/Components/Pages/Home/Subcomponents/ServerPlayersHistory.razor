@@ -1,0 +1,26 @@
+﻿@if (_loading)
+{
+    <div class="rz-m-12">
+        <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Info" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
+    </div>
+}
+else
+{
+    var snapShots = Server.ServerSnapshots?.Select(x => new {Snapshot = x.Snapshot.DateTime, x.Count}).ToList() ?? [];
+    var maxPlayers = Server.PlayerUpper > Server.MaxPlayers ? Server.PlayerUpper : Server.MaxPlayers;
+
+    if (snapShots.Count is not 0)
+    {
+        <RadzenChart Style="width: 100%">
+            <RadzenLineSeries Smooth="true" Data="snapShots" CategoryProperty="Snapshot" Title="Players" ValueProperty="Count">
+                <RadzenMarkers Visible="false" MarkerType="MarkerType.Circle"/>
+                <RadzenSeriesDataLabels Visible="false"/>
+            </RadzenLineSeries>
+            <RadzenValueAxis Max="maxPlayers" Min="0" Step="@(maxPlayers / 6)" FormatString="{0:N0}">
+                <RadzenGridLines Visible="true"/>
+            </RadzenValueAxis>
+            <RadzenCategoryAxis Padding="20" Formatter="DateFormatter"/>
+            <RadzenLegend Visible="false"/>
+        </RadzenChart>
+    }
+}

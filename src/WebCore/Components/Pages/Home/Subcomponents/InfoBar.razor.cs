@@ -42,8 +42,8 @@ public partial class InfoBar
         return OnWebContextUpdated.InvokeAsync(WebContext);
     }
 
-    public void RedirectToAccount()
+    private void RedirectToAccount()
     {
-        NavigationManager.NavigateTo("/Account", true);
+        NavigationManager.NavigateTo("/Account/Login", true);
     }
 }

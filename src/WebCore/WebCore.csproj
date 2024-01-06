@@ -1,72 +1,66 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-WebCore-d32094a3-1311-45ac-b49a-8370c73b46ff</UserSecretsId>
-    <RootNamespace>BetterSteamBrowser.WebCore</RootNamespace>
-    <AssemblyName>BetterSteamBrowser.WebCore</AssemblyName>
-    <Version>2024.01.03.03</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>aspnet-WebCore-d32094a3-1311-45ac-b49a-8370c73b46ff</UserSecretsId>
+        <RootNamespace>BetterSteamBrowser.WebCore</RootNamespace>
+        <AssemblyName>BetterSteamBrowser.WebCore</AssemblyName>
+        <Version>2024.01.06.04</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
-    <PackageReference Include="ClipLazor" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
-    <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Npgsql" Version="8.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
-    <PackageReference Include="Radzen.Blazor" Version="4.23.5" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.4.0"/>
+        <PackageReference Include="ClipLazor" Version="2.1.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0"/>
+        <PackageReference Include="Humanizer.Core" Version="2.14.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql" Version="8.0.1"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0"/>
+        <PackageReference Include="Radzen.Blazor" Version="4.23.5"/>
+        <PackageReference Include="Serilog" Version="3.1.1"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00968"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Business\Business.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Components\Pages\Account\Account.razor" />
-    <AdditionalFiles Include="Components\Pages\Account\Subcomponents\LoginComponent.razor" />
-    <AdditionalFiles Include="Components\Pages\Account\Subcomponents\RegisterComponent.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\Pages\Subcomponents\ServerList.razor" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-regular.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v15-latin-300.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v15-latin-700.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v15-latin-regular.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-300.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-500.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-700.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-regular.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Black.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-BlackIt.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Bold.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-BoldIt.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-ExtraLight.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-ExtraLightIt.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-It.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Light.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-LightIt.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Regular.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Semibold.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-SemiboldIt.woff" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Business\Business.csproj"/>
+        <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
+    </ItemGroup>
   
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="Components\Pages\Subcomponents\ServerList.razor"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-regular.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v15-latin-300.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v15-latin-700.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v15-latin-regular.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-300.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-500.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-700.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\roboto-v30-latin-regular.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Black.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-BlackIt.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Bold.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-BoldIt.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-ExtraLight.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-ExtraLightIt.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-It.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Light.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-LightIt.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Regular.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-Semibold.woff"/>
+        <_ContentIncludedByDefault Remove="wwwroot\fonts\SourceSansPro-SemiboldIt.woff"/>
+    </ItemGroup>
+
 </Project>

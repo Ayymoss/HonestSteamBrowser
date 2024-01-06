@@ -1,4 +1,5 @@
 ﻿@using Humanizer
+@using BetterSteamBrowser.Domain.ValueObjects
 
 <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Normal" JustifyContent="JustifyContent.Left">
     <RadzenText Text="@Server.Name" TextStyle="TextStyle.DisplayH5" TextAlign="TextAlign.Center" class="rz-mb-0 rz-color-secondary"/>
@@ -14,10 +15,10 @@
         </RadzenText>
     </RadzenStack>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
-        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="arrow_forward" Click="ConnectToServer" Text="Connect"/>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="arrow_forward" Click="ConnectToServer" Text="Connect" class="rz-border-radius-4 rz-py-5 rz-shadow-3"/>
         @if (_isClipboardSupported)
         {
-            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="content_copy" Click="CopyToClipboardAsync" Text="Copy Address"/>
+            <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="content_copy" Click="CopyToClipboardAsync" Text="Copy Address" class="rz-border-radius-4 rz-py-5 rz-shadow-3"/>
         }
         else
         {
@@ -30,9 +31,10 @@
             var favouriteText = _isFavourite ? "Remove from Favourites" : "Add to Favourites";
             var favouriteIcon = _isFavourite ? "star" : "star_border";
             var favouriteStyle = _isFavourite ? ButtonStyle.Danger : ButtonStyle.Info;
-            <RadzenButton ButtonStyle="@favouriteStyle" Icon="@favouriteIcon" Click="AddToFavouriteAsync" Text="@favouriteText" IsBusy="_processing" BusyText="Working..."/>
+            <RadzenButton ButtonStyle="@favouriteStyle" Icon="@favouriteIcon" Click="AddToFavouriteAsync" Text="@favouriteText" IsBusy="_processing" BusyText="Working..." class="rz-border-radius-4 rz-py-5 rz-shadow-3"/>
         }
     </RadzenStack>
+    <ServerPlayersHistory Server="Server"/>
     @if (_players is null)
     {
         <div class="rz-m-12">
@@ -43,41 +45,24 @@
     {
         if (_players.Count is not 0)
         {
-            <div class="scrollable-container rz-scrollbars">
-                <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
-                    <RadzenColumn SizeSM="12" SizeMD="2">
-                        <RadzenText class="rz-mb-0">Index</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn SizeSM="12" SizeMD="5">
-                        <RadzenText class="rz-mb-0">Name</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn SizeSM="12" SizeMD="2">
-                        <RadzenText class="rz-mb-0">Score</RadzenText>
-                    </RadzenColumn>
-                    <RadzenColumn SizeSM="12" SizeMD="3">
-                        <RadzenText class="rz-mb-0">Online Time</RadzenText>
-                    </RadzenColumn>
-                </RadzenRow>
-                <hr class="no-padding-hr"/>
-                @for (var i = 0; i < _players.Count; i++)
-                {
-                    var i1 = i;
-                    <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
-                        <RadzenColumn SizeSM="12" SizeMD="2">
-                            <RadzenText class="rz-mb-0">@((i1 + 1).ToString())</RadzenText>
-                        </RadzenColumn>
-                        <RadzenColumn SizeSM="12" SizeMD="5">
-                            <RadzenText class="rz-mb-0">@_players[i1].Name</RadzenText>
-                        </RadzenColumn>
-                        <RadzenColumn SizeSM="12" SizeMD="2">
-                            <RadzenText class="rz-mb-0">@_players[i1].Score</RadzenText>
-                        </RadzenColumn>
-                        <RadzenColumn SizeSM="12" SizeMD="3">
-                            <RadzenText class="rz-mb-0">@_players[i1].Online.Humanize()</RadzenText>
-                        </RadzenColumn>
-                    </RadzenRow>
-                    <hr class="no-padding-hr"/>
-                }
+            <div style="max-width:750px">
+                <RadzenDataGrid AllowColumnResize="true" AllowAlternatingRows="true" Density="Density.Compact" PageSize="10"
+                                AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                                Data="@_players" TItem="PlayerInfo">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="PlayerInfo" Property="Name" Title="Name" MinWidth="200px"/>
+                        <RadzenDataGridColumn TItem="PlayerInfo" Property="Score" Title="Score" MinWidth="100px">
+                            <Template Context="context">
+                                <RadzenText TextStyle="TextStyle.Body2" Text="@context.Score?.ToString("N0")" class="rz-mb-0"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PlayerInfo" Property="Online" Title="Online Time" MinWidth="200px">
+                            <Template Context="context">
+                                <RadzenText TextStyle="TextStyle.Body2" Text="@context.Online.Humanize()" class="rz-mb-0"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
             </div>
         }
     }

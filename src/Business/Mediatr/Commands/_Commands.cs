@@ -37,6 +37,13 @@ public class GetUserFavouriteCountCommand : IRequest<int>
     public string UserId { get; set; }
 }
 
+public class GetServerSnapshotsCommand : IRequest<List<ServerSnapshot>>
+{
+    public string Hash { get; set; }
+}
+
 public class GetBlockListCommand : Pagination, IRequest<PaginationContext<Block>>;
+
 public class GetSteamGameListCommand : Pagination, IRequest<PaginationContext<SteamGame>>;
+
 public class GetUserListCommand : Pagination, IRequest<PaginationContext<User>>;

@@ -1,7 +1,11 @@
-﻿namespace BetterSteamBrowser.Business.ViewModels;
+﻿using BetterSteamBrowser.Domain.ValueObjects;
+
+namespace BetterSteamBrowser.Business.ViewModels;
 
 public class Server
 {
+    public string Hash { get; set; }
+
     /// <summary>
     /// The IP Address. Excludes the port.
     /// </summary>
@@ -19,23 +23,19 @@ public class Server
     public string Map { get; set; }
     public int Players { get; set; }
     public int MaxPlayers { get; set; }
-    public int UpperBoundPlayers { get; set; }
-    public int LowerBoundPlayers { get; set; }
-    public List<int>? PlayerHistory { get; set; }
-    public double? PlayerStandardDeviation { get; set; }
-    public double? PlayerGlobalStandardDeviationRatio { get; set; }
+    public List<ServerSnapshot>? ServerSnapshots { get; set; }
+    public double? PlayersStandardDeviation { get; set; }
     public string Country { get; set; }
+    public string? CountryCode { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
     public DateTimeOffset Created { get; set; }
     public bool Favourite { get; set; }
+    public double PlayerAverage { get; set; }
+    public int PlayerUpper { get; set; }
+    public int PlayerLower { get; set; }
 
     /// <summary>
     /// Combination of IpAddress and Port.
     /// </summary>
     public string Address => $"{IpAddress}:{Port}";
-
-    /// <summary>
-    /// The average number of players on the server.
-    /// </summary>
-    public double AveragePlayers => PlayerHistory?.Count > 0 ? PlayerHistory.Average() : 0;
 }

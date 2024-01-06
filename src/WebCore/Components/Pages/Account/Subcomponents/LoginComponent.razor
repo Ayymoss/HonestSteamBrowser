@@ -1,23 +1,31 @@
-﻿<RadzenCard>
-    <RadzenText Text="Login In" TextStyle="TextStyle.H3"/>
-    <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-        <DataAnnotationsValidator/>
-        <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem">
-            <InputText @bind-Value="Input.Username" class="rz-textbox rz-state-empty" autocomplete="username" style="width: 100%" aria-required="true" placeholder="Username"/>
-            <InputText type="password" @bind-Value="Input.Password" class="rz-textbox rz-state-empty" style="width: 100%" autocomplete="current-password" aria-required="true" placeholder="Password"/>
-            <ValidationSummary class="text-danger" role="alert"/>
-            <RadzenStack Orientation="Orientation.Horizontal">
-                <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input"/>
-                <RadzenText TextAlign="TextAlign.Center" Text="Remember me?" TextStyle="TextStyle.Body1" class="rz-mb-0"/>
-            </RadzenStack>
-            <button type="submit" class="rz-button rz-button-md rz-variant-filled rz-info rz-shade-dark" style="width: 100%">Log in</button>
-            @if (!string.IsNullOrWhiteSpace(_errorMessage))
-            {
-                <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
-                    <RadzenText Text="Error:" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
-                    <RadzenText Text="@_errorMessage" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
+﻿<RadzenStack Orientation="Orientation.Vertical">
+    <RadzenCard>
+        <RadzenText Text="Login" TextStyle="TextStyle.H3"/>
+        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+            <DataAnnotationsValidator/>
+            <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem">
+                <InputText @bind-Value="Input.Username" class="rz-textbox rz-state-empty" autocomplete="username" style="width: 100%" aria-required="true" placeholder="Username"/>
+                <InputText type="password" @bind-Value="Input.Password" class="rz-textbox rz-state-empty" style="width: 100%" autocomplete="current-password" aria-required="true" placeholder="Password"/>
+                <ValidationSummary class="text-danger" role="alert"/>
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input"/>
+                    <RadzenText TextAlign="TextAlign.Center" Text="Remember me?" TextStyle="TextStyle.Body1" class="rz-mb-0"/>
                 </RadzenStack>
-            }
+                <button type="submit" class="rz-button rz-button-md rz-variant-filled rz-info rz-shade-dark rz-border-radius-2">Log in</button>
+                @if (!string.IsNullOrWhiteSpace(_errorMessage))
+                {
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
+                        <RadzenText Text="Error:" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
+                        <RadzenText Text="@_errorMessage" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
+                    </RadzenStack>
+                }
+            </RadzenStack>
+        </EditForm>
+    </RadzenCard>
+    <RadzenCard>
+        <RadzenStack Orientation="Orientation.Vertical">
+            <RadzenText Text="Register an Account?" TextStyle="TextStyle.H3"/>
+            <a href="/Account/Register" class="rz-button rz-button-md rz-variant-filled rz-secondary rz-shade-dark rz-border-radius-2" style="text-align:center">Register</a>
         </RadzenStack>
-    </EditForm>
-</RadzenCard>
+    </RadzenCard>
+</RadzenStack>

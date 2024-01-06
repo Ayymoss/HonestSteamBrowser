@@ -46,6 +46,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         var serverList = await context.Servers
             .Where(x => servers.Contains(x.Hash))
             .Include(x => x.SteamGame)
+            .Include(x => x.ServerSnapshots)
             .ToListAsync();
         return serverList;
     }
@@ -56,7 +57,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         var query = context.Servers.Where(x => x.IpAddress == address);
         if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
         var servers = await query.ToListAsync(cancellationToken: cancellationToken);
-        foreach (var server in servers) server.Blocked = true;
+        foreach (var server in servers) server.BlockServer();
         await context.SaveChangesAsync(cancellationToken);
     }
 
@@ -92,5 +93,24 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
             .Where(server => server.CountryCode != null && countryCodesInRegion.Contains(server.CountryCode))
             .SumAsync(x => x.Players, cancellationToken: cancellationToken);
         return count;
+    }
+
+    public async Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var servers = await context.ServerSnapshots
+            .Where(x => serverHashes.Contains(x.ServerHash))
+            .ToListAsync(cancellationToken: cancellationToken);
+        context.ServerSnapshots.RemoveRange(servers);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+        var snapshots = await context.ServerSnapshots
+            .Where(x => x.ServerHash == hash)
+            .ToListAsync(cancellationToken: cancellationToken);
+        return snapshots;
     }
 }

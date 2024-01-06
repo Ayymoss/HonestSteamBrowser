@@ -1,20 +1,28 @@
-﻿<RadzenCard>
-    <RadzenText Text="Register" TextStyle="TextStyle.H3"/>
-    <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
-        <DataAnnotationsValidator/>
-        <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem">
-            <InputText @bind-Value="Input.Username" class="rz-textbox rz-state-empty" autocomplete="username" style="width: 100%" aria-required="true" placeholder="Username"/>
-            <InputText type="password" @bind-Value="Input.Password" class="rz-textbox rz-state-empty" style="width: 100%" aria-required="true" placeholder="Password (6-64 characters)"/>
-            <InputText type="password" @bind-Value="Input.ConfirmPassword" class="rz-textbox rz-state-empty" style="width: 100%" aria-required="true" placeholder="Confirm Password"/>
-            <ValidationSummary class="text-danger" role="alert"/>
-            <button type="submit" class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-light" style="width: 100%">Register</button>
-            @if (!string.IsNullOrWhiteSpace(_errorMessage))
-            {
-                <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
-                    <RadzenText Text="Error:" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
-                    <RadzenText Text="@_errorMessage" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
-                </RadzenStack>
-            }
+﻿<RadzenStack Orientation="Orientation.Vertical">
+    <RadzenCard>
+        <RadzenText Text="Register" TextStyle="TextStyle.H3"/>
+        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+            <DataAnnotationsValidator/>
+            <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem">
+                <InputText @bind-Value="Input.Username" class="rz-textbox rz-state-empty" autocomplete="username" style="width: 100%" aria-required="true" placeholder="Username"/>
+                <InputText type="password" @bind-Value="Input.Password" class="rz-textbox rz-state-empty" style="width: 100%" aria-required="true" placeholder="Password (6-64 characters)"/>
+                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="rz-textbox rz-state-empty" style="width: 100%" aria-required="true" placeholder="Confirm Password"/>
+                <ValidationSummary class="text-danger" role="alert"/>
+                <button type="submit" class="rz-button rz-button-md rz-variant-filled rz-info rz-shade-dark rz-border-radius-2">Register</button>
+                @if (!string.IsNullOrWhiteSpace(_errorMessage))
+                {
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.25rem">
+                        <RadzenText Text="Error:" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
+                        <RadzenText Text="@_errorMessage" TextStyle="TextStyle.Body1" class="rz-color-danger"/>
+                    </RadzenStack>
+                }
+            </RadzenStack>
+        </EditForm>
+    </RadzenCard>
+    <RadzenCard>
+        <RadzenStack Orientation="Orientation.Vertical">
+            <RadzenText Text="Looking to Login?" TextStyle="TextStyle.H3"/>
+            <a href="/Account/Login" class="rz-button rz-button-md rz-variant-filled rz-secondary rz-shade-dark rz-border-radius-2" style="text-align:center">Login</a>
         </RadzenStack>
-    </EditForm>
-</RadzenCard>
+    </RadzenCard>
+</RadzenStack>

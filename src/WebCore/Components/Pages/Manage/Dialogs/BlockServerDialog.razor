@@ -1,24 +1,27 @@
 ﻿<RadzenStack Orientation="Orientation.Vertical" Gap="0">
-    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal" Gap="0.25rem">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
-            <RadzenText class="rz-color-primary" Text="Name:"/>
-            <RadzenText>@Server.Name</RadzenText>
+            <RadzenText class="rz-color-primary rz-mb-0" Text="Name:"/>
+            <RadzenText class="rz-mb-0">@Server.Name</RadzenText>
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
-            <RadzenText class="rz-color-primary" Text="Address:"/>
-            <RadzenText>@Server.Address</RadzenText>
+            <RadzenText class="rz-color-primary rz-mb-0" Text="Address:"/>
+            <RadzenText class="rz-mb-0">@Server.Address</RadzenText>
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
-            <RadzenText class="rz-color-primary" Text="Players:"/>
-            <RadzenText>@Server.Players/@Server.MaxPlayers</RadzenText>
+            <RadzenText class="rz-color-primary rz-mb-0" Text="Players:"/>
+            <RadzenText class="rz-mb-0">@Server.Players/@Server.MaxPlayers</RadzenText>
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
-            <RadzenText class="rz-color-primary" Text="Country:"/>
-            <RadzenText>@Server.Country</RadzenText>
+            <ServerPlayersHistory Server="Server"/>
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
-            <RadzenText class="rz-color-primary" Text="Game Name:"/>
-            <RadzenText>@Server.SteamGameName</RadzenText>
+            <RadzenText class="rz-color-primary rz-mb-0" Text="Country:"/>
+            <RadzenText class="rz-mb-0">@Server.Country</RadzenText>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary rz-mb-0" Text="Game Name:"/>
+            <RadzenText class="rz-mb-0">@Server.SteamGameName</RadzenText>
         </RadzenStack>
     </RadzenStack>
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" class="rz-my-4">

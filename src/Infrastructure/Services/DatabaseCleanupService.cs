@@ -17,6 +17,7 @@ public class DatabaseCleanupService(
         logger.LogInformation("Found {ServerHashesCount} servers to purge", serverHashes.Count);
         await favouriteRepository.DeleteFavouritesByServerHashesAsync(serverHashes, cancellationToken);
         await serverRepository.DeleteServersByHashesAsync(serverHashes, cancellationToken);
+        await serverRepository.DeletePlayerSnapshotsByServerHashesAsync(serverHashes, cancellationToken);
         logger.LogInformation("Purged {ServerHashesCount} servers", serverHashes.Count);
         await snapshotRepository.DeleteSnapshotsByDateAsync(DateTimeOffset.UtcNow.AddYears(-1), cancellationToken);
         logger.LogInformation("Purged snapshots older than 1 year");

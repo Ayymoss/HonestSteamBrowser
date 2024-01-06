@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Radzen;
 using Radzen.Blazor;
+using Radzen.Blazor.Rendering;
 using SortDescriptor = BetterSteamBrowser.Domain.ValueObjects.Pagination.SortDescriptor;
 
 namespace BetterSteamBrowser.WebCore.Components.Pages.Home.Subcomponents;
@@ -70,15 +71,28 @@ public partial class ServerList : IDisposable
     {
         _isLoading = true;
 
+        var sort = args.Sorts.Count() is 0
+            ?
+            [
+                new Radzen.SortDescriptor
+                {
+                    Property = "Players",
+                    SortOrder = SortOrder.Descending
+                }
+            ]
+            : args.Sorts;
+
+        var convertedSort = sort.Select(x => new SortDescriptor
+        {
+            Property = x.Property,
+            SortOrder = x.SortOrder == SortOrder.Ascending
+                ? SortDirection.Ascending
+                : SortDirection.Descending
+        });
+
         var paginationQuery = new GetServerListCommand
         {
-            Sorts = args.Sorts.Select(x => new SortDescriptor
-            {
-                Property = x.Property,
-                SortOrder = x.SortOrder == SortOrder.Ascending
-                    ? SortDirection.Ascending
-                    : SortDirection.Descending
-            }),
+            Sorts = convertedSort,
             Search = _searchString,
             Top = args.Top ?? 20,
             Skip = args.Skip ?? 0,
@@ -143,6 +157,8 @@ public partial class ServerList : IDisposable
         await _dataGrid.Reload();
         UpdateUrl();
     }
+
+    private Task OnSort(DataGridColumnSortEventArgs<Server> arg) => arg.SortOrder is not null ? _dataGrid.GoToPage(0) : Task.CompletedTask;
 
     private void UpdateTitle()
     {
@@ -224,19 +240,8 @@ public partial class ServerList : IDisposable
         if (standard is null) return string.Empty;
         return standard switch
         {
-            < 10 => "rz-color-danger-light",
-            < 50 => "rz-color-warning-light",
-            _ => "rz-color-success-light"
-        };
-    }
-
-    private static string PlayerGlobalStandardDeviationRatioColour(double? ratio)
-    {
-        if (ratio is null) return string.Empty;
-        return ratio switch
-        {
-            < 0.5 => "rz-color-danger-light",
-            < 1 => "rz-color-warning-light",
+            < 0.2 => "rz-color-danger-light",
+            < 0.5 => "rz-color-warning-light",
             _ => "rz-color-success-light"
         };
     }

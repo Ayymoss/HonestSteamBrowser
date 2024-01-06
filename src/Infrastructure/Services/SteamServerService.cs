@@ -14,6 +14,11 @@ using RestEase;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
+// TODO: Delay showing new servers for a day or so. This will allow us to filter out servers that are only up for a short time
+// TODO: Trust Score. If a server is up for a long time, it's more likely to be a good server
+// TODO: Standard dev for each server's player history. Consistency shows spoofed servers
+// TODO: We have player history, let's use it in the algo for determining spoofed servers
+
 public class SteamServerService(
     IHttpClientFactory httpClientFactory,
     IServerRepository serverRepository,
@@ -60,47 +65,12 @@ public class SteamServerService(
             var existingServerFinal = ProcessExistingServers(existingServers).ToList();
             var newServersFinal = ProcessNewServers(newServers).ToList();
 
-            var allServers = existingServerFinal.Concat(newServersFinal).ToList();
-            var nonBlocked = allServers.Where(x => !x.Blocked).ToList();
-            AssignStandardDeviationToServers(nonBlocked);
-
             await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal, cancellationToken);
             logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error executing scheduled action");
-        }
-    }
-
-    private static void AssignStandardDeviationToServers(IEnumerable<EFServer> servers)
-    {
-        const int lowPlayerCountThreshold = 5;
-        var serversByGame = servers.GroupBy(server => server.SteamGameId);
-
-        foreach (var gameGroup in serversByGame)
-        {
-            var gameMean = gameGroup.Average(server => server.Players);
-            var gameSumOfSquares = gameGroup.Sum(server => Math.Pow(server.Players - gameMean, 2));
-            var gameStandardDeviation = Math.Sqrt(gameSumOfSquares / gameGroup.Count());
-
-            var groupedServers = gameGroup
-                .GroupBy(server => server.IpAddress)
-                .Where(group => group.Count() > 1 && !group.All(server => server.Players <= lowPlayerCountThreshold));
-
-            foreach (var group in groupedServers)
-            {
-                var groupMean = group.Average(server => server.Players);
-                var sumOfSquaresOfDifferences = group.Sum(server => Math.Pow(server.Players - groupMean, 2));
-                var groupStandardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / group.Count());
-                var deviationRatio = groupStandardDeviation / gameStandardDeviation;
-
-                foreach (var server in group)
-                {
-                    server.PlayerGlobalStandardDeviationRatio = deviationRatio;
-                    server.PlayerStandardDeviation = groupStandardDeviation;
-                }
-            }
         }
     }
 
@@ -184,16 +154,19 @@ public class SteamServerService(
                 {
                     case FilterType.Hostname:
                         if (server.Name.Contains(block.Value, StringComparison.OrdinalIgnoreCase))
-                            server.Blocked = true;
+                            server.BlockServer();
                         break;
                     case FilterType.CountryCode:
-                        if (server.CountryCode == block.Value) server.Blocked = true;
+                        if (server.CountryCode == block.Value)
+                            server.BlockServer();
                         break;
                     case FilterType.IpAddress:
-                        if (server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture)) server.Blocked = true;
+                        if (server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture))
+                            server.BlockServer();
                         break;
                     case FilterType.Subnet:
-                        if (server.IpAddress.IsInCidrRange(block.Value)) server.Blocked = true;
+                        if (server.IpAddress.IsInCidrRange(block.Value))
+                            server.BlockServer();
                         break;
                 }
             }
@@ -239,9 +212,8 @@ public class SteamServerService(
             server.Item1.MaxPlayers = server.Item2.MaxPlayers;
             server.Item1.Map = server.Item2.Map!;
             server.Item1.LastUpdated = DateTimeOffset.UtcNow;
-
-            server.Item1.UpdateBounds(server.Item2.Players);
-            server.Item1.AddToHistory(server.Item2.Players);
+            server.Item1.AddToHistory();
+            server.Item1.UpdateStandardDeviation();
         }
 
         var filtered = BuildBlockList(servers.Select(x => x.Item1).ToList());
