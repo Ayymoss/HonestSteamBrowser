@@ -4,5 +4,5 @@ namespace BetterSteamBrowser.Domain.Interfaces.Services;
 
 public interface ISignalRNotification
 {
-    Task NotifyUserAsync(HubType hubType, string methodName, object message, CancellationToken cancellationToken);
+    Task NotifyUsersAsync(HubType hubType, string methodName, object message, CancellationToken cancellationToken);
 }

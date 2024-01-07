@@ -218,15 +218,13 @@ public partial class ServerList : IDisposable
         {
             if (!IsAdmin) return;
 
-            await DialogService.OpenAsync<BlockServerDialog>("Block Address?", parameters, options);
-            await OnServerBlockCreated.InvokeAsync();
-            await _dataGrid.Reload();
+            var result = await DialogService.OpenAsync<BlockServerDialog>("Block Address?", parameters, options);
+            if (result is true) await OnServerBlockCreated.InvokeAsync();
         }
         else
         {
             options.ShowTitle = false;
             await DialogService.OpenAsync<ViewServerMetaDialog>("Server Meta", parameters, options);
-            await _dataGrid.Reload();
         }
     }
 

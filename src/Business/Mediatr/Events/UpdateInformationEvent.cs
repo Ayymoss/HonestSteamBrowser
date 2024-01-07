@@ -4,11 +4,15 @@ using BetterSteamBrowser.Domain.Enums;
 using BetterSteamBrowser.Domain.Interfaces.Repositories;
 using BetterSteamBrowser.Domain.Interfaces.Services;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace BetterSteamBrowser.Business.Mediatr.Events;
 
-public class UpdateInformationEvent(IServerRepository serverRepository, ServerContextCache contextCache,
-        ISignalRNotification signalRNotification)
+public class UpdateInformationEvent(
+    IServerRepository serverRepository,
+    ServerContextCache contextCache,
+    ISignalRNotification signalRNotification,
+    ILogger<UpdateInformationEvent> logger)
     : INotificationHandler<UpdateInformationCommand>
 {
     public async Task Handle(UpdateInformationCommand notification, CancellationToken cancellationToken)
@@ -22,7 +26,8 @@ public class UpdateInformationEvent(IServerRepository serverRepository, ServerCo
         };
 
         contextCache.UpdateServerCount(cache);
-        await signalRNotification.NotifyUserAsync(HubType.Main, SignalRMethod.OnInformationUpdated.ToString(), cache,
-            cancellationToken);
+
+        logger.LogInformation("Notifying clients of updated information");
+        await signalRNotification.NotifyUsersAsync(HubType.Main, SignalRMethod.OnInformationUpdated.ToString(), cache, cancellationToken);
     }
 }

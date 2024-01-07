@@ -58,8 +58,8 @@ public class EFServer
         ServerSnapshots ??= [];
         ServerSnapshots.Add(new EFServerSnapshot {SnapshotCount = Players, SnapshotTaken = DateTimeOffset.UtcNow});
         PlayerAverage = ServerSnapshots.Average(x => x.SnapshotCount);
-        PlayerUpperBound = ServerSnapshots.Min(x => x.SnapshotCount);
-        PlayerLowerBound = ServerSnapshots.Max(x => x.SnapshotCount);
+        PlayerUpperBound = ServerSnapshots.Max(x => x.SnapshotCount);
+        PlayerLowerBound = ServerSnapshots.Min(x => x.SnapshotCount);
 
         // Cap the history - 1 Week ((60 / 4) * 24 * 7)
         if (ServerSnapshots.Count > 672) ServerSnapshots.RemoveAt(0);
@@ -73,11 +73,12 @@ public class EFServer
 
     public void UpdateStandardDeviation()
     {
+        if (!PlayerAverage.HasValue) return;
         if (!(ServerSnapshots?.Count > 1)) return;
 
-        var avg = ServerSnapshots.Average(x => x.SnapshotCount);
-        var sumOfSquaresOfDifferences = ServerSnapshots.Sum(x => (x.SnapshotCount - avg) * (x.SnapshotCount - avg));
+        var average = PlayerAverage.Value;
+        var sumOfSquaresOfDifferences = ServerSnapshots.Sum(x => (x.SnapshotCount - average) * (x.SnapshotCount - average));
         var standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / ServerSnapshots.Count);
-        PlayersStandardDeviation = avg > 0 ? standardDeviation / avg : 0;
+        PlayersStandardDeviation = average > 0 ? standardDeviation / average : 0;
     }
 }

@@ -19,13 +19,13 @@ public static partial class ExtensionMethods
         ? query.OrderBy(property)
         : query.OrderByDescending(property);
 
-    public static async Task<TResponse?> DeserializeHttpResponseContentAsync<TResponse>(this HttpResponseMessage response)
+    public static async Task<TResponse?> DeserializeHttpResponseContentAsync<TResponse>(this HttpResponseMessage response, CancellationToken cancellationToken)
         where TResponse : class
     {
         try
         {
             if (!response.IsSuccessStatusCode) return null;
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             return string.IsNullOrEmpty(json) ? null : JsonSerializer.Deserialize<TResponse>(json, JsonSerializerOptions);
         }
         catch (Exception e)

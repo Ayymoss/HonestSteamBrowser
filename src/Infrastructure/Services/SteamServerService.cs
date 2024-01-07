@@ -45,11 +45,12 @@ public class SteamServerService(
             _blockList = await blockRepository.GetBlockListAsync(cancellationToken);
             _steamGames = await steamGameRepository.GetSteamGamesAsync(cancellationToken);
 
-            var rawSteamServers = (await RetrieveServerStatisticsAsync())
+            var rawSteamServers = (await RetrieveServerStatisticsAsync(cancellationToken))
                 .GroupBy(serverStat => serverStat.Address.Compute256Hash())
                 .ToDictionary(serverStat => serverStat.Key,
                     serverStat => serverStat.First());
 
+            logger.LogInformation("Processing {Count} servers...", rawSteamServers.Count);
             var existingServerHashes = await serverRepository.GetServerByExistingAsync(rawSteamServers.Keys);
             var existingServerDictionary = existingServerHashes.ToDictionary(server => server.Hash, server => server);
 
@@ -65,6 +66,7 @@ public class SteamServerService(
             var existingServerFinal = ProcessExistingServers(existingServers).ToList();
             var newServersFinal = ProcessNewServers(newServers).ToList();
 
+            logger.LogInformation("Modifying {Count} servers...", existingServerFinal.Count + newServersFinal.Count);
             await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal, cancellationToken);
             logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
         }
@@ -74,31 +76,45 @@ public class SteamServerService(
         }
     }
 
-    private async Task<List<ServerListItem>> RetrieveServerStatisticsAsync()
+    private async Task<List<ServerListItem>> RetrieveServerStatisticsAsync(CancellationToken cancellationToken)
     {
         var serverList = new ConcurrentBag<ServerListItem>();
-
-        for (var i = 0; i < _steamGames.Count; i += BatchSize)
+        var parallelOptions = new ParallelOptions
         {
-            var batch = _steamGames.Where(x => x.Id > 0).Skip(i).Take(BatchSize);
-            var tasks = batch.AsParallel().Select(ProcessGameAsync).ToList();
-            var results = await Task.WhenAll(tasks);
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            CancellationToken = cancellationToken
+        };
 
-            foreach (var result in results)
+        var games = _steamGames.Where(x => x.Id > 0).ToList();
+
+        logger.LogInformation("[Starting] Processing {GamesCount} games", games.Count);
+
+        // Token comes from the options.
+        await Parallel.ForEachAsync(games, parallelOptions, async (game, token) =>
+        {
+            logger.LogInformation("[Starting] Processing {@GameName}", game.Name);
+            var result = await ProcessGameAsync(game, token);
+
+            if (result != null)
             {
-                if (result is null) continue;
-                foreach (var item in result.Item2) serverList.Add(item);
+                foreach (var item in result.Item2)
+                {
+                    serverList.Add(item);
+                }
             }
-        }
 
+            logger.LogInformation("[Finished] Processing {@GameName}", game.Name);
+        });
+
+        logger.LogInformation("[Finished] Processing {GamesCount} games", games.Count);
         return serverList.ToList();
     }
 
-    private async Task<Tuple<EFSteamGame, List<ServerListItem>>?> ProcessGameAsync(EFSteamGame game)
+    private async Task<Tuple<EFSteamGame, List<ServerListItem>>?> ProcessGameAsync(EFSteamGame game, CancellationToken cancellationToken)
     {
         var blocksForApi = _blockList.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
         var filter = BuildApiFilter(blocksForApi, game.Id);
-        var serverListItems = await GetServerListAsync(filter);
+        var serverListItems = await GetServerListAsync(filter, cancellationToken);
         logger.LogDebug("Filter {GameAppId}: {Filter}", game.Id, filter);
 
         if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
@@ -107,7 +123,7 @@ public class SteamServerService(
         return null;
     }
 
-    private async Task<List<ServerListItem>?> GetServerListAsync(string filterParam)
+    private async Task<List<ServerListItem>?> GetServerListAsync(string filterParam, CancellationToken cancellationToken)
     {
         const int queryLimit = 20_000;
         var queryParams = new Dictionary<string, string>
@@ -126,7 +142,7 @@ public class SteamServerService(
                 return null;
             }
 
-            var result = await response.DeserializeHttpResponseContentAsync<ServerListRoot>();
+            var result = await response.DeserializeHttpResponseContentAsync<ServerListRoot>(cancellationToken);
             return result?.Response.Servers;
         }
         catch (Exception ex)

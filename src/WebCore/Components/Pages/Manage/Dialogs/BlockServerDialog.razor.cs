@@ -28,6 +28,6 @@ public partial class BlockServerDialog
 
         NotificationService.Notify(NotificationSeverity.Success, "IP Address blocked!");
         _processing = false;
-        DialogService.Close();
+        DialogService.Close(true);
     }
 }

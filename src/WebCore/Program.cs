@@ -112,17 +112,22 @@ public class Program
         Log.Logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Information()
-            .MinimumLevel.Override("BanHub", LogEventLevel.Debug)
+            .MinimumLevel.Override("BetterSteamBrowser", LogEventLevel.Debug)
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
 #else
             .MinimumLevel.Warning()
-            .MinimumLevel.Override("BanHub", LogEventLevel.Information)
+            .MinimumLevel.Override("BetterSteamBrowser", LogEventLevel.Information)
 #endif
             .Enrich.FromLogContext()
             .Enrich.With<ShortSourceContextEnricher>()
+            // I'm excluding these errors since I have no idea how they're being triggered. It's not causing any issues. Related to SignalR.
             .Filter.ByExcluding(logEvent =>
                 logEvent.Exception is HttpRequestException httpRequestEx &&
                 httpRequestEx.Message.Contains("SSL connection could not be established"))
+            .Filter.ByExcluding(logEvent =>
+                logEvent.Exception is InvalidOperationException invalidOpEx &&
+                invalidOpEx.Message.Contains("'BetterSteamBrowser.Infrastructure.SignalR.BsbClientHub' type only implements " +
+                                             "IAsyncDisposable. Use DisposeAsync to dispose the container."))
             .WriteTo.Console()
             .WriteTo.File(
                 Path.Join(AppContext.BaseDirectory, "_Log", "bsb-.log"),

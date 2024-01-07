@@ -2,11 +2,12 @@
 using BetterSteamBrowser.Domain.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace BetterSteamBrowser.Infrastructure.Services;
 
-public class ScheduledTaskRunner(IServiceProvider serviceProvider) : IDisposable
+public class ScheduledTaskRunner(IServiceProvider serviceProvider, ILogger<ScheduledTaskRunner> logger) : IDisposable
 {
     private Timer? _steamTimer;
     private bool _steamFirstRun = true;
@@ -36,10 +37,19 @@ public class ScheduledTaskRunner(IServiceProvider serviceProvider) : IDisposable
             var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
             try
             {
+                logger.LogInformation("Fetching Steam Server List");
                 await steamService.StartSteamFetchAsync(_cancellationTokenSource.Token);
+
+                logger.LogInformation("Purging old records");
                 await databasePurgeService.PurgeOldRecordsAsync(DateTimeOffset.UtcNow.AddDays(-7), _cancellationTokenSource.Token);
+
+                logger.LogInformation("Updating statistics cache");
                 await publisher.Publish(new UpdateInformationCommand(), _cancellationTokenSource.Token);
+
+                logger.LogInformation("Updating statistics page");
                 await statisticsService.FetchStatisticsAsync(_cancellationTokenSource.Token);
+
+                logger.LogInformation("Finished scheduled action");
             }
             catch (Exception e)
             {

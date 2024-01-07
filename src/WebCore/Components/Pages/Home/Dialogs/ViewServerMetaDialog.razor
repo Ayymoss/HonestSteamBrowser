@@ -22,7 +22,7 @@
         }
         else
         {
-            <RadzenCard Style="padding:0.5rem">
+            <RadzenCard class="rz-border-radius-4 rz-py-5 rz-px-5 rz-shadow-3">
                 <RadzenText TextStyle="TextStyle.Body2" TextAlign="TextAlign.Center" Text="@Server.Address" class="rz-mb-0"/>
             </RadzenCard>
         }
@@ -37,8 +37,8 @@
     <ServerPlayersHistory Server="Server"/>
     @if (_players is null)
     {
-        <div class="rz-m-12">
-            <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Info" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
+        <div class="rz-mx-12 rz-my-4">
+            <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Secondary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"/>
         </div>
     }
     else

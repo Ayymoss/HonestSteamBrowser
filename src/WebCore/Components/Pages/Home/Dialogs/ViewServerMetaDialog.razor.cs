@@ -26,9 +26,10 @@ public partial class ViewServerMetaDialog
 
     private string SteamUrl => $"steam://connect/{Server.Address}";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public void ConnectToServer() => NavigationManager.NavigateTo(SteamUrl, true);
+
+    protected override async Task OnInitializedAsync()
     {
-        if (!firstRender) return;
         _isClipboardSupported = await Clipboard.IsPermitted(PermissionCommand.Write);
 
         await IsServerFavouriteAsync(Server.IpAddress, Server.Port);
@@ -37,13 +38,20 @@ public partial class ViewServerMetaDialog
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(2000));
 
-        _players = await Mediator.Send(new GetServerPlayersCommand
+        _ = Task.Run(async () =>
         {
-            IpAddress = Server.IpAddress,
-            Port = Server.Port
-        }, cancellationTokenSource.Token) ?? [];
+            var players = await Mediator.Send(new GetServerPlayersCommand
+            {
+                IpAddress = Server.IpAddress,
+                Port = Server.Port
+            }, cancellationTokenSource.Token) ?? [];
 
-        StateHasChanged();
+            await InvokeAsync(() =>
+            {
+                _players = players;
+                StateHasChanged();
+            });
+        }, cancellationTokenSource.Token);
     }
 
     private async Task CopyToClipboardAsync()
@@ -51,11 +59,6 @@ public partial class ViewServerMetaDialog
         if (!_isClipboardSupported) return;
         await Clipboard.WriteTextAsync(Server.Address.AsMemory());
         NotificationService.Notify(NotificationSeverity.Info, "Copied IP to Clipboard", Server.Address);
-    }
-
-    public void ConnectToServer()
-    {
-        NavigationManager.NavigateTo(SteamUrl, true);
     }
 
     private async Task IsServerFavouriteAsync(string ipAddress, int port)

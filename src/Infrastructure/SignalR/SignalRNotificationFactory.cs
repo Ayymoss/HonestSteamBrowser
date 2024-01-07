@@ -6,7 +6,7 @@ namespace BetterSteamBrowser.Infrastructure.SignalR;
 
 public class SignalRNotificationFactory(IHubContext<BsbServerHub> bsbHubContext) : ISignalRNotification
 {
-    public Task NotifyUserAsync(HubType hubType, string methodName, object message, CancellationToken cancellationToken)
+    public Task NotifyUsersAsync(HubType hubType, string methodName, object message, CancellationToken cancellationToken)
     {
         return hubType switch
         {
