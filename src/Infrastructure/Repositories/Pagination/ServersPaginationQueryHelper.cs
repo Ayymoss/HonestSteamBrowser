@@ -43,6 +43,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             query = request.Sorts.First().Property switch
             {
                 "PlayersStandardDeviation" => query.Where(x => x.PlayersStandardDeviation != null),
+                "PlayerAverage" => query.Where(x => x.PlayerAverage != null),
                 _ => query
             };
 
@@ -52,6 +53,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
                 "Name" => current.ApplySort(sort, p => p.Name),
                 "Players" => current.ApplySort(sort, p => p.Players),
                 "Country" => current.ApplySort(sort, p => p.Country ?? string.Empty),
+                "PlayerAverage" => current.ApplySort(sort, p => p.PlayerAverage ?? 0),
                 "Map" => current.ApplySort(sort, p => p.Map),
                 "Address" => current.ApplySort(sort, p => p.IpAddress),
                 "LastUpdated" => current.ApplySort(sort, p => p.LastUpdated),

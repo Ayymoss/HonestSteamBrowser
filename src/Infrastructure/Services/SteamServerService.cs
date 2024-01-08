@@ -29,7 +29,6 @@ public class SteamServerService(
     ILogger<SteamServerService> logger)
     : ISteamServerService
 {
-    private const int BatchSize = 10;
     private List<EFBlock> _blockList = [];
     private List<EFSteamGame> _steamGames = [];
     private ISteamApi _steamApi = null!;
@@ -63,11 +62,20 @@ public class SteamServerService(
                 .Select(kv => new Tuple<ServerListItem, string>(kv.Value, kv.Key))
                 .ToList();
 
-            var existingServerFinal = ProcessExistingServers(existingServers).ToList();
+            var standardDeviations = await serverRepository
+                .FetchStandardDeviationsAsync(existingServerHashes.Select(x => x.Hash), cancellationToken);
+            logger.LogInformation("Fetched {Count} standard deviations", standardDeviations.Count);
+
+            var existingServerFinal = ProcessExistingServers(existingServers, standardDeviations).ToList();
             var newServersFinal = ProcessNewServers(newServers).ToList();
 
-            logger.LogInformation("Modifying {Count} servers...", existingServerFinal.Count + newServersFinal.Count);
-            await serverRepository.AddAndUpdateServerListAsync(existingServerFinal, newServersFinal, cancellationToken);
+            logger.LogInformation("Saving {Count} servers...", existingServerFinal.Count + newServersFinal.Count);
+            await serverRepository.UpdateServerListAsync(existingServerFinal, cancellationToken);
+            await serverRepository.AddServerListAsync(newServersFinal, cancellationToken);
+
+            logger.LogInformation("Removing old snapshots...");
+            await serverRepository.CleanUpOldServerPlayerSnapshotsAsync(existingServerHashes.Select(x => x.Hash).ToHashSet(),
+                cancellationToken);
             logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
         }
         catch (Exception e)
@@ -92,10 +100,10 @@ public class SteamServerService(
         // Token comes from the options.
         await Parallel.ForEachAsync(games, parallelOptions, async (game, token) =>
         {
-            logger.LogInformation("[Starting] Processing {@GameName}", game.Name);
+            logger.LogInformation("[Starting] Processing {GameName}", game.Name);
             var result = await ProcessGameAsync(game, token);
 
-            if (result != null)
+            if (result is not null)
             {
                 foreach (var item in result.Item2)
                 {
@@ -103,7 +111,7 @@ public class SteamServerService(
                 }
             }
 
-            logger.LogInformation("[Finished] Processing {@GameName}", game.Name);
+            logger.LogInformation("[Finished] Processing {GameName}", game.Name);
         });
 
         logger.LogInformation("[Finished] Processing {GamesCount} games", games.Count);
@@ -115,7 +123,7 @@ public class SteamServerService(
         var blocksForApi = _blockList.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
         var filter = BuildApiFilter(blocksForApi, game.Id);
         var serverListItems = await GetServerListAsync(filter, cancellationToken);
-        logger.LogDebug("Filter {GameAppId}: {Filter}", game.Id, filter);
+        logger.LogDebug("Filter {GameName}: {Filter}", game.Name, filter);
 
         if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
 
@@ -218,18 +226,19 @@ public class SteamServerService(
         return filterBuilder.ToString();
     }
 
-    private IEnumerable<EFServer> ProcessExistingServers(IReadOnlyCollection<Tuple<EFServer, ServerListItem>> servers)
+    private IEnumerable<EFServer> ProcessExistingServers(IReadOnlyCollection<Tuple<EFServer, ServerListItem>> servers,
+        IReadOnlyDictionary<string, double> standardDeviations)
     {
         foreach (var server in servers.Where(server => server.Item2.Map is not null && server.Item2.Name is not null))
         {
             server.Item1.Name = server.Item2.Name?.FilterEmojis() ?? "Unknown";
-            server.Item1.SteamGame.Id = server.Item2.AppId;
+            server.Item1.SteamGameId = server.Item2.AppId;
             server.Item1.Players = server.Item2.Players;
             server.Item1.MaxPlayers = server.Item2.MaxPlayers;
             server.Item1.Map = server.Item2.Map!;
             server.Item1.LastUpdated = DateTimeOffset.UtcNow;
-            server.Item1.AddToHistory();
-            server.Item1.UpdateStandardDeviation();
+            server.Item1.PlayersStandardDeviation = standardDeviations.TryGetValue(server.Item1.Hash, out var value) ? value : null;
+            server.Item1.UpdateServerStatistics();
         }
 
         var filtered = BuildBlockList(servers.Select(x => x.Item1).ToList());

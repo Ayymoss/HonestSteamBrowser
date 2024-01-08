@@ -4,7 +4,8 @@ namespace BetterSteamBrowser.Domain.Interfaces.Repositories;
 
 public interface IServerRepository
 {
-    Task AddAndUpdateServerListAsync(IEnumerable<EFServer> existingServers, IEnumerable<EFServer> newServers, CancellationToken cancellationToken);
+    Task AddServerListAsync(IEnumerable<EFServer> newServers, CancellationToken cancellationToken);
+    Task UpdateServerListAsync(IEnumerable<EFServer> existingServers, CancellationToken cancellationToken);
     Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken);
     Task<int> GetTotalServerCountAsync(CancellationToken cancellationToken);
     Task<List<EFServer>> GetServerByExistingAsync(IEnumerable<string> servers);
@@ -14,4 +15,6 @@ public interface IServerRepository
     Task<int> GetTotalPlayerCountByContinentAsync(string continent, CancellationToken cancellationToken);
     Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
     Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken);
+    Task<Dictionary<string, double>> FetchStandardDeviationsAsync(IEnumerable<string> hashes, CancellationToken cancellationToken);
+    Task CleanUpOldServerPlayerSnapshotsAsync(HashSet<string> hashes, CancellationToken cancellationToken);
 }

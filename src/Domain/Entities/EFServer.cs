@@ -5,6 +5,11 @@ namespace BetterSteamBrowser.Domain.Entities;
 
 public class EFServer
 {
+    /// <summary>
+    /// Cap the history - 1 Week ((60 / 15) * 24 * 7)
+    /// </summary>
+    public const int SnapshotMax = 672;
+
     [Key] public string Hash { get; set; }
 
     /// <summary>
@@ -32,11 +37,12 @@ public class EFServer
     /// <summary>
     /// The standard deviation of the player count. This is used to detect spoofed servers.
     /// </summary>
-    public double? PlayersStandardDeviation { get; private set; }
+    public double? PlayersStandardDeviation { get; set; }
 
     public double? PlayerAverage { get; set; }
     public int? PlayerUpperBound { get; set; }
     public int? PlayerLowerBound { get; set; }
+    public int? PlayerSnapshotCount { get; set; }
 
     public string? Country { get; set; }
     public string? CountryCode { get; set; }
@@ -53,32 +59,23 @@ public class EFServer
     /// </summary>
     public List<EFServerSnapshot>? ServerSnapshots { get; set; }
 
-    public void AddToHistory()
+    public void UpdateServerStatistics()
     {
         ServerSnapshots ??= [];
-        ServerSnapshots.Add(new EFServerSnapshot {SnapshotCount = Players, SnapshotTaken = DateTimeOffset.UtcNow});
-        PlayerAverage = ServerSnapshots.Average(x => x.SnapshotCount);
-        PlayerUpperBound = ServerSnapshots.Max(x => x.SnapshotCount);
-        PlayerLowerBound = ServerSnapshots.Min(x => x.SnapshotCount);
-
-        // Cap the history - 1 Week ((60 / 4) * 24 * 7)
-        if (ServerSnapshots.Count > 672) ServerSnapshots.RemoveAt(0);
+        ServerSnapshots.Add(new EFServerSnapshot {ServerHash = Hash, SnapshotCount = Players, SnapshotTaken = DateTimeOffset.UtcNow});
+        PlayerSnapshotCount = !PlayerSnapshotCount.HasValue
+            ? 1
+            : PlayerSnapshotCount < SnapshotMax
+                ? PlayerSnapshotCount++
+                : PlayerSnapshotCount;
+        PlayerAverage = PlayerAverage.HasValue ? PlayerAverage + (Players - PlayerAverage) / PlayerSnapshotCount : Players;
+        PlayerUpperBound = !PlayerUpperBound.HasValue ? Players : Players > PlayerUpperBound ? Players : PlayerUpperBound;
+        PlayerLowerBound = !PlayerLowerBound.HasValue ? Players : Players < PlayerLowerBound ? Players : PlayerLowerBound;
     }
 
     public void BlockServer()
     {
         Blocked = true;
         ServerSnapshots = [];
-    }
-
-    public void UpdateStandardDeviation()
-    {
-        if (!PlayerAverage.HasValue) return;
-        if (!(ServerSnapshots?.Count > 1)) return;
-
-        var average = PlayerAverage.Value;
-        var sumOfSquaresOfDifferences = ServerSnapshots.Sum(x => (x.SnapshotCount - average) * (x.SnapshotCount - average));
-        var standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / ServerSnapshots.Count);
-        PlayersStandardDeviation = average > 0 ? standardDeviation / average : 0;
     }
 }

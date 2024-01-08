@@ -9,11 +9,16 @@ namespace BetterSteamBrowser.Infrastructure.Repositories;
 
 public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : IServerRepository
 {
-    public async Task AddAndUpdateServerListAsync(IEnumerable<EFServer> existingServers, IEnumerable<EFServer> newServers,
-        CancellationToken cancellationToken)
+    public async Task AddServerListAsync(IEnumerable<EFServer> newServers, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         context.Servers.AddRange(newServers);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateServerListAsync(IEnumerable<EFServer> existingServers, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         context.Servers.UpdateRange(existingServers);
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -45,10 +50,52 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         await using var context = await contextFactory.CreateDbContextAsync();
         var serverList = await context.Servers
             .Where(x => servers.Contains(x.Hash))
-            .Include(x => x.SteamGame)
-            .Include(x => x.ServerSnapshots)
             .ToListAsync();
         return serverList;
+    }
+
+    public async Task<Dictionary<string, double>> FetchStandardDeviationsAsync(IEnumerable<string> hashes,
+        CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var snapshotGroups = await context.ServerSnapshots
+            .Where(x => hashes.Contains(x.ServerHash))
+            .GroupBy(x => x.ServerHash)
+            .Select(g => new
+            {
+                Hash = g.Key,
+                Snapshots = g.Select(x => x.SnapshotCount).ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        var deviationCounts = snapshotGroups
+            .Where(x => x.Snapshots.Count > 1)
+            .ToDictionary(g => g.Hash, g =>
+            {
+                var average = g.Snapshots.Average();
+                var sumOfSquares = g.Snapshots.Sum(x => Math.Pow(x - average, 2));
+                return Math.Sqrt(sumOfSquares / g.Snapshots.Count) / average;
+            });
+
+        return deviationCounts;
+    }
+
+    public async Task CleanUpOldServerPlayerSnapshotsAsync(HashSet<string> hashes, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var serverGroupHashes = await context.ServerSnapshots
+            .Where(x => hashes.Contains(x.ServerHash))
+            .GroupBy(x => x.ServerHash)
+            .Where(x => x.Count() > EFServer.SnapshotMax)
+            .OrderBy(x => x.First().Id)
+            .Select(x => x.First().Id)
+            .ToListAsync(cancellationToken);
+
+        await context.ServerSnapshots
+            .Where(x => serverGroupHashes.Contains(x.Id))
+            .ExecuteDeleteAsync(cancellationToken);
     }
 
     public async Task BlockAddressAsync(string address, int steamGameId, CancellationToken cancellationToken)

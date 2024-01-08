@@ -40,7 +40,7 @@ public class Program
 #endif
 
 #if DEBUG
-        configuration.DatabaseName = "SteamBrowserTest8";
+        configuration.DatabaseName = "SteamBrowserTest11";
 #endif
 
         builder.Services.AddDbContextFactory<DataContext>(options =>

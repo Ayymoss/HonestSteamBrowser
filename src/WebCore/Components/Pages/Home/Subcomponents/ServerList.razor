@@ -100,7 +100,7 @@
                     </RadzenDataGridColumn>
                     @if (Manager)
                     {
-                        <RadzenDataGridColumn TItem="Server" Sortable="false" Property="AveragePlayers" Title="Player Avg." MinWidth="80px">
+                        <RadzenDataGridColumn TItem="Server" Sortable="false" Property="PlayerAverage" Title="Player Avg." MinWidth="80px">
                             <Template Context="context">
                                 <RadzenText TextStyle="TextStyle.Body2">@(context.PlayerAverage is 0 ? "--" : context.PlayerAverage.ToString("N2"))</RadzenText>
                             </Template>
