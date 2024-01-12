@@ -12,8 +12,8 @@ public class GetServerSnapshotsHandler(IServerRepository serverRepository)
         var snapshots = await serverRepository.GetServerSnapshotsAsync(request.Hash, cancellationToken);
         var converted = snapshots.Select(x => new ServerSnapshot
         {
-            Count = x.SnapshotCount,
-            Snapshot = x.SnapshotTaken
+            Count = x.PlayerCount,
+            Snapshot = x.Taken
         }).ToList();
         return converted;
     }

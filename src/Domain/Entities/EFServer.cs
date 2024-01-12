@@ -5,11 +5,6 @@ namespace BetterSteamBrowser.Domain.Entities;
 
 public class EFServer
 {
-    /// <summary>
-    /// Cap the history - 1 Week ((60 / 15) * 24 * 7)
-    /// </summary>
-    public const int SnapshotMax = 672;
-
     [Key] public string Hash { get; set; }
 
     /// <summary>
@@ -42,7 +37,6 @@ public class EFServer
     public double? PlayerAverage { get; set; }
     public int? PlayerUpperBound { get; set; }
     public int? PlayerLowerBound { get; set; }
-    public int? PlayerSnapshotCount { get; set; }
 
     public string? Country { get; set; }
     public string? CountryCode { get; set; }
@@ -57,25 +51,26 @@ public class EFServer
     /// <summary>
     /// Navigation property for the server snapshots.
     /// </summary>
-    public List<EFServerSnapshot>? ServerSnapshots { get; set; }
+    public List<EFServerSnapshot>? Snapshots { get; set; }
+
+    [NotMapped] public static DateTimeOffset OldestPlayerSnapshot { get; } = DateTimeOffset.UtcNow.AddDays(-7);
 
     public void UpdateServerStatistics()
     {
-        ServerSnapshots ??= [];
-        ServerSnapshots.Add(new EFServerSnapshot {ServerHash = Hash, SnapshotCount = Players, SnapshotTaken = DateTimeOffset.UtcNow});
-        PlayerSnapshotCount = !PlayerSnapshotCount.HasValue
-            ? 1
-            : PlayerSnapshotCount < SnapshotMax
-                ? PlayerSnapshotCount++
-                : PlayerSnapshotCount;
-        PlayerAverage = PlayerAverage.HasValue ? PlayerAverage + (Players - PlayerAverage) / PlayerSnapshotCount : Players;
+        var deltaDays = Math.Round((DateTimeOffset.UtcNow - OldestPlayerSnapshot).TotalDays);
+        var maxCount = (double)60 / 15 * 24 * deltaDays;
+        var smoothingFactor = 2.0 / (maxCount + 1);
+        PlayerAverage = PlayerAverage.HasValue
+            ? Players * smoothingFactor + PlayerAverage.Value * (1 - smoothingFactor)
+            : Players;
         PlayerUpperBound = !PlayerUpperBound.HasValue ? Players : Players > PlayerUpperBound ? Players : PlayerUpperBound;
         PlayerLowerBound = !PlayerLowerBound.HasValue ? Players : Players < PlayerLowerBound ? Players : PlayerLowerBound;
+        Snapshots = [new EFServerSnapshot {ServerHash = Hash, PlayerCount = Players, Taken = DateTimeOffset.UtcNow}];
     }
 
     public void BlockServer()
     {
         Blocked = true;
-        ServerSnapshots = [];
+        Snapshots = [];
     }
 }

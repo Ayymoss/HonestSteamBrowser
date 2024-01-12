@@ -4,10 +4,11 @@ using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Infrastructure.Context;
 using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BetterSteamBrowser.Infrastructure.Repositories;
 
-public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : IServerRepository
+public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILogger<ServerRepository> logger) : IServerRepository
 {
     public async Task AddServerListAsync(IEnumerable<EFServer> newServers, CancellationToken cancellationToken)
     {
@@ -54,7 +55,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         return serverList;
     }
 
-    public async Task<Dictionary<string, double>> FetchStandardDeviationsAsync(IEnumerable<string> hashes,
+    public async Task<Dictionary<string, double>> GetStandardDeviationsAsync(IEnumerable<string> hashes,
         CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
@@ -65,7 +66,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
             .Select(g => new
             {
                 Hash = g.Key,
-                Snapshots = g.Select(x => x.SnapshotCount).ToList()
+                Snapshots = g.Select(x => x.PlayerCount).ToList()
             })
             .ToListAsync(cancellationToken);
 
@@ -81,21 +82,20 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         return deviationCounts;
     }
 
-    public async Task CleanUpOldServerPlayerSnapshotsAsync(HashSet<string> hashes, CancellationToken cancellationToken)
+    public async Task DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var serverGroupHashes = await context.ServerSnapshots
-            .Where(x => hashes.Contains(x.ServerHash))
-            .GroupBy(x => x.ServerHash)
-            .Where(x => x.Count() > EFServer.SnapshotMax)
-            .OrderBy(x => x.First().Id)
-            .Select(x => x.First().Id)
-            .ToListAsync(cancellationToken);
+            .Where(x => x.Taken < EFServer.OldestPlayerSnapshot)
+            .Select(x => x.Id)
+            .ToListAsync(cancellationToken: cancellationToken);
 
         await context.ServerSnapshots
             .Where(x => serverGroupHashes.Contains(x.Id))
             .ExecuteDeleteAsync(cancellationToken);
+
+        logger.LogInformation("Purged {Count} player snapshots", serverGroupHashes.Count);
     }
 
     public async Task BlockAddressAsync(string address, int steamGameId, CancellationToken cancellationToken)
@@ -142,14 +142,16 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory) : I
         return count;
     }
 
-    public async Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
+    public async Task<int> DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
         var servers = await context.ServerSnapshots
             .Where(x => serverHashes.Contains(x.ServerHash))
             .ToListAsync(cancellationToken: cancellationToken);
+        var count = servers.Count;
         context.ServerSnapshots.RemoveRange(servers);
         await context.SaveChangesAsync(cancellationToken);
+        return count;
     }
 
     public async Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken)

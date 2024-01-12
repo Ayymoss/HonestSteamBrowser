@@ -13,8 +13,8 @@ public interface IServerRepository
     Task<List<string>> GetOlderServerHashesAsync(DateTimeOffset from, CancellationToken cancellationToken);
     Task DeleteServersByHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
     Task<int> GetTotalPlayerCountByContinentAsync(string continent, CancellationToken cancellationToken);
-    Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
+    Task<int> DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
     Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken);
-    Task<Dictionary<string, double>> FetchStandardDeviationsAsync(IEnumerable<string> hashes, CancellationToken cancellationToken);
-    Task CleanUpOldServerPlayerSnapshotsAsync(HashSet<string> hashes, CancellationToken cancellationToken);
+    Task<Dictionary<string, double>> GetStandardDeviationsAsync(IEnumerable<string> hashes, CancellationToken cancellationToken);
+    Task DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken);
 }

@@ -23,7 +23,7 @@ public class StatisticsService(
             var count = await serverRepository.GetTotalPlayerCountByContinentAsync(continent, cancellationToken);
             var snapshotType = GetSnapshotType(continent);
             await snapshotRepository.SubmitSnapshotAsync(snapshotType, count, dateTimeOffset, cancellationToken);
-            logger.LogInformation("Submitted snapshot for {Continent} with {Count} players", continent, count);
+            logger.LogDebug("Submitted statistics snapshot for {Continent} with {Count} players", continent, count);
         }).ToList();
 
         tasks.Add(servers);
@@ -35,9 +35,9 @@ public class StatisticsService(
         var playersCount = players.Result;
 
         await snapshotRepository.SubmitSnapshotAsync(SnapshotType.Servers, serversCount, dateTimeOffset, cancellationToken);
-        logger.LogInformation("Submitted snapshot for {Continent} with {Count} players", SnapshotType.Servers.ToString(), serversCount);
+        logger.LogDebug("Submitted statistics snapshot for {Continent} with {Count} players", SnapshotType.Servers.ToString(), serversCount);
         await snapshotRepository.SubmitSnapshotAsync(SnapshotType.Players, players.Result, dateTimeOffset, cancellationToken);
-        logger.LogInformation("Submitted snapshot for {Continent} with {Count} players", SnapshotType.Players.ToString(), playersCount);
+        logger.LogDebug("Submitted statistics snapshot for {Continent} with {Count} players", SnapshotType.Players.ToString(), playersCount);
     }
 
     private static SnapshotType GetSnapshotType(string type)

@@ -1,7 +1,6 @@
 ﻿using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
-using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using BetterSteamBrowser.Infrastructure.Context;
 using BetterSteamBrowser.Infrastructure.Utilities;
@@ -121,7 +120,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         {
             Data = pagedData,
             Count = queryServerCount,
-            Players = queryPlayerCount
+            Players = queryPlayerCount,
         };
     }
 }

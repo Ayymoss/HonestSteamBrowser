@@ -6,7 +6,7 @@ namespace BetterSteamBrowser.Business.Utilities;
 public class ShortSourceContextEnricher : ILogEventEnricher
 {
     private const int FixedLength = 32;
-    
+
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
         if (!logEvent.Properties.TryGetValue("SourceContext", out var sourceContext)) return;

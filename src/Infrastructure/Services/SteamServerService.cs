@@ -63,7 +63,7 @@ public class SteamServerService(
                 .ToList();
 
             var standardDeviations = await serverRepository
-                .FetchStandardDeviationsAsync(existingServerHashes.Select(x => x.Hash), cancellationToken);
+                .GetStandardDeviationsAsync(existingServerHashes.Select(x => x.Hash), cancellationToken);
             logger.LogInformation("Fetched {Count} standard deviations", standardDeviations.Count);
 
             var existingServerFinal = ProcessExistingServers(existingServers, standardDeviations).ToList();
@@ -73,10 +73,9 @@ public class SteamServerService(
             await serverRepository.UpdateServerListAsync(existingServerFinal, cancellationToken);
             await serverRepository.AddServerListAsync(newServersFinal, cancellationToken);
 
-            logger.LogInformation("Removing old snapshots...");
-            await serverRepository.CleanUpOldServerPlayerSnapshotsAsync(existingServerHashes.Select(x => x.Hash).ToHashSet(),
-                cancellationToken);
-            logger.LogInformation("Successfully modified {Count} servers", existingServers.Count + newServersFinal.Count);
+            logger.LogInformation("Purging old player snapshots...");
+            await serverRepository.DeleteOldServerPlayerSnapshotsAsync(cancellationToken);
+            logger.LogInformation("Successfully saved {Count} servers", existingServers.Count + newServersFinal.Count);
         }
         catch (Exception e)
         {
@@ -100,7 +99,7 @@ public class SteamServerService(
         // Token comes from the options.
         await Parallel.ForEachAsync(games, parallelOptions, async (game, token) =>
         {
-            logger.LogInformation("[Starting] Processing {GameName}", game.Name);
+            logger.LogDebug("[Starting] Fetching {GameName}", game.Name);
             var result = await ProcessGameAsync(game, token);
 
             if (result is not null)
@@ -111,10 +110,10 @@ public class SteamServerService(
                 }
             }
 
-            logger.LogInformation("[Finished] Processing {GameName}", game.Name);
+            logger.LogDebug("[Finished] Fetched {GameName}", game.Name);
         });
 
-        logger.LogInformation("[Finished] Processing {GamesCount} games", games.Count);
+        logger.LogInformation("[Finished] Processed {GamesCount} games", games.Count);
         return serverList.ToList();
     }
 

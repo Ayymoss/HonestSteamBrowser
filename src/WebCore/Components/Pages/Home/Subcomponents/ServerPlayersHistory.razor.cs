@@ -1,4 +1,5 @@
-﻿using BetterSteamBrowser.Business.Mediatr.Commands;
+﻿using System.Collections;
+using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -36,7 +37,7 @@ public partial class ServerPlayersHistory
         }, cancellationTokenSource.Token);
     }
 
-    private string DateFormatter(object arg)
+    private static string DateFormatter(object arg)
     {
         if (arg is DateTime dateTime) return dateTime.ToString("MM-dd HH:mm");
         return string.Empty;
