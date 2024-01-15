@@ -27,6 +27,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
     public async Task<int> GetTotalPlayerCountAsync(CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var count = await context.Servers
             .AsNoTracking()
             .Where(x => !x.Blocked)
@@ -38,6 +39,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
     public async Task<int> GetTotalServerCountAsync(CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var count = await context.Servers
             .AsNoTracking()
             .Where(x => !x.Blocked)
@@ -46,12 +48,13 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
         return count;
     }
 
-    public async Task<List<EFServer>> GetServerByExistingAsync(IEnumerable<string> servers)
+    public async Task<List<EFServer>> GetServerByExistingAsync(IEnumerable<string> servers, CancellationToken cancellationToken)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var serverList = await context.Servers
             .Where(x => servers.Contains(x.Hash))
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
         return serverList;
     }
 
@@ -101,6 +104,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
     public async Task BlockAddressAsync(string address, int steamGameId, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var query = context.Servers.Where(x => x.IpAddress == address);
         if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
         var servers = await query.ToListAsync(cancellationToken: cancellationToken);
@@ -111,6 +115,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
     public async Task<List<string>> GetOlderServerHashesAsync(DateTimeOffset from, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var hashes = await context.Servers
             .Where(x => x.LastUpdated < from)
             .Select(x => x.Hash)
@@ -121,6 +126,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
     public async Task DeleteServersByHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var servers = await context.Servers
             .Where(x => serverHashes.Contains(x.Hash))
             .ToListAsync(cancellationToken: cancellationToken);
@@ -131,6 +137,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
     public async Task<int> GetTotalPlayerCountByContinentAsync(string continent, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var mapSuccess = UtilityMethods.CountryMap.TryGetValue(continent, out var countryCodesInRegion);
         if (!mapSuccess || countryCodesInRegion is null) return 0;
         var count = await context.Servers
@@ -142,21 +149,23 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
         return count;
     }
 
-    public async Task<int> DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
+    public async Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var servers = await context.ServerSnapshots
             .Where(x => serverHashes.Contains(x.ServerHash))
             .ToListAsync(cancellationToken: cancellationToken);
-        var count = servers.Count;
         context.ServerSnapshots.RemoveRange(servers);
         await context.SaveChangesAsync(cancellationToken);
-        return count;
+
+        logger.LogInformation("Purged {Count} player snapshots from server hashes", servers.Count);
     }
 
     public async Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var snapshots = await context.ServerSnapshots
             .Where(x => x.ServerHash == hash)
             .ToListAsync(cancellationToken: cancellationToken);

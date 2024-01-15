@@ -57,12 +57,13 @@ public class EFServer
 
     public void UpdateServerStatistics()
     {
+        // Get the window for the EMA
         var deltaDays = Math.Round((DateTimeOffset.UtcNow - OldestPlayerSnapshot).TotalDays);
         var maxCount = (double)60 / 15 * 24 * deltaDays;
         var smoothingFactor = 2.0 / (maxCount + 1);
         PlayerAverage = PlayerAverage.HasValue
             ? Players * smoothingFactor + PlayerAverage.Value * (1 - smoothingFactor)
-            : Players;
+            : 0;
         PlayerUpperBound = !PlayerUpperBound.HasValue ? Players : Players > PlayerUpperBound ? Players : PlayerUpperBound;
         PlayerLowerBound = !PlayerLowerBound.HasValue ? Players : Players < PlayerLowerBound ? Players : PlayerLowerBound;
         Snapshots = [new EFServerSnapshot {ServerHash = Hash, PlayerCount = Players, Taken = DateTimeOffset.UtcNow}];

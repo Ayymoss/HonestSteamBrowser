@@ -5,8 +5,8 @@ using MediatR;
 
 namespace BetterSteamBrowser.Business.Mediatr.Commands;
 
-public class GetInformationHandler
-    (ServerContextCache contextCache, IPublisher publisher) : IRequestHandler<GetInformationCommand, CacheInfo>
+public class GetInformationHandler(IServerContextCache contextCache, IPublisher publisher)
+    : IRequestHandler<GetInformationCommand, CacheInfo>
 {
     public async Task<CacheInfo> Handle(GetInformationCommand request, CancellationToken cancellationToken)
     {

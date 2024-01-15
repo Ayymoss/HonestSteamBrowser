@@ -244,6 +244,16 @@ public partial class ServerList : IDisposable
         };
     }
 
+    private static string LastSeenLookupColour(DateTimeOffset time)
+    {
+        var timeOnly = DateTimeOffset.UtcNow - time;
+
+        if (timeOnly > TimeSpan.FromMinutes(90)) return "rz-color-danger-light";
+        if (timeOnly > TimeSpan.FromMinutes(60)) return "rz-color-warning-light";
+
+        return string.Empty;
+    }
+
     public void Dispose()
     {
         _dataGrid.Dispose();

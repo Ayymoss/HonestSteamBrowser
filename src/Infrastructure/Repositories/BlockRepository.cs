@@ -10,6 +10,7 @@ public class BlockRepository(IDbContextFactory<DataContext> contextFactory) : IB
     public async Task<List<EFBlock>> GetBlockListAsync(CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var blockList = await context.Blocks
             .Include(x => x.SteamGame)
             .ToListAsync(cancellationToken: cancellationToken);
@@ -19,10 +20,12 @@ public class BlockRepository(IDbContextFactory<DataContext> contextFactory) : IB
     public async Task AddAsync(EFBlock block, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var alreadyExists = await context.Blocks
             .Where(x => x.Value == block.Value && x.SteamGameId == block.SteamGameId)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (alreadyExists is not null) return;
+
         context.Blocks.Add(block);
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -30,6 +33,7 @@ public class BlockRepository(IDbContextFactory<DataContext> contextFactory) : IB
     public async Task<int> CountAsync(CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var count = await context.Blocks.CountAsync(cancellationToken: cancellationToken);
         return count;
     }
@@ -37,7 +41,8 @@ public class BlockRepository(IDbContextFactory<DataContext> contextFactory) : IB
     public async Task RemoveAsync(int blockId, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
-        var block = await context.Blocks.FindAsync(new object?[] { blockId }, cancellationToken: cancellationToken);
+
+        var block = await context.Blocks.FindAsync(new object?[] {blockId}, cancellationToken: cancellationToken);
         if (block is null) return;
         context.Blocks.Remove(block);
         await context.SaveChangesAsync(cancellationToken);

@@ -1,5 +1,7 @@
-﻿using BetterSteamBrowser.Business.Mediatr.Commands;
+﻿using System.Diagnostics.CodeAnalysis;
+using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.ViewModels;
+using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using BetterSteamBrowser.Infrastructure.Context;
@@ -13,29 +15,31 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
     public async Task<PaginationContext<Block>> QueryResourceAsync(GetBlockListCommand request, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
-        var query = context.Blocks
-            .AsNoTracking()
-            .AsQueryable();
+        var query = GetBaseQuery(context);
 
         int? gameSearch = request.Data is int game ? game : null;
-        if (gameSearch is not null) query = query.Where(server => server.SteamGame.Id == gameSearch);
+        if (gameSearch.HasValue)
+            query = ApplyGameQuery(query, gameSearch.Value);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
-            query = query.Where(search =>
-                EF.Functions.ILike(search.Value, $"%{request.Search}%") ||
-                EF.Functions.ILike(search.SteamGame.Name, $"%{request.Search}%"));
+            query = ApplySearchQuery(request, query);
 
         if (request.Sorts.Any())
-            query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch
-            {
-                "Type" => current.ApplySort(sort, p => p.Type),
-                "Value" => current.ApplySort(sort, p => p.Value),
-                "Added" => current.ApplySort(sort, p => p.Added),
-                "SteamGameName" => current.ApplySort(sort, p => p.SteamGame.Name),
-                "ApiFilter" => current.ApplySort(sort, p => p.ApiFilter),
-                _ => current
-            });
+            query = ApplySortQuery(request, query);
 
+        return await GetPagedData(request, cancellationToken, query, context);
+    }
+
+    private static IQueryable<EFBlock> GetBaseQuery(DataContext context)
+    {
+        return context.Blocks
+            .AsNoTracking()
+            .AsQueryable();
+    }
+
+    private static async Task<PaginationContext<Block>> GetPagedData(GetBlockListCommand request, CancellationToken cancellationToken,
+        IQueryable<EFBlock> query, DataContext context)
+    {
         var count = await query.CountAsync(cancellationToken: cancellationToken);
 
         var pagedData = await query
@@ -62,5 +66,30 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
             Data = pagedData,
             Count = count,
         };
+    }
+
+    private static IQueryable<EFBlock> ApplySortQuery(GetBlockListCommand request, IQueryable<EFBlock> query)
+    {
+        return request.Sorts.Aggregate(query, (current, sort) => sort.Property switch
+        {
+            "Type" => current.ApplySort(sort, p => p.Type),
+            "Value" => current.ApplySort(sort, p => p.Value),
+            "Added" => current.ApplySort(sort, p => p.Added),
+            "SteamGameName" => current.ApplySort(sort, p => p.SteamGame.Name),
+            "ApiFilter" => current.ApplySort(sort, p => p.ApiFilter),
+            _ => current
+        });
+    }
+
+    private static IQueryable<EFBlock> ApplySearchQuery(GetBlockListCommand request, IQueryable<EFBlock> query)
+    {
+        return query.Where(search =>
+            EF.Functions.ILike(search.Value, $"%{request.Search}%") ||
+            EF.Functions.ILike(search.SteamGame.Name, $"%{request.Search}%"));
+    }
+
+    private static IQueryable<EFBlock> ApplyGameQuery(IQueryable<EFBlock> query, int gameSearch)
+    {
+        return query.Where(server => server.SteamGame.Id == gameSearch);
     }
 }

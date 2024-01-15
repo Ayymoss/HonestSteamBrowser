@@ -3,6 +3,7 @@ using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using BetterSteamBrowser.Infrastructure.Context;
+using BetterSteamBrowser.Infrastructure.Identity;
 using BetterSteamBrowser.Infrastructure.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,46 +15,31 @@ public class UsersPaginationQueryHelper(IDbContextFactory<DataContext> contextFa
     public async Task<PaginationContext<User>> QueryResourceAsync(GetUserListCommand request, CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
-        var query = context.Users
-            .AsNoTracking()
-            .AsQueryable();
 
-        // Filtering and sorting
+        var query = GetBaseQuery(context);
+
         if (!string.IsNullOrWhiteSpace(request.Search))
-            query = query.Where(search =>
-                (search.UserName != null && EF.Functions.ILike(search.UserName, $"%{request.Search}%")));
+            query = ApplySearchQuery(request, query);
 
         if (request.Sorts.Any())
-            query = request.Sorts.Aggregate(query, (current, sort) => sort.Property switch
-            {
-                "UserName" => current.ApplySort(sort, p => p.UserName ?? string.Empty),
-                _ => current
-            });
+            query = ApplySortQuery(request, query);
 
-        // Favourites
-        var userIds = await query
-            .Skip(request.Skip)
-            .Take(request.Top)
-            .Select(u => u.Id)
-            .ToListAsync(cancellationToken: cancellationToken);
+        var favouriteCounts = await GetFavourites(request, cancellationToken, query, context);
 
-        var favouriteCounts = await context.Favourites
-            .Where(fav => userIds.Contains(fav.UserId))
-            .GroupBy(fav => fav.UserId)
-            .Select(group => new {UserId = group.Key, Count = group.Count()})
-            .ToDictionaryAsync(fav => fav.UserId, fav => fav.Count, cancellationToken);
+        return await GetPagedData(request, cancellationToken, context, query, favouriteCounts);
+    }
 
-        // Roles
+    private static async Task<PaginationContext<User>> GetPagedData(GetUserListCommand request, CancellationToken cancellationToken,
+        DataContext context, IQueryable<ApplicationUser> query, IReadOnlyDictionary<string, int> favouriteCounts)
+    {
         var allUserRoles = await context.UserRoles
             .ToListAsync(cancellationToken: cancellationToken);
 
         var allRoles = await context.Roles
             .ToListAsync(cancellationToken: cancellationToken);
 
-        // Total count
         var count = await query.CountAsync(cancellationToken: cancellationToken);
 
-        // Object mapping
         var pagedData = await query
             .Skip(request.Skip)
             .Take(request.Top)
@@ -78,5 +64,46 @@ public class UsersPaginationQueryHelper(IDbContextFactory<DataContext> contextFa
             Data = result,
             Count = count,
         };
+    }
+
+    private static async Task<Dictionary<string, int>> GetFavourites(GetUserListCommand request, CancellationToken cancellationToken,
+        IQueryable<ApplicationUser> query,
+        DataContext context)
+    {
+        var userIds = await query
+            .Skip(request.Skip)
+            .Take(request.Top)
+            .Select(u => u.Id)
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        var favouriteCounts = await context.Favourites
+            .Where(fav => userIds.Contains(fav.UserId))
+            .GroupBy(fav => fav.UserId)
+            .Select(group => new {UserId = group.Key, Count = group.Count()})
+            .ToDictionaryAsync(fav => fav.UserId, fav => fav.Count, cancellationToken);
+        return favouriteCounts;
+    }
+
+    private static IQueryable<ApplicationUser> ApplySortQuery(GetUserListCommand request, IQueryable<ApplicationUser> query)
+    {
+        return request.Sorts.Aggregate(query, (current, sort) => sort.Property switch
+        {
+            "UserName" => current.ApplySort(sort, p => p.UserName ?? string.Empty),
+            _ => current
+        });
+    }
+
+    private static IQueryable<ApplicationUser> ApplySearchQuery(GetUserListCommand request, IQueryable<ApplicationUser> query)
+    {
+        query = query.Where(search =>
+            (search.UserName != null && EF.Functions.ILike(search.UserName, $"%{request.Search}%")));
+        return query;
+    }
+
+    private static IQueryable<ApplicationUser> GetBaseQuery(DataContext context)
+    {
+        return context.Users
+            .AsNoTracking()
+            .AsQueryable();
     }
 }

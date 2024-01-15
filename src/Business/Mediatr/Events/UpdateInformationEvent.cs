@@ -10,7 +10,7 @@ namespace BetterSteamBrowser.Business.Mediatr.Events;
 
 public class UpdateInformationEvent(
     IServerRepository serverRepository,
-    ServerContextCache contextCache,
+    IServerContextCache contextCache,
     ISignalRNotification signalRNotification,
     ILogger<UpdateInformationEvent> logger)
     : INotificationHandler<UpdateInformationCommand>

@@ -33,6 +33,11 @@ public class SteamServerService(
     private List<EFSteamGame> _steamGames = [];
     private ISteamApi _steamApi = null!;
 
+    private record ServerData(
+        List<EFServer> ExistingServerHashes,
+        List<(EFServer Server, ServerListItem ServerItem)> ExistingServers,
+        List<(ServerListItem ServerItem, string ServerHash)> NewServers);
+
     public async Task StartSteamFetchAsync(CancellationToken cancellationToken)
     {
         var client = httpClientFactory.CreateClient("BSBClient");
@@ -41,46 +46,58 @@ public class SteamServerService(
 
         try
         {
-            _blockList = await blockRepository.GetBlockListAsync(cancellationToken);
-            _steamGames = await steamGameRepository.GetSteamGamesAsync(cancellationToken);
+            await PrepareSteamServiceAsync(cancellationToken);
+            var servers = await GetSteamServersAsync(cancellationToken);
 
-            var rawSteamServers = (await RetrieveServerStatisticsAsync(cancellationToken))
-                .GroupBy(serverStat => serverStat.Address.Compute256Hash())
-                .ToDictionary(serverStat => serverStat.Key,
-                    serverStat => serverStat.First());
-
-            logger.LogInformation("Processing {Count} servers...", rawSteamServers.Count);
-            var existingServerHashes = await serverRepository.GetServerByExistingAsync(rawSteamServers.Keys);
-            var existingServerDictionary = existingServerHashes.ToDictionary(server => server.Hash, server => server);
-
-            var existingServers = existingServerDictionary
-                .Select(kv => new Tuple<EFServer, ServerListItem>(kv.Value, rawSteamServers[kv.Key]))
-                .ToList();
-
-            var newServers = rawSteamServers
-                .Where(kv => !existingServerDictionary.ContainsKey(kv.Key))
-                .Select(kv => new Tuple<ServerListItem, string>(kv.Value, kv.Key))
-                .ToList();
-
+            logger.LogInformation("Processing {Count} servers...", servers.ExistingServers.Count + servers.NewServers.Count);
             var standardDeviations = await serverRepository
-                .GetStandardDeviationsAsync(existingServerHashes.Select(x => x.Hash), cancellationToken);
+                .GetStandardDeviationsAsync(servers.ExistingServerHashes.Select(x => x.Hash), cancellationToken);
             logger.LogInformation("Fetched {Count} standard deviations", standardDeviations.Count);
 
-            var existingServerFinal = ProcessExistingServers(existingServers, standardDeviations).ToList();
-            var newServersFinal = ProcessNewServers(newServers).ToList();
+            var existingServerFinal = ProcessExistingServers(servers.ExistingServers, standardDeviations).ToList();
+            var newServersFinal = ProcessNewServers(servers.NewServers).ToList();
 
             logger.LogInformation("Saving {Count} servers...", existingServerFinal.Count + newServersFinal.Count);
             await serverRepository.UpdateServerListAsync(existingServerFinal, cancellationToken);
             await serverRepository.AddServerListAsync(newServersFinal, cancellationToken);
+            logger.LogInformation("Successfully saved {Count} servers", servers.ExistingServers.Count + newServersFinal.Count);
 
             logger.LogInformation("Purging old player snapshots...");
             await serverRepository.DeleteOldServerPlayerSnapshotsAsync(cancellationToken);
-            logger.LogInformation("Successfully saved {Count} servers", existingServers.Count + newServersFinal.Count);
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error executing scheduled action");
         }
+    }
+
+
+    private async Task<ServerData> GetSteamServersAsync(CancellationToken cancellationToken)
+    {
+        var rawSteamServers = (await RetrieveServerStatisticsAsync(cancellationToken))
+            .GroupBy(serverStat => serverStat.Address.Compute256Hash())
+            .ToDictionary(serverStat => serverStat.Key,
+                serverStat => serverStat.First());
+
+        var existingServerHashes = await serverRepository.GetServerByExistingAsync(rawSteamServers.Keys, cancellationToken);
+        var existingServerDictionary = existingServerHashes.ToDictionary(server => server.Hash, server => server);
+
+        var existingServers = existingServerDictionary
+            .Select(kv => (kv.Value, rawSteamServers[kv.Key]))
+            .ToList();
+
+        var newServers = rawSteamServers
+            .Where(kv => !existingServerDictionary.ContainsKey(kv.Key))
+            .Select(kv => (kv.Value, kv.Key))
+            .ToList();
+
+        return new ServerData(existingServerHashes, existingServers, newServers);
+    }
+
+    private async Task PrepareSteamServiceAsync(CancellationToken cancellationToken)
+    {
+        _blockList = await blockRepository.GetBlockListAsync(cancellationToken);
+        _steamGames = await steamGameRepository.GetSteamGamesAsync(cancellationToken);
     }
 
     private async Task<List<ServerListItem>> RetrieveServerStatisticsAsync(CancellationToken cancellationToken)
@@ -102,13 +119,9 @@ public class SteamServerService(
             logger.LogDebug("[Starting] Fetching {GameName}", game.Name);
             var result = await ProcessGameAsync(game, token);
 
-            if (result is not null)
-            {
-                foreach (var item in result.Item2)
-                {
+            if (result.HasValue)
+                foreach (var item in result.Value.ServerItem)
                     serverList.Add(item);
-                }
-            }
 
             logger.LogDebug("[Finished] Fetched {GameName}", game.Name);
         });
@@ -117,20 +130,26 @@ public class SteamServerService(
         return serverList.ToList();
     }
 
-    private async Task<Tuple<EFSteamGame, List<ServerListItem>>?> ProcessGameAsync(EFSteamGame game, CancellationToken cancellationToken)
+    private async Task<(EFSteamGame Game, List<ServerListItem> ServerItem)?> ProcessGameAsync(EFSteamGame game,
+        CancellationToken cancellationToken)
     {
-        var blocksForApi = _blockList.Where(x => x.SteamGameId is SteamGameConstants.AllGames || x.SteamGameId == game.Id);
+        var blocksForApi = GetBlocksForApi(game);
         var filter = BuildApiFilter(blocksForApi, game.Id);
         var serverListItems = await GetServerListAsync(filter, cancellationToken);
+
         logger.LogDebug("Filter {GameName}: {Filter}", game.Name, filter);
 
-        if (serverListItems is not null) return new Tuple<EFSteamGame, List<ServerListItem>>(game, serverListItems);
+        if (serverListItems is not null) return (game, serverListItems);
 
-        logger.LogInformation("No results for game: {Game}", game.Name);
+        logger.LogInformation("No results for game: {GameName}", game.Name);
         return null;
+
+        IEnumerable<EFBlock> GetBlocksForApi(EFSteamGame apiGame) => _blockList.Where(block =>
+            block.SteamGameId is SteamGameConstants.AllGames || block.SteamGameId == apiGame.Id);
     }
 
-    private async Task<List<ServerListItem>?> GetServerListAsync(string filterParam, CancellationToken cancellationToken)
+
+    public async Task<List<ServerListItem>?> GetServerListAsync(string filterParam, CancellationToken cancellationToken)
     {
         const int queryLimit = 20_000;
         var queryParams = new Dictionary<string, string>
@@ -159,40 +178,28 @@ public class SteamServerService(
         }
     }
 
-    private IEnumerable<EFServer> BuildBlockList(List<EFServer> servers)
+    public IEnumerable<EFServer> BuildBlockList(List<EFServer> servers)
     {
         // Reset all servers to unblocked state as we may have removed some filters
         foreach (var server in servers) server.Blocked = false;
+
+        Dictionary<FilterType, Func<EFServer, EFBlock, bool>> filterStrategies = new()
+        {
+            [FilterType.Hostname] = (server, block) => server.Name.Contains(block.Value, StringComparison.OrdinalIgnoreCase),
+            [FilterType.CountryCode] = (server, block) => server.CountryCode == block.Value,
+            [FilterType.IpAddress] = (server, block) => server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture),
+            [FilterType.Subnet] = (server, block) => server.IpAddress.IsInCidrRange(block.Value),
+        };
 
         var blockList = _blockList.Where(x => !x.ApiFilter).ToList();
         if (blockList.Count is 0) return servers;
 
         foreach (var server in servers)
         {
-            var blocks = blockList.Where(b =>
-                server.SteamGameId == b.SteamGameId || b.SteamGameId == SteamGameConstants.AllGames);
+            var blocks = blockList.Where(b => server.SteamGameId == b.SteamGameId || b.SteamGameId == SteamGameConstants.AllGames);
             foreach (var block in blocks)
-            {
-                switch (block.Type)
-                {
-                    case FilterType.Hostname:
-                        if (server.Name.Contains(block.Value, StringComparison.OrdinalIgnoreCase))
-                            server.BlockServer();
-                        break;
-                    case FilterType.CountryCode:
-                        if (server.CountryCode == block.Value)
-                            server.BlockServer();
-                        break;
-                    case FilterType.IpAddress:
-                        if (server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture))
-                            server.BlockServer();
-                        break;
-                    case FilterType.Subnet:
-                        if (server.IpAddress.IsInCidrRange(block.Value))
-                            server.BlockServer();
-                        break;
-                }
-            }
+                if (filterStrategies[block.Type].Invoke(server, block))
+                    server.BlockServer();
         }
 
         return servers;
@@ -201,69 +208,73 @@ public class SteamServerService(
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     private static string BuildApiFilter(IEnumerable<EFBlock> blocks, int gameAppId)
     {
+        const string initialFilter = @"\appid\{0}\empty\1\dedicated\1\name_match\*";
         var blockList = blocks.Where(x => x.ApiFilter)
             .OrderByDescending(x => x.Type)
             .ToList();
 
-        var filterBuilder = new StringBuilder($@"\appid\{gameAppId}\empty\1\dedicated\1\name_match\*");
+        var filterBuilder = new StringBuilder(string.Format(initialFilter, gameAppId));
         filterBuilder.Append(@"\nand\1\gametype\hidden");
+
         if (blockList.Count is 0) return filterBuilder.ToString();
 
-        foreach (var block in blockList)
+        foreach (var block in blockList) AppendBlockFilter(block, filterBuilder);
+
+        return filterBuilder.ToString();
+
+        void AppendBlockFilter(EFBlock block, StringBuilder filter)
         {
             switch (block.Type)
             {
                 case FilterType.GameType:
-                    filterBuilder.Append($@"\nand\1\gametype\{block.Value}");
+                    filter.Append($@"\nand\1\gametype\{block.Value}");
                     break;
                 case FilterType.IpAddress:
-                    filterBuilder.Append($@"\nand\1\gameaddr\{block.Value}");
+                    filter.Append($@"\nand\1\gameaddr\{block.Value}");
                     break;
             }
         }
-
-        return filterBuilder.ToString();
     }
 
-    private IEnumerable<EFServer> ProcessExistingServers(IReadOnlyCollection<Tuple<EFServer, ServerListItem>> servers,
+    public IEnumerable<EFServer> ProcessExistingServers(List<(EFServer Server, ServerListItem ServerItem)> servers,
         IReadOnlyDictionary<string, double> standardDeviations)
     {
-        foreach (var server in servers.Where(server => server.Item2.Map is not null && server.Item2.Name is not null))
+        foreach (var server in servers.Where(server => server.ServerItem.Map is not null && server.ServerItem.Name is not null))
         {
-            server.Item1.Name = server.Item2.Name?.FilterEmojis() ?? "Unknown";
-            server.Item1.SteamGameId = server.Item2.AppId;
-            server.Item1.Players = server.Item2.Players;
-            server.Item1.MaxPlayers = server.Item2.MaxPlayers;
-            server.Item1.Map = server.Item2.Map!;
-            server.Item1.LastUpdated = DateTimeOffset.UtcNow;
-            server.Item1.PlayersStandardDeviation = standardDeviations.TryGetValue(server.Item1.Hash, out var value) ? value : null;
-            server.Item1.UpdateServerStatistics();
+            server.Server.Name = server.ServerItem.Name?.FilterEmojis() ?? "Unknown";
+            server.Server.SteamGameId = server.ServerItem.AppId;
+            server.Server.Players = server.ServerItem.Players;
+            server.Server.MaxPlayers = server.ServerItem.MaxPlayers;
+            server.Server.Map = server.ServerItem.Map!;
+            server.Server.LastUpdated = DateTimeOffset.UtcNow;
+            server.Server.PlayersStandardDeviation = standardDeviations.TryGetValue(server.Server.Hash, out var value) ? value : null;
+            server.Server.UpdateServerStatistics();
         }
 
-        var filtered = BuildBlockList(servers.Select(x => x.Item1).ToList());
+        var filtered = BuildBlockList(servers.Select(x => x.Server).ToList());
         return filtered;
     }
 
-    private IEnumerable<EFServer> ProcessNewServers(IEnumerable<Tuple<ServerListItem, string>> steamServers)
+    public IEnumerable<EFServer> ProcessNewServers(IEnumerable<(ServerListItem ServerItem, string ServerHash)> steamServers)
     {
         var servers = steamServers
-            .Where(x => x.Item1 is {Name: not null, Map: not null})
+            .Where(x => x.ServerItem is {Name: not null, Map: not null})
             .Select(x =>
             {
-                var address = x.Item1.Address.Split(':');
+                var address = x.ServerItem.Address.Split(':');
 
                 return new EFServer
                 {
-                    Hash = x.Item2,
+                    Hash = x.ServerHash,
                     IpAddress = address[0],
                     Port = int.Parse(address[1]),
-                    Name = x.Item1.Name?.FilterEmojis() ?? "Unknown",
-                    Players = x.Item1.Players,
-                    MaxPlayers = x.Item1.MaxPlayers,
+                    Name = x.ServerItem.Name?.FilterEmojis() ?? "Unknown",
+                    Players = x.ServerItem.Players,
+                    MaxPlayers = x.ServerItem.MaxPlayers,
                     Country = null,
                     CountryCode = null,
-                    Map = x.Item1.Map!,
-                    SteamGameId = x.Item1.AppId,
+                    Map = x.ServerItem.Map!,
+                    SteamGameId = x.ServerItem.AppId,
                     LastUpdated = DateTimeOffset.UtcNow,
                     Created = DateTimeOffset.UtcNow,
                 };

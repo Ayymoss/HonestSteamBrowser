@@ -3,6 +3,7 @@
 @using Humanizer
 @using BetterSteamBrowser.Business.ViewModels
 @using System.Text
+@using Humanizer.Localisation
 
 <RadzenRow JustifyContent="JustifyContent.Center">
     <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
@@ -81,14 +82,16 @@
                                 if (queueDelta > 0) textResult.Append($"{maxPlayers:N0}/{maxPlayers:N0} (+{queueDelta:N0})");
                                 else textResult.Append($"{players:N0}/{maxPlayers:N0}");
                             }
-                            <RadzenText TextStyle="TextStyle.Body2">
+                            <RadzenText TextStyle="TextStyle.Body2" class="@(players >= maxPlayers ? "rz-color-base-200" : string.Empty)">
                                 @textResult.ToString()
                             </RadzenText>
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="LastUpdated" Title="Last Seen" MinWidth="120px">
                         <Template Context="context">
-                            @context.LastUpdated.Humanize()
+                            <RadzenText TextStyle="TextStyle.Body2" class="@LastSeenLookupColour(context.LastUpdated)">
+                                @((DateTimeOffset.UtcNow - context.LastUpdated).Humanize(maxUnit: TimeUnit.Minute)) ago
+                            </RadzenText>
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="Created" Title="First Seen" MinWidth="120px">
@@ -102,7 +105,7 @@
                     {
                         <RadzenDataGridColumn TItem="Server" Property="PlayerAverage" Title="Player Avg." MinWidth="80px">
                             <Template Context="context">
-                                <RadzenText TextStyle="TextStyle.Body2">@(context.PlayerAverage is 0 ? "--" : context.PlayerAverage.ToString("N2"))</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body2">@(context.PlayerAverage is 0 ? "--" : context.PlayerAverage.ToString("N3"))</RadzenText>
                             </Template>
                         </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="Server" Property="PlayersStandardDeviation" Title="Player Std." MinWidth="80px">

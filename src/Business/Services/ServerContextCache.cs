@@ -1,17 +1,8 @@
-﻿using BetterSteamBrowser.Business.ViewModels;
+﻿namespace BetterSteamBrowser.Business.Services;
 
-namespace BetterSteamBrowser.Business.Services;
-
-public class ServerContextCache
+public class ServerContextCache : IServerContextCache
 {
-    public int ServerCount { get; private set; }
-    public int PlayerCount { get; private set; }
-    public bool Loaded { get; private set; }
-
-    public void UpdateServerCount(CacheInfo cacheInfo)
-    {
-        ServerCount = cacheInfo.ServerCount;
-        PlayerCount = cacheInfo.PlayerCount;
-        Loaded = true;
-    }
+    public int ServerCount { get; set; }
+    public int PlayerCount { get; set; }
+    public bool Loaded { get; set; }
 }
