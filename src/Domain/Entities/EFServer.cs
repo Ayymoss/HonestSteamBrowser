@@ -40,6 +40,7 @@ public class EFServer
 
     public string? Country { get; set; }
     public string? CountryCode { get; set; }
+    public string? AutonomousSystemOrganization { get; set; }
     public string Map { get; set; }
     public DateTimeOffset LastUpdated { get; set; }
     public DateTimeOffset Created { get; set; }
@@ -53,12 +54,12 @@ public class EFServer
     /// </summary>
     public List<EFServerSnapshot>? Snapshots { get; set; }
 
-    [NotMapped] public static DateTimeOffset OldestPlayerSnapshot { get; } = DateTimeOffset.UtcNow.AddDays(-7);
+    [NotMapped] public static int OldestPlayerSnapshotInDays { get; } = 7;
 
     public void UpdateServerStatistics()
     {
         // Get the window for the EMA
-        var deltaDays = Math.Round((DateTimeOffset.UtcNow - OldestPlayerSnapshot).TotalDays);
+        var deltaDays = Math.Round((DateTimeOffset.UtcNow - DateTimeOffset.UtcNow.AddDays(-OldestPlayerSnapshotInDays)).TotalDays);
         var maxCount = (double)60 / 15 * 24 * deltaDays;
         var smoothingFactor = 2.0 / (maxCount + 1);
         PlayerAverage = PlayerAverage.HasValue

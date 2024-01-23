@@ -89,8 +89,11 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Server" Property="LastUpdated" Title="Last Seen" MinWidth="120px">
                         <Template Context="context">
-                            <RadzenText TextStyle="TextStyle.Body2" class="@LastSeenLookupColour(context.LastUpdated)">
-                                @((DateTimeOffset.UtcNow - context.LastUpdated).Humanize(maxUnit: TimeUnit.Minute)) ago
+                            @{
+                                var lastSeenFormat = GetTimeStatusAndColour(context.LastUpdated);
+                            }
+                            <RadzenText TextStyle="TextStyle.Body2" class="@lastSeenFormat.TimeClass">
+                                @lastSeenFormat.TimeStatus
                             </RadzenText>
                         </Template>
                     </RadzenDataGridColumn>

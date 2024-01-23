@@ -90,7 +90,7 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var serverGroupHashes = await context.ServerSnapshots
-            .Where(x => x.Taken < EFServer.OldestPlayerSnapshot)
+            .Where(x => x.Taken < DateTimeOffset.UtcNow.AddDays(-EFServer.OldestPlayerSnapshotInDays))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken: cancellationToken);
 
@@ -99,6 +99,48 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
             .ExecuteDeleteAsync(cancellationToken);
 
         logger.LogInformation("Purged {Count} player snapshots", serverGroupHashes.Count);
+    }
+
+    public async Task<List<AsnPreBlock>> GetAsnBlockListAsync(string autonomousSystemOrganization, int steamGameId,
+        CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var query = context.Servers
+            .Where(x => !x.Blocked)
+            .Where(x => x.AutonomousSystemOrganization == autonomousSystemOrganization)
+            .AsQueryable();
+        if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
+
+        var servers = await query.Select(server => new AsnPreBlock
+        {
+            IpAddress = server.IpAddress,
+            Port = server.Port,
+            Name = server.Name,
+            SteamGameId = server.SteamGameId,
+            Players = server.Players,
+            MaxPlayers = server.MaxPlayers,
+            LastUpdated = server.LastUpdated,
+            Created = server.Created,
+            CountryCode = server.CountryCode,
+            PlayersStandardDeviation = server.PlayersStandardDeviation,
+            PlayerAverage = server.PlayerAverage ?? 0,
+            PlayerUpper = server.PlayerUpperBound ?? 0,
+            PlayerLower = server.PlayerLowerBound ?? 0,
+        }).ToListAsync(cancellationToken: cancellationToken);
+
+        return servers;
+    }
+
+    public async Task BlockAsnAsync(string autonomousSystemOrganization, int steamGameId, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var query = context.Servers.Where(x => x.AutonomousSystemOrganization == autonomousSystemOrganization);
+        if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
+        var servers = await query.ToListAsync(cancellationToken: cancellationToken);
+        foreach (var server in servers) server.BlockServer();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task BlockAddressAsync(string address, int steamGameId, CancellationToken cancellationToken)

@@ -1,5 +1,6 @@
 ﻿@using BetterSteamBrowser.Business.ViewModels
 @using Humanizer
+@using System.Text
 
 <RadzenRow JustifyContent="JustifyContent.Center">
     <RadzenColumn SizeSM="12" SizeMD="10" SizeXX="8">
@@ -30,7 +31,15 @@
                             PagingSummaryFormat="Displaying page {0} of {1} <b>(total {2} records)</b>" AllowColumnResize="true"
                             RowClick="RowClickEvent" Style="min-height: 200px;" class="rz-selectable">
                 <Columns>
-                    <RadzenDataGridColumn TItem="Block" Property="Value" Title="Value" MinWidth="120px" Width="500px"/>
+                    <RadzenDataGridColumn TItem="Block" Property="Value" Title="Value" MinWidth="120px" Width="500px">
+                        <Template Context="context">
+                            @{
+                                var message = new StringBuilder(context.Value);
+                                if (context.ASN.HasValue) message.Append($" ({context.ASN} - {context.ASNName})");
+                            }
+                            @message
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Block" Property="Type" Title="Filter" MinWidth="100px" Width="175px">
                         <Template Context="context">
                             @context.Type.Humanize().Transform(To.TitleCase)

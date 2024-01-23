@@ -71,7 +71,6 @@ public class SteamServerService(
         }
     }
 
-
     private async Task<ServerData> GetSteamServersAsync(CancellationToken cancellationToken)
     {
         var rawSteamServers = (await RetrieveServerStatisticsAsync(cancellationToken))
@@ -148,7 +147,6 @@ public class SteamServerService(
             block.SteamGameId is SteamGameConstants.AllGames || block.SteamGameId == apiGame.Id);
     }
 
-
     public async Task<List<ServerListItem>?> GetServerListAsync(string filterParam, CancellationToken cancellationToken)
     {
         const int queryLimit = 20_000;
@@ -189,6 +187,7 @@ public class SteamServerService(
             [FilterType.CountryCode] = (server, block) => server.CountryCode == block.Value,
             [FilterType.IpAddress] = (server, block) => server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture),
             [FilterType.Subnet] = (server, block) => server.IpAddress.IsInCidrRange(block.Value),
+            [FilterType.AutonomousSystemOrganization] = (server, block) => server.AutonomousSystemOrganization?.Contains(block.Value) ?? false,
         };
 
         var blockList = _blockList.Where(x => !x.ApiFilter).ToList();
@@ -249,6 +248,9 @@ public class SteamServerService(
             server.Server.LastUpdated = DateTimeOffset.UtcNow;
             server.Server.PlayersStandardDeviation = standardDeviations.TryGetValue(server.Server.Hash, out var value) ? value : null;
             server.Server.UpdateServerStatistics();
+            // This is a bit of a hack, but it's the easiest way to get the ASN populated.
+            // It is very slow to do this, but it should only ever be done once per server...
+            server.Server.AutonomousSystemOrganization ??= geoIpService.GetAutonomousSystemOrganization(server.Server.IpAddress);
         }
 
         var filtered = BuildBlockList(servers.Select(x => x.Server).ToList());
@@ -280,7 +282,7 @@ public class SteamServerService(
                 };
             }).ToList();
 
-        geoIpService.PopulateCountries(servers);
+        geoIpService.PopulateIpContext(servers);
         var filtered = BuildBlockList(servers);
 
         return filtered;

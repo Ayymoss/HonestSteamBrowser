@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using BetterSteamBrowser.Business.Mediatr.Commands;
 using BetterSteamBrowser.Business.ViewModels;
 using BetterSteamBrowser.Domain.Entities;
 using BetterSteamBrowser.Domain.Interfaces.Repositories.Pagination;
+using BetterSteamBrowser.Domain.Interfaces.Services;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using BetterSteamBrowser.Infrastructure.Context;
 using BetterSteamBrowser.Infrastructure.Utilities;
@@ -10,7 +12,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BetterSteamBrowser.Infrastructure.Repositories.Pagination;
 
-public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextFactory) : IResourceQueryHelper<GetBlockListCommand, Block>
+public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextFactory, IGeoIpService geoIpService)
+    : IResourceQueryHelper<GetBlockListCommand, Block>
 {
     public async Task<PaginationContext<Block>> QueryResourceAsync(GetBlockListCommand request, CancellationToken cancellationToken)
     {
@@ -37,7 +40,7 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
             .AsQueryable();
     }
 
-    private static async Task<PaginationContext<Block>> GetPagedData(GetBlockListCommand request, CancellationToken cancellationToken,
+    private async Task<PaginationContext<Block>> GetPagedData(GetBlockListCommand request, CancellationToken cancellationToken,
         IQueryable<EFBlock> query, DataContext context)
     {
         var count = await query.CountAsync(cancellationToken: cancellationToken);
@@ -60,6 +63,17 @@ public class BlocksPaginationQueryHelper(IDbContextFactory<DataContext> contextF
                 AddedBy = bu.User.UserName ?? "< UNSET >",
             })
             .ToListAsync(cancellationToken: cancellationToken);
+
+        var ipAddresses = pagedData.Select(x => x.Value)
+            .Select(x => IPAddress.TryParse(x, out var ip) ? ip : IPAddress.None)
+            .ToList();
+        var result = geoIpService.PopulateAsns(ipAddresses);
+        foreach (var block in pagedData)
+        {
+            if (!result.TryGetValue(block.Value, out var asn)) continue;
+            block.ASN = asn.AutonomousSystemNumber;
+            block.ASNName = asn.AutonomousSystemOrganization;
+        }
 
         return new PaginationContext<Block>
         {

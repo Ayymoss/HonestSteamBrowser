@@ -53,7 +53,7 @@ public class ScheduledTaskRunner(IServiceProvider serviceProvider, ILogger<Sched
             }
             catch (Exception e)
             {
-                Log.Error(e, "Error executing scheduled action");
+                logger.LogError(e, "Error executing scheduled action");
             }
         }, _cancellationTokenSource.Token);
     }

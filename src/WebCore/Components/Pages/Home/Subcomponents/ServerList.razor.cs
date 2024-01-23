@@ -5,6 +5,8 @@ using BetterSteamBrowser.Infrastructure.Identity;
 using BetterSteamBrowser.WebCore.Components.Pages.Home.Dialogs;
 using BetterSteamBrowser.WebCore.Components.Pages.Manage.Dialogs;
 using BetterSteamBrowser.WebCore.Utilities;
+using Humanizer;
+using Humanizer.Localisation;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -244,14 +246,20 @@ public partial class ServerList : IDisposable
         };
     }
 
-    private static string LastSeenLookupColour(DateTimeOffset time)
+    private static (string TimeStatus, string TimeClass) GetTimeStatusAndColour(DateTimeOffset time)
     {
-        var timeOnly = DateTimeOffset.UtcNow - time;
+        const int offlineThresholdMinutes = 90;
+        const int warningThresholdMinutes = 60;
 
-        if (timeOnly > TimeSpan.FromMinutes(90)) return "rz-color-danger-light";
-        if (timeOnly > TimeSpan.FromMinutes(60)) return "rz-color-warning-light";
+        var timeDifference = DateTimeOffset.UtcNow - time;
+        var timeFormat = $"{timeDifference.Humanize(maxUnit: TimeUnit.Minute)} ago";
 
-        return string.Empty;
+        if (timeDifference > TimeSpan.FromMinutes(offlineThresholdMinutes))
+            return (timeFormat, "rz-color-danger-light");
+        if (timeDifference > TimeSpan.FromMinutes(warningThresholdMinutes))
+            return (timeFormat, "rz-color-warning-light");
+
+        return (timeFormat, string.Empty);
     }
 
     public void Dispose()

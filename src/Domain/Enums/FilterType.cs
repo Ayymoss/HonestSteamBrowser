@@ -13,5 +13,7 @@ public enum FilterType
     [Display(Description = "Country Code")]
     CountryCode,
     [Display(Description = "CIDR Subnet")]
-    Subnet
+    Subnet,
+    [Display(Description = "Autonomous System Organization")]
+    AutonomousSystemOrganization
 }

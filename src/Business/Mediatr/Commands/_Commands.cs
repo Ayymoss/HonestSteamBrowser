@@ -1,4 +1,6 @@
-﻿using BetterSteamBrowser.Business.ViewModels;
+﻿using System.Net;
+using BetterSteamBrowser.Business.ViewModels;
+using BetterSteamBrowser.Domain.Interfaces.Services;
 using BetterSteamBrowser.Domain.ValueObjects;
 using BetterSteamBrowser.Domain.ValueObjects.Pagination;
 using MediatR;
@@ -47,3 +49,14 @@ public class GetBlockListCommand : Pagination, IRequest<PaginationContext<Block>
 public class GetSteamGameListCommand : Pagination, IRequest<PaginationContext<SteamGame>>;
 
 public class GetUserListCommand : Pagination, IRequest<PaginationContext<User>>;
+
+public class CheckAsnCountsCommand : IRequest<List<AsnPreBlock>>
+{
+    public string AutonomousSystemOrganization { get; set; }
+    public int SteamGameId { get; set; }
+}
+
+public class GetAsnDataCommand : IRequest<AutonomousSystemData>
+{
+    public IPAddress IpAddress { get; set; }
+}

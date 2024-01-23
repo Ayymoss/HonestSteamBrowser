@@ -1,4 +1,5 @@
 ﻿using BetterSteamBrowser.Domain.Entities;
+using BetterSteamBrowser.Domain.ValueObjects;
 
 namespace BetterSteamBrowser.Domain.Interfaces.Repositories;
 
@@ -17,4 +18,6 @@ public interface IServerRepository
     Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken);
     Task<Dictionary<string, double>> GetStandardDeviationsAsync(IEnumerable<string> hashes, CancellationToken cancellationToken);
     Task DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken);
+    Task<List<AsnPreBlock>> GetAsnBlockListAsync(string autonomousSystemOrganization, int steamGameId, CancellationToken cancellationToken);
+    Task BlockAsnAsync(string autonomousSystemOrganization, int steamGameId, CancellationToken cancellationToken);
 }

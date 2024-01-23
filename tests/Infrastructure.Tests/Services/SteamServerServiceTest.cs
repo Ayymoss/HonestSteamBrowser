@@ -49,7 +49,7 @@ public class SteamServerServiceTest
         var cancellationToken = CancellationToken.None;
 
         //Act
-        var result = await _steamServerService.GetServerListAsync("", cancellationToken);
+        var result = await _steamServerService.GetServerListAsync(string.Empty, cancellationToken);
 
         //Assert
         Assert.That(result, Is.Null);
@@ -59,7 +59,7 @@ public class SteamServerServiceTest
     public void BuildBlockList_Always_ReturnsServers()
     {
         //Arrange
-        var servers = new List<EFServer>() { };
+        List<EFServer> servers = [];
 
         //Act
         var result = _steamServerService.BuildBlockList(servers);
@@ -72,10 +72,9 @@ public class SteamServerServiceTest
     public void ProcessExistingServers_Always_ReturnsServers()
     {
         //Arrange
-        var servers = new List<(EFServer Server, ServerListItem ServerItem)>
-        {
-            new(new EFServer(), new ServerListItem())
-        };
+        List<(EFServer Server, ServerListItem ServerItem)> servers =
+            [new ValueTuple<EFServer, ServerListItem>(new EFServer(), new ServerListItem())];
+
         var standardDeviations = new Dictionary<string, double> {[string.Empty] = 0.0};
 
         //Act
@@ -89,10 +88,8 @@ public class SteamServerServiceTest
     public void ProcessNewServers_Always_ReturnsServers()
     {
         //Arrange
-        var steamServers = new List<(ServerListItem ServerItem, string ServerHash)>
-        {
-            new(new ServerListItem {Name = "Test", Map = "Test", Address = "127.0.0.1:27015"}, "Test")
-        };
+        List<(ServerListItem ServerItem, string ServerHash)> steamServers =
+            [new ValueTuple<ServerListItem, string>(new ServerListItem {Name = "Test", Map = "Test", Address = "127.0.0.1:27015"}, "Test")];
 
         //Act
         var result = _steamServerService.ProcessNewServers(steamServers);

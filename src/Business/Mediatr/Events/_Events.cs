@@ -55,3 +55,10 @@ public class ResetUserPasswordCommand : INotification
     public string Id { get; set; }
     public string? Password { get; set; }
 }
+
+public class BlockAsnCommand : INotification
+{
+    public string AutonomousSystemOrganization { get; set; }
+    public string UserId { get; set; }
+    public int SteamGameId { get; set; }
+}

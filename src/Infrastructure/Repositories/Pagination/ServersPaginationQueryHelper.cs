@@ -149,7 +149,6 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             IpAddress = server.IpAddress,
             Port = server.Port,
             Name = server.Name,
-            SteamGameAppId = server.SteamGame.Id,
             SteamGameName = server.SteamGame.Name,
             SteamGameId = server.SteamGameId,
             Map = server.Map,
@@ -163,7 +162,8 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
             PlayerAverage = server.PlayerAverage ?? 0,
             PlayerUpper = server.PlayerUpperBound ?? 0,
             PlayerLower = server.PlayerLowerBound ?? 0,
-            Favourite = favouriteServers.Contains(server.Hash)
+            Favourite = favouriteServers.Contains(server.Hash),
+            AutonomousSystemOrganization = server.AutonomousSystemOrganization
         };
     }
 }

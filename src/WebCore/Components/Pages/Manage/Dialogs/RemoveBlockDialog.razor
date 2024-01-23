@@ -1,10 +1,15 @@
 ﻿@using Humanizer
+@using System.Text
 
 <RadzenStack Orientation="Orientation.Vertical" Gap="0">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
             <RadzenText class="rz-color-primary" Text="Value:"/>
-            <RadzenText>@Block.Value</RadzenText>
+            @{
+                var message = new StringBuilder(Block.Value);
+                if (Block.ASN.HasValue) message.Append($" ({Block.ASN} - {Block.ASNName})");
+            }
+            <RadzenText>@message</RadzenText>
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
             <RadzenText class="rz-color-primary" Text="Type:"/>

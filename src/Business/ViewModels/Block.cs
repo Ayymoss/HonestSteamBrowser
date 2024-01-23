@@ -4,6 +4,8 @@ namespace BetterSteamBrowser.Business.ViewModels;
 
 public class Block
 {
+    public long? ASN;
+    public string? ASNName;
     public int Id { get; set; }
     public string Value { get; set; }
     public FilterType Type { get; set; }

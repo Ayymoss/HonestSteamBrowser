@@ -5,17 +5,16 @@ using MediatR;
 
 namespace BetterSteamBrowser.Business.Mediatr.Events;
 
-public class BlockServerAddressHandler(IServerRepository serverRepository, IBlockRepository blockRepository)
-    : INotificationHandler<BlockServerAddressCommand>
+public class BlockAsnHandler(IServerRepository serverRepository, IBlockRepository blockRepository) : INotificationHandler<BlockAsnCommand>
 {
-    public async Task Handle(BlockServerAddressCommand notification, CancellationToken cancellationToken)
+    public async Task Handle(BlockAsnCommand notification, CancellationToken cancellationToken)
     {
-        await serverRepository.BlockAddressAsync(notification.IpAddress, notification.SteamGameId, cancellationToken);
+        await serverRepository.BlockAsnAsync(notification.AutonomousSystemOrganization, notification.SteamGameId, cancellationToken);
         var block = new EFBlock
         {
-            Value = notification.IpAddress,
+            Value = notification.AutonomousSystemOrganization,
             ApiFilter = false,
-            Type = FilterType.IpAddress,
+            Type = FilterType.AutonomousSystemOrganization,
             Added = DateTimeOffset.UtcNow,
             SteamGameId = notification.SteamGameId,
             UserId = notification.UserId

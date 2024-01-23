@@ -3,6 +3,7 @@ using System;
 using BetterSteamBrowser.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BetterSteamBrowser.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240123144917_AddAsnToServer")]
+    partial class AddAsnToServer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,90 +63,90 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             Id = -1,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5581), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4532), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
-                            Type = 2,
+                            Type = 3,
                             UserId = "ADMIN_SEED_ID",
                             Value = "FASTCUP"
                         },
                         new
                         {
                             Id = -2,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5586), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4538), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = 730,
-                            Type = 1,
+                            Type = 2,
                             UserId = "ADMIN_SEED_ID",
                             Value = "uwujka"
                         },
                         new
                         {
                             Id = -3,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5588), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4539), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = -2,
-                            Type = 1,
+                            Type = 2,
                             UserId = "ADMIN_SEED_ID",
                             Value = "nosteam"
                         },
                         new
                         {
                             Id = -4,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5589), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4541), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = true,
                             SteamGameId = -2,
-                            Type = 1,
+                            Type = 2,
                             UserId = "ADMIN_SEED_ID",
                             Value = "no-steam"
                         },
                         new
                         {
                             Id = -5,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5590), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4542), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
-                            Type = 2,
+                            Type = 3,
                             UserId = "ADMIN_SEED_ID",
                             Value = "Develop"
                         },
                         new
                         {
                             Id = -6,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5591), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4543), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = -2,
-                            Type = 2,
+                            Type = 3,
                             UserId = "ADMIN_SEED_ID",
                             Value = "FACEIT"
                         },
                         new
                         {
                             Id = -7,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5592), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4544), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = 730,
-                            Type = 3,
+                            Type = 4,
                             UserId = "ADMIN_SEED_ID",
                             Value = "RU"
                         },
                         new
                         {
                             Id = -8,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5593), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4545), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = 252490,
-                            Type = 3,
+                            Type = 4,
                             UserId = "ADMIN_SEED_ID",
                             Value = "RU"
                         },
                         new
                         {
                             Id = -9,
-                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 19, 9, 28, 85, DateTimeKind.Unspecified).AddTicks(5594), new TimeSpan(0, 0, 0, 0, 0)),
+                            Added = new DateTimeOffset(new DateTime(2024, 1, 23, 14, 49, 16, 921, DateTimeKind.Unspecified).AddTicks(4546), new TimeSpan(0, 0, 0, 0, 0)),
                             ApiFilter = false,
                             SteamGameId = 730,
-                            Type = 2,
+                            Type = 3,
                             UserId = "ADMIN_SEED_ID",
                             Value = "Counter-Strike 2"
                         });
@@ -178,9 +181,6 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                     b.Property<string>("Hash")
                         .HasColumnType("text");
 
-                    b.Property<string>("AutonomousSystemOrganization")
-                        .HasColumnType("text");
-
                     b.Property<bool>("Blocked")
                         .HasColumnType("boolean");
 
@@ -196,6 +196,9 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                     b.Property<string>("IpAddress")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<long?>("IpAddressAsn")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("LastUpdated")
                         .HasColumnType("timestamp with time zone");
@@ -544,13 +547,13 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         {
                             Id = "ADMIN_SEED_ID",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2cff2fc5-c391-446b-b980-68975bf47f71",
+                            ConcurrencyStamp = "3bbb5469-8ff0-404e-9e5a-90bdec09c1dc",
                             Email = "superadmin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@EXAMPLE.COM",
                             NormalizedUserName = "SUPERADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH+vFla8Y1SKLqZzERXjdrDFE3BdrOyaxTsrML+N59YPivKRCLOc510mpPKMCnkBHg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPoOhBjTypJW78Vj+Bilr/ijKJMWrfMa3MpgTh23q/uO4+y3KjjxTJeaHDyCcO3nRg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -586,7 +589,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ADMIN_ROLE_ID",
+                            Id = "f25cf932-446f-45bc-8777-374d5a246d47",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -682,7 +685,7 @@ namespace BetterSteamBrowser.Infrastructure.Migrations
                         new
                         {
                             UserId = "ADMIN_SEED_ID",
-                            RoleId = "ADMIN_ROLE_ID"
+                            RoleId = "f25cf932-446f-45bc-8777-374d5a246d47"
                         });
                 });
 

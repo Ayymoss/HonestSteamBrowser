@@ -30,7 +30,7 @@ public static class DataContextSeed
 
         var adminRole = new IdentityRole
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = "ADMIN_ROLE_ID",
             Name = "Admin",
             NormalizedName = "ADMIN"
         };

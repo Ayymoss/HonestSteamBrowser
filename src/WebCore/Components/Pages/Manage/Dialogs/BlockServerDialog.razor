@@ -1,4 +1,7 @@
-﻿<RadzenStack Orientation="Orientation.Vertical" Gap="0">
+﻿@using BetterSteamBrowser.Domain.ValueObjects
+@using Humanizer
+@using System.Text
+<RadzenStack Orientation="Orientation.Vertical" Gap="0.25rem">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Normal" Gap="0.25rem">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
             <RadzenText class="rz-color-primary rz-mb-0" Text="Name:"/>
@@ -6,7 +9,7 @@
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
             <RadzenText class="rz-color-primary rz-mb-0" Text="Address:"/>
-            <RadzenText class="rz-mb-0">@Server.Address</RadzenText>
+            <RadzenText class="rz-mb-0">@Server.Address - @_asnData?.AutonomousSystemOrganization (@_asnData?.AutonomousSystemNumber)</RadzenText>
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
             <RadzenText class="rz-color-primary rz-mb-0" Text="Players:"/>
@@ -26,9 +29,81 @@
     </RadzenStack>
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" class="rz-my-4">
         <RadzenCheckBox @bind-Value="_forAllGames" Name="BlockCheckbox"/>
-        <RadzenText class="rz-ml-2 rz-mb-0" Text="Block for all games or just this one?"/>
+        <RadzenText class="rz-ml-2 rz-mb-0" Text="Block for all games?"/>
     </RadzenStack>
-    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-        <RadzenButton Click="BlockAddress" Text="Block" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Blocking..."/>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.25rem">
+        <RadzenButton Click="AsnBlockCheck" Text="Check ASN Counts" ButtonStyle="ButtonStyle.Info" IsBusy="_processing" BusyText="Getting..."/>
+        <RadzenButton Click="BlockAddress" Text="Block IP Address" ButtonStyle="ButtonStyle.Success" IsBusy="_processing" BusyText="Blocking..."/>
+        <RadzenButton Click="BlockAsn" Text="Block ASN" ButtonStyle="ButtonStyle.Danger" IsBusy="_processing" BusyText="Blocking..."/>
     </RadzenStack>
+    @if (!string.IsNullOrWhiteSpace(_checkResult))
+    {
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.25rem">
+            <RadzenText class="rz-color-primary rz-mb-0" Text="Check Result:"/>
+            <RadzenText class="rz-mb-0">@_checkResult</RadzenText>
+        </RadzenStack>
+
+        <div style="max-width:100%">
+            <RadzenDataGrid AllowColumnResize="true" AllowAlternatingRows="true" Density="Density.Compact" PageSize="10"
+                            AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" AllowSorting="true"
+                            Data="@_asnPreBlocks" TItem="AsnPreBlock">
+                <Columns>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="CountryCode" Title="Country" MinWidth="60px"/>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="Name" Title="Name" MinWidth="250px" Width="450px"/>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="Address" Title="Address" MinWidth="100px" Width="175px"/>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="SteamGameId" Title="GameID" Sortable="false" MinWidth="60px"/>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="Players" Title="Players" SortOrder="SortOrder.Descending" MinWidth="80px">
+                        <Template Context="context">
+                            @{
+                                var players = context.Players;
+                                var maxPlayers = context.MaxPlayers;
+                                var queueDelta = players - maxPlayers;
+
+                                var textResult = new StringBuilder();
+
+                                if (queueDelta > 0) textResult.Append($"{maxPlayers:N0}/{maxPlayers:N0} (+{queueDelta:N0})");
+                                else textResult.Append($"{players:N0}/{maxPlayers:N0}");
+                            }
+                            <RadzenText TextStyle="TextStyle.Body2" class="@(players >= maxPlayers ? "rz-color-base-200" : string.Empty)">
+                                @textResult.ToString()
+                            </RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="LastUpdated" Title="Last Seen" MinWidth="120px">
+                        <Template Context="context">
+                            <RadzenText TextStyle="TextStyle.Body2" Text="@context.LastUpdated.Humanize()"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="Created" Title="First Seen" MinWidth="120px">
+                        <Template Context="context">
+                            <RadzenText TextStyle="TextStyle.Body2" Text="@context.Created.Humanize()"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="PlayerAverage" Title="Player Avg." MinWidth="80px">
+                        <Template Context="context">
+                            <RadzenText TextStyle="TextStyle.Body2">@(context.PlayerAverage is 0 ? "--" : context.PlayerAverage.ToString("N3"))</RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Property="PlayersStandardDeviation" Title="Player Std." MinWidth="80px">
+                        <Template Context="context">
+                            <RadzenText TextStyle="TextStyle.Body2">
+                                @(context.PlayersStandardDeviation?.ToString("N2") ?? "--")
+                            </RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AsnPreBlock" Sortable="false" Title="Player Bounds" MinWidth="140px">
+                        <Template Context="context">
+                            @{
+                                var hasBounds = context.PlayerUpper > 0;
+                            }
+                            <RadzenText TextStyle="TextStyle.Body2">
+                                @(hasBounds ? $"LB: {context.PlayerLower:N0}, UB: {context.PlayerUpper:N0}" : "--")
+                            </RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    }
 </RadzenStack>
