@@ -35,7 +35,7 @@
                             </RadzenFormField>
                         </RadzenColumn>
                         <RadzenColumn SizeSM="12" SizeMD="4">
-                            <RadzenFormField Text="Search (min 3 chars, '!' to negate)" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
+                            <RadzenFormField Text="Search (min 3 chars, '-' to exclude)" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
                                 <ChildContent>
                                     <RadzenTextBox @bind-Value="_searchString" Change="OnSearch"/>
                                 </ChildContent>

@@ -65,10 +65,10 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         var searchWords = search.Split(' ');
         var regularSearchWords = searchWords
             .Where(x => x.Length >= 3)
-            .Where(word => !word.StartsWith('!'));
+            .Where(word => !word.StartsWith('-'));
         var negatedSearchWords = searchWords
             .Where(x => x.Length >= 4)
-            .Where(word => word.StartsWith('!'))
+            .Where(word => word.StartsWith('-'))
             .Select(word => word[1..]);
 
         query = regularSearchWords.Aggregate(query,

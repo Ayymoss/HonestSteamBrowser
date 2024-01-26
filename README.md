@@ -1,7 +1,7 @@
-# Better Steam Browser
-The Better Steam Browser project is to better the problematic Steam Browser. Quashing spoofers and building a much better experience for server owners and players alike.
+# Honest Steam Browser
+The Honest Steam Browser project is to better the problematic Steam Browser. Quashing spoofers and building a much better experience for server owners and players alike.
 
-**Website:** [Better Steam Browser](https://BetterSteamBrowser.app/)
+**Website:** [Honest Steam Browser](https://honeststeambrowser.com/)
 
 ***
 ## Requirements
