@@ -17,7 +17,8 @@ public interface IServerRepository
     Task DeletePlayerSnapshotsByServerHashesAsync(List<string> serverHashes, CancellationToken cancellationToken);
     Task<List<EFServerSnapshot>> GetServerSnapshotsAsync(string hash, CancellationToken cancellationToken);
     Task<Dictionary<string, double>> GetStandardDeviationsAsync(IEnumerable<string> hashes, CancellationToken cancellationToken);
-    Task DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken);
+    Task<List<string>> DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken);
     Task<List<AsnPreBlock>> GetAsnBlockListAsync(string autonomousSystemOrganization, int steamGameId, CancellationToken cancellationToken);
     Task BlockAsnAsync(string autonomousSystemOrganization, int steamGameId, CancellationToken cancellationToken);
+    Task UpdateServerBoundsAsync(IEnumerable<string> serverHashes, CancellationToken cancellationToken);
 }

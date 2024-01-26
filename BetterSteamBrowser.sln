@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5341C28E-F1FC-4340-8403-EB93C457AF25}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		LICENSE.md = LICENSE.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business.Tests", "tests\Business.Tests\Business.Tests.csproj", "{3366C22A-E2D9-4A54-8AAA-70B869F5ABDE}"

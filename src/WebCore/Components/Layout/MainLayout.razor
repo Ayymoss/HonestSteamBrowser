@@ -13,14 +13,16 @@
     <RadzenBody @ref="_body" class="rz-p-8">
         <ChildContent>
             <RadzenContentContainer Name="main">
-                @Body
-                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" class="rz-mt-4">
-                    @{
-                        var version = HelperMethods.GetVersionAsString();
-                        var versionString = $"Better Steam Browser | By Amos | Version {version}";
-                    }
-                    <RadzenText TextAlign="TextAlign.Center" Text="@versionString" TextStyle="TextStyle.Caption" class="rz-mb-0 rz-color-secondary-dark"/>
-                </RadzenStack>
+                <div style="height: 100%">
+                    @Body
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center">
+                        @{
+                            var version = HelperMethods.GetVersion();
+                            var versionString = $"Better Steam Browser | By Amos | Version {version}";
+                        }
+                        <RadzenText TextAlign="TextAlign.Center" Text="@versionString" TextStyle="TextStyle.Caption" class="rz-mb-0 rz-my-2 rz-color-secondary-dark"/>
+                    </RadzenStack>
+                </div>
             </RadzenContentContainer>
         </ChildContent>
     </RadzenBody>

@@ -63,7 +63,11 @@ public class SteamServerService(
             logger.LogInformation("Successfully saved {Count} servers", servers.ExistingServers.Count + newServersFinal.Count);
 
             logger.LogInformation("Purging old player snapshots...");
-            await serverRepository.DeleteOldServerPlayerSnapshotsAsync(cancellationToken);
+            var serversToUpdate = await serverRepository.DeleteOldServerPlayerSnapshotsAsync(cancellationToken);
+            logger.LogInformation("Purged {Count} player snapshots", serversToUpdate.Count);
+
+            logger.LogInformation("Updating server bounds...");
+            await serverRepository.UpdateServerBoundsAsync(serversToUpdate, cancellationToken);
         }
         catch (Exception e)
         {
@@ -187,7 +191,8 @@ public class SteamServerService(
             [FilterType.CountryCode] = (server, block) => server.CountryCode == block.Value,
             [FilterType.IpAddress] = (server, block) => server.IpAddress.Equals(block.Value, StringComparison.CurrentCulture),
             [FilterType.Subnet] = (server, block) => server.IpAddress.IsInCidrRange(block.Value),
-            [FilterType.AutonomousSystemOrganization] = (server, block) => server.AutonomousSystemOrganization?.Contains(block.Value) ?? false,
+            // If we don't have an ASO, let's just block it. MaxMind doesn't have it listed, so why should we?
+            [FilterType.AutonomousSystemOrganization] = (server, block) => server.AutonomousSystemOrganization?.Contains(block.Value) ?? true,
         };
 
         var blockList = _blockList.Where(x => !x.ApiFilter).ToList();

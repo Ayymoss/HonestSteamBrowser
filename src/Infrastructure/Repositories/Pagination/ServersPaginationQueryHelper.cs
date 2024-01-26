@@ -62,12 +62,29 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
 
     private static IQueryable<EFServer> ApplySearchQuery(IQueryable<EFServer> query, string search)
     {
-        query = search.Split(' ')
-            .Aggregate(query, (current, searchWord) => current.Where(iSearch =>
-                (iSearch.Country != null && EF.Functions.ILike(iSearch.Country, $"%{searchWord}%"))
-                || EF.Functions.ILike(iSearch.IpAddress, $"%{searchWord}%")
-                || EF.Functions.ILike(iSearch.Map, $"%{searchWord}%")
-                || EF.Functions.ILike(iSearch.Name, $"%{searchWord}%")));
+        var searchWords = search.Split(' ');
+        var regularSearchWords = searchWords
+            .Where(x => x.Length >= 3)
+            .Where(word => !word.StartsWith('!'));
+        var negatedSearchWords = searchWords
+            .Where(x => x.Length >= 4)
+            .Where(word => word.StartsWith('!'))
+            .Select(word => word[1..]);
+
+        query = regularSearchWords.Aggregate(query,
+            (current, word) => current.Where(server =>
+                (server.Country != null && EF.Functions.ILike(server.Country, $"%{word}%"))
+                || EF.Functions.ILike(server.IpAddress, $"%{word}%")
+                || EF.Functions.ILike(server.Map, $"%{word}%")
+                || EF.Functions.ILike(server.Name, $"%{word}%")));
+
+        query = negatedSearchWords.Aggregate(query,
+            (current, word) => current.Where(server =>
+                (server.Country == null || !EF.Functions.ILike(server.Country, $"%{word}%"))
+                && !EF.Functions.ILike(server.IpAddress, $"%{word}%")
+                && !EF.Functions.ILike(server.Map, $"%{word}%")
+                && !EF.Functions.ILike(server.Name, $"%{word}%")));
+
         return query;
     }
 
@@ -78,7 +95,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         // If we're sorting, let's remove any servers that don't have the data we're sorting by
         query = sortDescriptors.First().Property switch
         {
-            "PlayersStandardDeviation" => query.Where(x => x.PlayersStandardDeviation != null),
+            "PlayersStandardDeviation" => query.Where(x => x.PlayersStandardDeviation.HasValue),
             "PlayerAverage" => query.Where(x => x.PlayerAverage.HasValue && x.PlayerAverage != 0),
             _ => query
         };
@@ -100,8 +117,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         return query;
     }
 
-    private static async Task<List<string>> GetFavouriteServers(string? userId, DataContext context,
-        CancellationToken cancellationToken)
+    private static async Task<List<string>> GetFavouriteServers(string? userId, DataContext context, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(userId)) return [];
 
@@ -112,7 +128,7 @@ public class ServersPaginationQueryHelper(IDbContextFactory<DataContext> context
         return favouriteServerHashes;
     }
 
-    private static IQueryable<EFServer> ApplyFavouriteQuery(IQueryable<EFServer> query, List<string> hashes)
+    private static IQueryable<EFServer> ApplyFavouriteQuery(IQueryable<EFServer> query, ICollection<string> hashes)
     {
         query = query.Where(server => hashes.Contains(server.Hash));
         return query;

@@ -15,5 +15,5 @@ public class HelperMethods
         return string.Join(", ", identityRoles);
     }
 
-    public static string GetVersionAsString() => Assembly.GetCallingAssembly().GetName().Version?.ToString() ?? "Unknown";
+    public static string GetVersion() => Assembly.GetCallingAssembly().GetName().Version?.ToString() ?? "Unknown";
 }

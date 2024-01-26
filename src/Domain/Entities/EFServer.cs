@@ -54,7 +54,7 @@ public class EFServer
     /// </summary>
     public List<EFServerSnapshot>? Snapshots { get; set; }
 
-    [NotMapped] public static int OldestPlayerSnapshotInDays { get; } = 7;
+    [NotMapped] public static int OldestPlayerSnapshotInDays => 7;
 
     public void UpdateServerStatistics()
     {

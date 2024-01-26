@@ -85,20 +85,24 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
         return deviationCounts;
     }
 
-    public async Task DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken)
+    public async Task<List<string>> DeleteOldServerPlayerSnapshotsAsync(CancellationToken cancellationToken)
     {
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var serverGroupHashes = await context.ServerSnapshots
             .Where(x => x.Taken < DateTimeOffset.UtcNow.AddDays(-EFServer.OldestPlayerSnapshotInDays))
-            .Select(x => x.Id)
+            .Select(x => new
+            {
+                x.Id,
+                x.ServerHash
+            })
             .ToListAsync(cancellationToken: cancellationToken);
 
         await context.ServerSnapshots
-            .Where(x => serverGroupHashes.Contains(x.Id))
+            .Where(x => serverGroupHashes.Select(y => y.Id).Contains(x.Id))
             .ExecuteDeleteAsync(cancellationToken);
 
-        logger.LogInformation("Purged {Count} player snapshots", serverGroupHashes.Count);
+        return serverGroupHashes.Select(x => x.ServerHash).ToList();
     }
 
     public async Task<List<AsnPreBlock>> GetAsnBlockListAsync(string autonomousSystemOrganization, int steamGameId,
@@ -140,6 +144,37 @@ public class ServerRepository(IDbContextFactory<DataContext> contextFactory, ILo
         if (steamGameId is not SteamGameConstants.AllGames) query = query.Where(x => x.SteamGameId == steamGameId);
         var servers = await query.ToListAsync(cancellationToken: cancellationToken);
         foreach (var server in servers) server.BlockServer();
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateServerBoundsAsync(IEnumerable<string> serverHashes, CancellationToken cancellationToken)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var highestPlayerCounts = await context.ServerSnapshots
+            .Where(snapshot => serverHashes.Contains(snapshot.ServerHash))
+            .GroupBy(snapshot => snapshot.ServerHash)
+            .Select(group => new
+            {
+                Hash = group.Key,
+                PlayersUpper = group.Max(snapshot => snapshot.PlayerCount),
+                PlayersLower = group.Min(snapshot => snapshot.PlayerCount)
+            }).ToListAsync(cancellationToken);
+
+        var playerCountsDict = highestPlayerCounts.ToDictionary(info => info.Hash, info => (info.PlayersUpper, info.PlayersLower));
+
+        var servers = await context.Servers
+            .Where(server => serverHashes.Contains(server.Hash))
+            .ToListAsync(cancellationToken);
+
+        foreach (var server in servers)
+        {
+            if (!playerCountsDict.TryGetValue(server.Hash, out var values)) continue;
+            server.PlayerUpperBound = values.PlayersUpper;
+            server.PlayerLowerBound = values.PlayersLower;
+        }
+
+        context.Servers.UpdateRange(servers);
         await context.SaveChangesAsync(cancellationToken);
     }
 

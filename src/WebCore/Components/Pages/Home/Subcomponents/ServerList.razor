@@ -21,7 +21,7 @@
                                 <ChildContent>
                                     <RadzenDropDown TValue="string" @bind-Value="@_regionFilterSelected" Data="@_regionFilterData" AllowClear="true"
                                                     FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                    Change="OnDropdownChanged" Placeholder="Select Region"/>
+                                                    Change="OnDropdownChanged"/>
                                 </ChildContent>
                             </RadzenFormField>
                         </RadzenColumn>
@@ -30,12 +30,12 @@
                                 <ChildContent>
                                     <RadzenDropDown TValue="SteamGame" @bind-Value="@_gamesFilterSelected" Data="@_gamesFilterData" AllowClear="true"
                                                     FilterAsYouType="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                    Change="OnDropdownChanged" Placeholder="Select Game" LoadData="GameLoadData"/>
+                                                    Change="OnDropdownChanged" LoadData="GameLoadData"/>
                                 </ChildContent>
                             </RadzenFormField>
                         </RadzenColumn>
                         <RadzenColumn SizeSM="12" SizeMD="4">
-                            <RadzenFormField Text="Search" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
+                            <RadzenFormField Text="Search (min 3 chars, '!' to negate)" Variant="Variant.Outlined" Style="width: 100%; min-width: 240px;">
                                 <ChildContent>
                                     <RadzenTextBox @bind-Value="_searchString" Change="OnSearch"/>
                                 </ChildContent>

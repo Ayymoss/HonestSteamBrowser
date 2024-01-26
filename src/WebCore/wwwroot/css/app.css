@@ -32,6 +32,10 @@
     --rz-paginator-padding: 0.5rem 1rem !important;
 }
 
+.rz-form-field-label {
+    color: #ffffff99;
+}
+
 :root {
     font-size: var(--rz-root-font-size);
     --rz-layout-body-margin: 0 0.6rem 0.6rem !important;

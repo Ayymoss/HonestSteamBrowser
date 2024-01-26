@@ -7,8 +7,10 @@
 else
 {
     const double paddingPercentage = 1.01;
+    const int lowerScale = 10;
     var snapShots = Server.ServerSnapshots?.Select(x => new Snapshot(x.Snapshot.DateTime, x.Count)).ToList() ?? [];
-    var maxPlayers = (int)((Server.PlayerUpper > Server.MaxPlayers ? Server.PlayerUpper : Server.MaxPlayers) * paddingPercentage);
+    var scaleForEmptyHighCapServers = Server.MaxPlayers > lowerScale ? Server.PlayerUpper * paddingPercentage : Server.MaxPlayers;
+    var maxPlayers = (int)((Server.PlayerUpper > Server.MaxPlayers ? Server.PlayerUpper : scaleForEmptyHighCapServers) * paddingPercentage);
     var stepSize = int.Max(maxPlayers / 10, 1);
 
     if (snapShots.Count is not 0)
